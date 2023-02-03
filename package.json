@@ -1,0 +1,25 @@
+{
+  "name": "jandas",
+  "version": "0.1.0",
+  "description": "A very much Pandas-like JavaScript library for data science",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "prepare": "npm run build && ./node_modules/.bin/esbuild lib/J.js --minify --bundle --global-name=jandas --platform=browser --outfile=dist/jandas.min.js",
+    "prepublishOnly": "npm test"
+  },
+  "author": "Qiaonan Duan",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "esbuild": "0.17.5",
+    "jest": "^29.4.1",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.5"
+  },
+  "files": [
+    "lib/**/*",
+    "dist/**/*"
+  ]
+}
