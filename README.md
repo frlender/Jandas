@@ -22,7 +22,7 @@ Include the library in a script tag:
 ```html
 <script src="/path/to/jandas.min.js"></script>
 ```
-The minified version can be found at `dist/jandas.min.js`.
+The above command inserts an object named `jandas` in the global space. Users can access Jandas classes and functions through its properties. The minified version can be found at `dist/jandas.min.js`.
 
 ## [API Reference](https://github.com/frlender/Jandas/blob/main/API.md)
 ## Getting Started
