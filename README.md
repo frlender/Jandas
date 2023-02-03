@@ -1,4 +1,4 @@
-## Jandas: a very much Pandas-like JavaScript library for data science
+## git remote add origin https://github.com/frlender/Jandas.git
 Jandas is designed to have very similar indexing experience as  Pandas. It implements DataFrame, Series and Index classes in TypeScript and supports position- and label-based indexing. Unlike Pandas where some operations are asymemtrical between row and column, Jandas tries to make all operations symmetrical along the two axes. 
 
 ## Main Features
@@ -23,7 +23,7 @@ Include the library in a script tag:
 ```
 The minified version can be found at `dist/jandas.min.js`.
 
-## [API Reference]()
+## [API Reference](https://github.com/frlender/Jandas/blob/main/API.md)
 ## Getting Started
 Jandas uses `.loc()` to access values with a label based-index and `.iloc()` a position-based index. Both methods accept boolean arrays as arguments. `null` is used as a placeholder as `:` in Pandas to select all elements along an axis. The output of both methods is a new object with no pass by reference to the parent object. `.iloc()` also accepts range strings as arguments with the same syntax as the range expression in python.
 
@@ -48,7 +48,7 @@ df.loc('b').values // [[3,4],[5,6]]
 df.loc(null,['d',5]).values // [[1,2],[3,4],[5,6]]
 df.loc(null,[true,false]).values //[[1],[3],[5]]
 ```
-Jandas uses `.set()` or `.iset()` to change values inplace with a label- or position-based index. The indexing rule is the same as `.loc()` and `.iloc()`. The replacement value must be the same shape as the output from `.loc()` and `.iloc()` using the same indexing.
+Jandas uses `.set()` or `.iset()` to change values inplace with a label- or position-based index. The indexing rule is the same as `.loc()` and `.iloc()`. The replacement value must be the same shape as the output from `.loc()` and `.iloc()` using the same indices.
 
 ```TypeScript
 const df = new DataFrame([[1,2],[3,4],[5,6]],['a','b','b'],['d',5])
