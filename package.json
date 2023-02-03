@@ -2,7 +2,7 @@
   "name": "jandas",
   "version": "0.1.0",
   "description": "A very much Pandas-like JavaScript library for data science",
-  "main": "index.js",
+  "main": "lib/J.js",
   "scripts": {
     "test": "jest",
     "build": "tsc",
@@ -18,6 +18,11 @@
     "ts-jest": "^29.0.5",
     "typescript": "^4.9.5"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/frlender/Jandas"
+  },
+  "keywords": ["pandas","data science","dataframe","data analysis","indexing"],
   "files": [
     "lib/**/*",
     "dist/**/*"
