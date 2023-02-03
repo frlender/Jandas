@@ -22,7 +22,7 @@
     "type": "git",
     "url": "https://github.com/frlender/Jandas"
   },
-  "keywords": ["pandas","data science","dataframe","data analysis","indexing"],
+  "keywords": ["pandas","DataFrame","Series","data analysis","data analysis","indexing"],
   "files": [
     "lib/**/*",
     "dist/**/*"
