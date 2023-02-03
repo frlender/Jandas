@@ -18,11 +18,17 @@ Install via npm:
 ```bash
 npm install jandas
 ```
+Then import Jandas classes and functions in TypeScript:
+```TypeScript
+import {Series, DataFrame,Index,range} from 'jandas'
+```
+
+\
 Include the library in a script tag:
 ```html
 <script src="/path/to/jandas.min.js"></script>
 ```
-The above command inserts an object named `jandas` in the global space. Users can access Jandas classes and functions through its properties. The minified version can be found at `dist/jandas.min.js`.
+The above statement insert an object named `jandas` in the global space. Users can access Jandas classes and functions through the properties of this object. The minified version can be found at `dist/jandas.min.js`.
 
 ## [API Reference](https://github.com/frlender/Jandas/blob/main/API.md)
 ## Getting Started
