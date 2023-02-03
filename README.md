@@ -1,4 +1,5 @@
-## Jandas: a very much Pandas-like JavaScript library for data science
+# Jandas
+### A very much Pandas-like JavaScript library for data science
 Jandas is designed to have very similar indexing experience as  Pandas. It implements DataFrame, Series and Index classes in TypeScript and supports position- and label-based indexing. Unlike Pandas where some operations are asymemtrical between row and column, Jandas tries to make all operations symmetrical along the two axes. 
 
 ## Main Features
