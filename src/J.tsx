@@ -1,6 +1,12 @@
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
+import {Obj,GP,Then} from './df_lib'
+
+
+import * as _ from 'lodash'
+
+//TODO: test iterrows, itercols, groupby
 //TODO?: set on duplicated index ['a','a'] with lower dimension values
 //        namely, df.loc['a'] = [1,2,3]
 //TODO: merge, range 0:5:2, iterrows/cols, mean, sum,
@@ -419,9 +425,6 @@ class Series<T>{
     }
 }
 
-interface Obj<T>{
-    [key: number|string]:T
-}
 
 
 class DataFrame<T>{
@@ -942,6 +945,43 @@ class DataFrame<T>{
                 col_index = this.b(first as string,0)
         }
         return this.loc(row_index,col_index) as DataFrame<T>
+    }
+
+    iterrows(func:(row:Series<T>,key:number|string|ns_arr,
+        i:number)=>void){
+            this.index.values.forEach((k,i)=>{
+                const row = this.iloc(i) as Series<T>
+                func(row,k,i)
+            })
+    }
+
+    itercols(func:(row:Series<T>,key:number|string|ns_arr,
+        i:number)=>void){
+            this.columns.values.forEach((k,i)=>{
+                const row = this.iloc(null,i) as Series<T>
+                func(row,k,i)
+            })
+    }
+
+    groupby(labels:nsx,axis:0|1=1){
+        const index = axis === 1 ? this.columns : this.index
+        const iter = axis === 1 ? this.iterrows : this.itercols
+        
+
+        labels = (isArr(labels) ? labels : [labels] as ns_arr) as ns_arr
+        const idx = index.trans(labels) as number[]
+        
+        const res: GP = {}
+        iter((ss,k,i)=>{
+            const karr = ss.iloc(idx).values
+            const key = JSON.stringify(karr)
+            if(!(key in res))
+                res[key] = []
+            res[key].push(i)
+        })
+
+        const then = new Then<T>(res,axis,this)
+        return then
     }
 
 }

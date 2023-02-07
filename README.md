@@ -80,7 +80,7 @@ df2 = df.loc()
 df2.set(null,'e',[1,2,3]) // new DataFrame([[1,2,1],[3,4,2],[5,6,3]],
                           // ['a','b','b'],['d',5,'e'])
 ```
-Jandas implements two query functions `.b()` and `.q()` for Series and DataFrame. `.b()` returns a boolean index and `.q()` returns a DataFrame indexed by the boolean index. The syntaxes of query strings are slightly different bewtween Series and DataFrame.
+Jandas implements two query functions `.b()` and `.q()` for Series and DataFrame. `.b()` returns a boolean index and `.q()` returns a DataFrame indexed by the boolean index. The query syntaxes are slightly different bewtween Series and DataFrame.
 
 ```TypeScript
 const ss = new Series([1,2,3],['a','b','b'],'kk')

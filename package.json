@@ -13,6 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.4.0",
+    "@types/lodash": "^4.14.191",
     "esbuild": "0.17.5",
     "jest": "^29.4.1",
     "ts-jest": "^29.0.5",
@@ -22,9 +23,19 @@
     "type": "git",
     "url": "https://github.com/frlender/Jandas"
   },
-  "keywords": ["pandas","DataFrame","Series","data analysis","data analysis","indexing"],
+  "keywords": [
+    "pandas",
+    "DataFrame",
+    "Series",
+    "data analysis",
+    "data analysis",
+    "indexing"
+  ],
   "files": [
     "lib/**/*",
     "dist/**/*"
-  ]
+  ],
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }
