@@ -1,3 +1,4 @@
+import { expect, test, describe} from '@jest/globals';
 import {Series,Index} from '../J'
 
 const ss = new Series([1,2,3,4,5],['a','b','c','d','e'])

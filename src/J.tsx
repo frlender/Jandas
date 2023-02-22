@@ -1,7 +1,7 @@
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
-import {Obj,GP,Then} from './df_lib'
+import {Obj,GP,GroupByThen} from './df_lib'
 
 
 import * as _ from 'lodash'
@@ -963,24 +963,46 @@ class DataFrame<T>{
             })
     }
 
-    groupby(labels:nsx,axis:0|1=1){
+
+    groupby():GroupByThen<T>
+    groupby(labels:nsx|null):GroupByThen<T>
+    groupby(labels:nsx|null,axis:0|1):GroupByThen<T>
+    groupby(first?:any, second?:0|1):GroupByThen<T>{
+        if(_.isUndefined(first) && _.isUndefined(second)){
+            return this._groupby(null,1)
+        }else if(_.isUndefined(second)){
+            return this._groupby(first,1)
+        }else{
+            return this._groupby(first,second)
+        }
+    }
+
+    _groupby(labels:nsx|null,axis:0|1=1){
         const index = axis === 1 ? this.columns : this.index
         const iter = axis === 1 ? this.iterrows : this.itercols
-        
+        const _index = axis === 1 ? this.index : this.columns
 
-        labels = (isArr(labels) ? labels : [labels] as ns_arr) as ns_arr
-        const idx = index.trans(labels) as number[]
-        
         const res: GP = {}
-        iter((ss,k,i)=>{
-            const karr = ss.iloc(idx).values
-            const key = JSON.stringify(karr)
-            if(!(key in res))
-                res[key] = []
-            res[key].push(i)
-        })
-
-        const then = new Then<T>(res,axis,this)
+        if(_.isNull(labels)){   
+            iter.call(this,(ss,k,i)=>{
+                const karr = [k]
+                const key = JSON.stringify(karr)
+                if(!(key in res))
+                    res[key] = []
+                res[key].push(i)
+            })
+        }else{
+            labels = (isArr(labels) ? labels : [labels] as ns_arr) as ns_arr
+            const idx = index.trans(labels) as number[]                
+            iter.call(this,(ss,k,i)=>{
+                const karr = ss.iloc(idx).values
+                const key = JSON.stringify(karr)
+                if(!(key in res))
+                    res[key] = []
+                res[key].push(i)
+            })
+        }
+        const then = new GroupByThen<T>(res,axis,this)
         return then
     }
 

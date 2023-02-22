@@ -1,3 +1,4 @@
+import { expect, test, describe} from '@jest/globals';
 import {DataFrame,Index,Series} from '../J'
 
 test('constructor',()=>{
@@ -615,4 +616,55 @@ test('to_dict',()=>{
     df = new DataFrame([[1,2],[3,5]],['a',5],['b','b'])
     expect(df.to_dict()).toEqual([{'b':2},{'b':5}])
 
+})
+
+test('groupby',()=>{
+
+    let df = new DataFrame([[3,2,3],[3,8,9],[5,6,7]],
+        ['a','b','b'],['5',5,'e'])
+    df.groupby().then((gp,k,i)=>{
+        if(i==1){
+            expect(gp).toEqual(new DataFrame([[3,8,9],[5,6,7]],
+                ['b','b'],['5',5,'e']))
+            expect(k).toEqual('b')
+        }
+    })
+    df.groupby('5').then((gp,k,i)=>{
+        if(i==0){
+            expect(gp).toEqual(new DataFrame([[3,2,3],[3,8,9]],
+                ['a','b'],['5',5,'e']))
+            expect(k).toEqual(3)
+        }
+    })
+    df.groupby('a',0).then((gp,k,i)=>{
+        if(i==0){
+            expect(gp).toEqual(new DataFrame([[3,3],[3,9],[5,7]],
+                ['a','b','b'],['5','e']))
+            expect(k).toEqual(3)
+        }
+        if(i==1){
+            expect(gp).toEqual(new DataFrame([[2],[8],[6]],
+                ['a','b','b'],[5]))
+            expect(k).toEqual(2)
+        }
+    })
+
+    df = new DataFrame([[3,8,3],[3,8,9],[3,6,7],[9,8,7]],
+        ['a','b','b','c'],['5',5,'e'])
+
+    df.groupby(['5',5]).then((gp,k,i)=>{
+        if(i==0){
+            expect(gp).toEqual(new DataFrame([[3,8,3],[3,8,9]],
+                ['a','b'],['5',5,'e']))
+            expect(k).toEqual([3,8])
+        }
+    })
+
+    df.groupby('b',0).then((gp,k,i)=>{
+        if(i==1){
+            expect(gp).toEqual(new DataFrame([[8],[8],[6],[8]],
+                ['a','b','b','c'],[5]))
+            expect(k).toEqual([8,6])
+        }
+    })
 })
