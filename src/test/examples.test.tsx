@@ -29,6 +29,10 @@ test('.iloc, .loc',()=>{
         [[1,2],[3,4]]
     ) //[[1,2],[3,4]]
 
+    expect(t(df.iloc('::-1')).values).toEqual(
+        [[5,6],[3,4],[1,2]]
+    ) //[[5,6],[3,4],[1,2]]
+
     expect(t(df.iloc([true,false,false])).values).toEqual([[1,2]]) // [[1,2]]
     expect(df.iloc([false,false,false])).toEqual(new DataFrame([],[],['d',5])) // new DataFrame([],[],['d',5])
     expect(df.iloc(null,[false,false])).toEqual(new DataFrame([[],[],[]],['a','b','b'],[])) // new DataFrame([[],[],[]],['a','b','b'],[])
@@ -114,6 +118,10 @@ const dx = new DataFrame<number|string>([[1,'e',3],[3,'a',9],[5,'c',7]],
         ['a','b','b'],['5',5,'e'])
 expect(dx.q('["a","c"].includes([5]) && ["e"]>7')).toEqual(
     new DataFrame<number|string>([[3,'a',9]],
+    ['b'],['5',5,'e'])
+)
+expect(dx.q('["c",].includes([5])')).toEqual(
+    new DataFrame<number|string>([[5,'c',7]],
     ['b'],['5',5,'e'])
 )
 //output: new DataFrame<number|string>([[3,'a',9]],

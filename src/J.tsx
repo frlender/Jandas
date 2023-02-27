@@ -891,6 +891,9 @@ class DataFrame<T>{
                 dbl_quote_count : sgl_quote_count
             if(label.includes(',') && (quote_count===0 ||quote_count > 2))
                 return 
+            // [element,] to represent an arry with one element.
+            if(label[label.length-1] === ',')
+                return
 
             // handle trailling white space in []
             if (label !== labelx)

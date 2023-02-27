@@ -53,14 +53,22 @@ const check = {
             colon(s:string){
                 if(!s.includes(':'))
                     throw('no ":" is found in string range index.')
-                if(s.split(':').length > 2)
-                    throw('currently only one ":" should be in the string index')
+                if(s.split(':').length > 3)
+                    throw('More than two ":" in the string index')
             },
             parsed(start:number,end:number){
                 if(Number.isNaN(start) || Number.isNaN(end))
                     throw('string range index format is not correct.')
                 if(!Number.isInteger(start) || !Number.isInteger(end))
                     throw('numbers in string range index must be integers.')
+            },
+            parsedStep(step:number){
+                if(Number.isNaN(step))
+                    throw('step string range index format is not correct.')
+                if(!Number.isInteger(step))
+                    throw('step in string range index must be integers.')
+                if(step === 0)
+                    throw('step cannot be less than 0.')
             }
         }
     },
@@ -122,28 +130,74 @@ function _trans_neg(x:number,len:number){
 function _trans_rg(x:string,len:number){
     //TODO support multiple colons like 0:5:2, ::-1
     check.iloc.str.colon(x)
-    let [start_str,end_str] = x.split(':')
-    start_str = start_str ? start_str : '0'
-    end_str = end_str ? end_str : len.toString()
-    let [start,end] = [parseFloat(start_str),
-                        parseFloat(end_str)]
-    check.iloc.str.parsed(start,end)
-    if(start < 0) start = _trans_neg(start,len)
-    if(end < 0) end = _trans_neg(end,len)
-    if(start >= end) return []
-    if(start >= len) return []
-    end = end > len ? len : end
-    return Array.from(Array(end-start).keys()).map(x=>x+start)
+    const splits = x.split(':')
+    let start_str, end_str, step_str='1'
+    if(splits.length===2){
+        [start_str,end_str] = splits
+    }else{
+        [start_str,end_str,step_str] = splits
+    }
+    step_str = step_str ? step_str : '1'
+    let step = parseFloat(step_str)
+    check.iloc.str.parsedStep(step)
+
+    if(step > 0){
+        start_str = start_str ? start_str : '0'
+        end_str = end_str ? end_str : len.toString()
+        let [start,end] = [parseFloat(start_str),
+                            parseFloat(end_str)]
+                            
+        check.iloc.str.parsed(start,end)
+        if(start < 0) start = _trans_neg(start,len)
+        if(end < 0) end = _trans_neg(end,len)
+        if(start >= end) return []
+        if(start >= len) return []
+        end = end > len ? len : end
+        const arr = []
+        let i = start
+        while(i<end){
+            arr.push(i)
+            i+=step
+        }
+        return arr
+    }else{
+        start_str = start_str ? start_str : len.toString()
+        let end_str_null = false
+        if(!end_str){
+            end_str='0'
+            end_str_null = true
+        }
+        let [start,end] = [parseFloat(start_str),
+                            parseFloat(end_str)]
+                            
+        check.iloc.str.parsed(start,end)
+        if(start < 0) start = _trans_neg(start,len)
+        if(end < 0) end = _trans_neg(end,len)
+        if(start <= end) return []
+        if(end >= (len-1)) return []
+        start = start > (len-1) ? (len-1) : start
+        const arr = []
+        let i = start
+        end = end_str_null ? -1 : end
+        while(i>end){
+            arr.push(i)
+            i+=step
+        }
+        return arr
+    }
 }
 
 function range(end:number):number[]
 function range(start:number,end:number):number[]
-//TODO function range(start:number,end:number,step:number)
-function range(first:number,second?:number){
-    if(second === undefined)
+function range(start:number,end:number,step:number):number[]
+function range(first:number,second?:number,third?:number){
+    if(second === undefined && third === undefined)
         return _trans_rg(`:${first}`,first)
+    else if(third=== undefined)
+        return _trans_rg(`${first}:${second}`,second!)
     else
-        return _trans_rg(`${first}:${second}`,second)
+        return _trans_rg(`${first}:${second}:${third}`,
+            third!>0?second!:(first+1))
 }
 
 function _trans_iloc(idx: undefined | string 
@@ -165,4 +219,6 @@ function _trans_iloc(idx: undefined | string
 
 
 
-export {isNum, isStr, isArr,isVal,isNumArr,isStrArr,_trans_iloc,check,range}
+export {isNum, isStr, isArr,isVal,isNumArr,
+    isStrArr,_trans_iloc,check,range,
+    _trans_rg}

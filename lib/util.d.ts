@@ -23,6 +23,7 @@ declare const check: {
         str: {
             colon(s: string): void;
             parsed(start: number, end: number): void;
+            parsedStep(step: number): void;
         };
     };
     iset: {
@@ -39,7 +40,9 @@ declare const check: {
         };
     };
 };
+declare function _trans_rg(x: string, len: number): number[];
 declare function range(end: number): number[];
 declare function range(start: number, end: number): number[];
+declare function range(start: number, end: number, step: number): number[];
 declare function _trans_iloc(idx: undefined | string | number | number[] | boolean[], len: number): number | (number[] | boolean[]) | undefined;
-export { isNum, isStr, isArr, isVal, isNumArr, isStrArr, _trans_iloc, check, range };
+export { isNum, isStr, isArr, isVal, isNumArr, isStrArr, _trans_iloc, check, range, _trans_rg };

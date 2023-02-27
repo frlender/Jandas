@@ -1,4 +1,5 @@
 import { range } from './util';
+import { Obj, GroupByThen } from './df_lib';
 type ns_arr = (number | string)[];
 type numx = number[] | number;
 type nsx = number | string | ns_arr;
@@ -50,9 +51,6 @@ declare class Series<T> {
     b(expr: string): boolean[];
     q(expr: string): Series<T>;
 }
-interface Obj<T> {
-    [key: number | string]: T;
-}
 declare class DataFrame<T> {
     values: T[][];
     tr: T[][];
@@ -74,9 +72,9 @@ declare class DataFrame<T> {
     p(): void;
     transpose(inplace?: boolean): DataFrame<T>;
     _iloc_asymmetric(v1: T[][], l1: Index, l2: Index, transpose: boolean, i1: numx | boolean[], i2?: numx | boolean[]): DataFrame<T> | Series<T> | null;
-    _iloc_symmetric(ir?: numx | boolean[], ic?: numx | boolean[]): T | DataFrame<T> | null;
+    _iloc_symmetric(ir?: numx | boolean[], ic?: numx | boolean[]): DataFrame<T> | T | null;
     iloc(row?: null | string | numx | boolean[], col?: null | string | numx | boolean[]): T | Series<T> | DataFrame<T>;
-    loc(row?: null | locParam, col?: null | locParam): T | DataFrame<T> | Series<T>;
+    loc(row?: null | locParam, col?: null | locParam): DataFrame<T> | T | Series<T>;
     _iset_asymmetric(v1: T[][], l1: Index, l2: Index, i1: numx | boolean[], rpl: T[] | T[][], i2?: numx | boolean[]): null | undefined;
     _iset_symmetric(ir: undefined | numx | boolean[], ic: undefined | numx | boolean[], rpl: T | T[] | T[][]): null | undefined;
     _iset(row: undefined | numx | boolean[], col: undefined | numx | boolean[], rpl: T | T[] | T[][]): void;
@@ -96,5 +94,11 @@ declare class DataFrame<T> {
     b(expr: string, axis?: 0 | 1): boolean[];
     q(col_expr: string): DataFrame<T>;
     q(row_expr: null | string, col_expr: null | string): DataFrame<T>;
+    iterrows(func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
+    itercols(func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
+    groupby(): GroupByThen<T>;
+    groupby(labels: nsx | null): GroupByThen<T>;
+    groupby(labels: nsx | null, axis: 0 | 1): GroupByThen<T>;
+    _groupby(labels: nsx | null, axis?: 0 | 1): GroupByThen<T>;
 }
 export { Series, DataFrame, Index, range };

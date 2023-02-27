@@ -5,11 +5,11 @@ interface Obj<T> {
 interface GP {
     [key: string]: number[];
 }
-declare class Then<T> {
+declare class GroupByThen<T> {
     gp: GP;
     axis: 0 | 1;
     df: DataFrame<T>;
     constructor(gp: GP, axis: 0 | 1, df: DataFrame<T>);
     then(func: (sub: DataFrame<T>, key: T | T[], i: number) => void): void;
 }
-export { Obj, GP, Then };
+export { Obj, GP, GroupByThen };
