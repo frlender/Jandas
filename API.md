@@ -129,6 +129,33 @@ q(first:null|string,second?:null|string): DataFrame<T>
 Return a new dataframe based on the query expressions `col_expr` and `row_expr`. `col_expr` is evaluated on the columns and `row_expr` on the rows. When there is one argument, it will be `col_expr`. When there are two arguments, the first will be `row_expr` and the second `col_expr`. `null` is used as a placeholder. The syntax of the expressions is plain JavaScript except that it uses `[label]` to refer a row or column. Use `[value,]` to reprsent an array with a single value in the expression. Without the comma at the end, `[value]` will be treated as a label selection with the label being `value`. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
+**DataFrame.iterrows**
+```TypeScript
+iterrows(func:(row:Series<T>,key:number|string|ns_arr,i:number)=>void): void
+```
+Iterate over the rows of the dataframe. Similar to the `forEach` function, it accepts a function as argument where the `row`, `key` and `i` are the row, label and position in each iteration. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+
+\
+**DataFrame.itercols**
+```TypeScript
+itercols(func:(col:Series<T>,key:number|string|ns_arr,i:number)=>void): void
+```
+Iterate over the columns of the dataframe. Similar to the `forEach` function, it accepts a function as argument where the `col`, `key` and `i` are the column, label and position in each iteration. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+
+\
+**DataFrame.groupby**
+```TypeScript
+groupby():GroupByThen<T>
+groupby(labels:nsx|null):GroupByThen<T>
+groupby(labels:nsx|null,axis:0|1):GroupByThen<T>
+groupby(first?:any, second?:0|1):GroupByThen<T>
+
+GroupbyThen.then(func:(group:DataFrame<T>,key:T | T[], i:number)=>void): void
+```
+Group the dataframe by values in rows or columns designated by labels. When no `labels` are provided, it groups the dataframe by the row or column index. When no `axis` is provided, the `axis` defaults to 1 and the function groups by columns or the row index. It returns a `GroupByThen` object that has a `then` method. The method accepts a function as argument where the `group`, `key` and `i` are the group, group key and numric index in each iteration.
+Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+
+\
 **DataFrame.p**
 ```TypeScript
 p(): void

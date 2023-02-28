@@ -26,7 +26,7 @@ class GroupByThen<T>{
         this.df = df
     }
 
-    then(func:(sub:DataFrame<T>,key:T | T[],
+    then(func:(group:DataFrame<T>,key:T | T[],
         i:number)=>void){
         let i = 0
         _.forOwn(this.gp,(val,key)=>{

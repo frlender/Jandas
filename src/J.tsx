@@ -958,7 +958,7 @@ class DataFrame<T>{
             })
     }
 
-    itercols(func:(row:Series<T>,key:number|string|ns_arr,
+    itercols(func:(col:Series<T>,key:number|string|ns_arr,
         i:number)=>void){
             this.columns.values.forEach((k,i)=>{
                 const row = this.iloc(null,i) as Series<T>
