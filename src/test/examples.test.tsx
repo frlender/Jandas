@@ -127,3 +127,23 @@ expect(dx.q('["c",].includes([5])')).toEqual(
 //output: new DataFrame<number|string>([[3,'a',9]],
 //        ['b'],['5',5,'e'])
 })
+
+test('iteration',()=>{
+    const df = new DataFrame([[1,2],
+                              [3,4],
+                              [5,6]],
+    ['a','b','b'],['d',5])
+
+    df.iterrows((row,key,i)=>{
+        if(key === 'a'){
+            expect(row.values).toEqual([1,2])
+        }
+    })
+
+    df.iterrows((col,key,i)=>{
+        if(key === 5){
+            expect(col.values).toEqual([2,4,6])
+        }
+    })
+      
+})

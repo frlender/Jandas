@@ -32,6 +32,7 @@ The above statement insert an object named `jandas` in the global namespace. Use
 
 ## [API Reference](https://github.com/frlender/Jandas/blob/main/API.md)
 ## Getting Started
+### Indexing
 Jandas uses `.loc()` to access values with a label based-index and `.iloc()` a position-based index. Both methods accept boolean arrays as arguments. `null` is used as a placeholder as `:` in Pandas to select all elements along an axis. The output of both methods is a new object with no pass by reference to the parent object. `.iloc()` also accepts range strings as arguments with the same syntax as the range expression in python.
 
 ```TypeScript
@@ -133,4 +134,64 @@ dx.q('["c",].includes([5])')
 
 Jandas implements `.to_dict()` to convert a dataframe into an array of objects. It is similar to `.to_dict('records')` in Pandas. It also implements `.reset_index()` and `.reset_columns()` to reset index along the row and column axes.
 
+
+### Iteration
+Jandas implements `.iterrows()` and `.itercols` to iter over the rows and columns of a DataFrame.
+```TypeScript
+const df = new DataFrame([[1,2],
+                          [3,4],
+                          [5,6]],
+           ['a','b','b'],['d',5])
+
+df.iterrows((row,key,i)=>{
+  console.log(row.values,key)
+  // output:  [1,2],'a'
+  //          [3,4],'b'
+  //          [5,6],'b'
+})
+
+df.itercols((col,key,i)=>{
+  console.log(col.values,key)
+  // output:  [1,3,5],'d'
+  //          [2,4,6], 5
+})
+```
+It implements `.groupby()` to group a DataFrame by values in rows or columns designated by input labels. The method return a `GroupByThen` object that has a `then` method to iterate over the groups.
+```TypeScript
+let df = new DataFrame([[3,2,3],
+                        [3,8,9],
+                        [5,6,7]],
+    ['a','b','b'],['5',5,'e'])
+
+df.groupby().then((gp,k,i)=>{
+    if(i===1){
+        // gp: new DataFrame([[3,8,9],
+        //                    [5,6,7]],
+        //        ['b','b'],['5',5,'e']))
+        // k: 'b'
+    }
+})
+df.groupby('a',0).then((gp,k,i)=>{
+    if(i===1){
+        // gp: new DataFrame([[2],[8],[6]],
+        //             ['a','b','b'],[5]))
+        // k: 2
+    }
+})
+
+df = new DataFrame([[3,8,3],
+                    [3,8,9],
+                    [3,6,7],
+                    [9,8,7]],
+['a','b','b','c'],['5',5,'e'])
+
+df.groupby(['5',5]).then((gp,k,i)=>{
+    if(i===0){
+        // gp: new DataFrame([[3,8,3],
+        //                    [3,8,9]],
+        //         ['a','b'],['5',5,'e']))
+        //k: [3,8]
+    }
+})
+```
 

@@ -6,10 +6,9 @@ import {Obj,GP,GroupByThen} from './df_lib'
 
 import * as _ from 'lodash'
 
-//TODO: test iterrows, itercols, groupby
 //TODO?: set on duplicated index ['a','a'] with lower dimension values
 //        namely, df.loc['a'] = [1,2,3]
-//TODO: merge, range 0:5:2, iterrows/cols, mean, sum,
+//TODO: merge, mean, sum,
 // std, op(for element-wise operation in dataframe).
 //TODO: MultiIndex
 

@@ -623,26 +623,26 @@ test('groupby',()=>{
     let df = new DataFrame([[3,2,3],[3,8,9],[5,6,7]],
         ['a','b','b'],['5',5,'e'])
     df.groupby().then((gp,k,i)=>{
-        if(i==1){
+        if(i===1){
             expect(gp).toEqual(new DataFrame([[3,8,9],[5,6,7]],
                 ['b','b'],['5',5,'e']))
             expect(k).toEqual('b')
         }
     })
     df.groupby('5').then((gp,k,i)=>{
-        if(i==0){
+        if(i===0){
             expect(gp).toEqual(new DataFrame([[3,2,3],[3,8,9]],
                 ['a','b'],['5',5,'e']))
             expect(k).toEqual(3)
         }
     })
     df.groupby('a',0).then((gp,k,i)=>{
-        if(i==0){
+        if(i===0){
             expect(gp).toEqual(new DataFrame([[3,3],[3,9],[5,7]],
                 ['a','b','b'],['5','e']))
             expect(k).toEqual(3)
         }
-        if(i==1){
+        if(i===1){
             expect(gp).toEqual(new DataFrame([[2],[8],[6]],
                 ['a','b','b'],[5]))
             expect(k).toEqual(2)
@@ -653,7 +653,7 @@ test('groupby',()=>{
         ['a','b','b','c'],['5',5,'e'])
 
     df.groupby(['5',5]).then((gp,k,i)=>{
-        if(i==0){
+        if(i===0){
             expect(gp).toEqual(new DataFrame([[3,8,3],[3,8,9]],
                 ['a','b'],['5',5,'e']))
             expect(k).toEqual([3,8])
@@ -661,7 +661,7 @@ test('groupby',()=>{
     })
 
     df.groupby('b',0).then((gp,k,i)=>{
-        if(i==1){
+        if(i===1){
             expect(gp).toEqual(new DataFrame([[8],[8],[6],[8]],
                 ['a','b','b','c'],[5]))
             expect(k).toEqual([8,6])
