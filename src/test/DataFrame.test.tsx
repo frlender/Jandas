@@ -1,6 +1,9 @@
 import { expect, test, describe} from '@jest/globals';
 import {DataFrame,Index,Series} from '../J'
 
+const t = (x: any)=>x as DataFrame<unknown>
+
+
 test('constructor',()=>{
     let df = new DataFrame([[1,2,3],[4,5,6]])
     expect(df.values).toEqual([[1,2,3],[4,5,6]])
@@ -87,14 +90,14 @@ describe('iloc',()=>{
         expect(()=>df.iloc(0)).toThrow('range')
         expect(()=>df.iloc(0,0)).toThrow('range')
         expect(()=>df.iloc(0,[0])).toThrow('range')
-        expect(df.iloc(null,[1])).toEqual(
+        expect((df.iloc(null,[1]) as DataFrame<any>).loc()).toEqual(
             new DataFrame([],null,[1]))
 
 
         df = new DataFrame([[]],['a'])
         expect(df.iloc(0)).toEqual(new Series([],'a'))
         expect(()=>df.iloc(null,0)).toThrow('range')
-        expect(df.iloc([0])).toEqual(df)
+        expect(df.iloc([0])).toEqual(df.loc())
     })
 
     test('_iloc',()=>{
@@ -138,22 +141,22 @@ describe('iloc',()=>{
             new DataFrame([[3,4]],[1])
         )
 
-        expect(df.iloc(null,[1])).toEqual(
+        expect((df.iloc(null,[1]) as DataFrame<number>).loc()).toEqual(
             new DataFrame([[2],[4]],null,[1])
         )
-        expect(df.iloc(null,[false,true])).toEqual(
+        expect((df.iloc(null,[false,true]) as DataFrame<number>).loc()).toEqual(
             new DataFrame([[2],[4]],null,[1])
         )
 
-        expect(df.iloc(null,[1])).toEqual(
+        expect(t(df.iloc(null,[1])).loc()).toEqual(
             new DataFrame([[2],[4]],[0,1],[1])
         )
 
-        expect(df.iloc([0],[1])).toEqual(
+        expect(t(df.iloc([0],[1])).loc()).toEqual(
             new DataFrame([[2]],[0],[1])
         )
-        expect(df.iloc([true,false],
-            [false,true])).toEqual(
+        expect(t(df.iloc([true,false],
+            [false,true])).loc()).toEqual(
             new DataFrame([[2]],[0],[1])
         )
     })
@@ -187,7 +190,7 @@ describe('loc',()=>{
         let df = new DataFrame([],null,['a','b'])
         expect(df.loc(null,'a')).toEqual(new Series([],'a'))
         expect(()=>df.loc('a')).toThrow('exist')
-        expect(df.loc(null,['b'])).toEqual(
+        expect((df.loc(null,['b']) as DataFrame<unknown>).loc()).toEqual(
             new DataFrame([],null,['b']))
 
 
@@ -237,8 +240,8 @@ test('transpose',()=>{
     let df = new DataFrame([[]])
     let ds = new DataFrame([],null,[0])
     expect(df.transpose()).toEqual(ds)
-    expect(df.transpose(true)).toEqual(ds)
-    expect(df).toEqual(ds)
+    expect(df.transpose(true).loc()).toEqual(ds)
+    expect(df.loc()).toEqual(ds)
 
 })
 
@@ -246,7 +249,7 @@ describe('iset',()=>{
     test('symmetric',()=>{
         let df = new DataFrame([[1,2],[3,4]])
         df.iset([[5,6],[7,8]])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[5,6],[7,8]])
         )
         expect(()=>df.iset([[5],[6]])).toThrow('second')
@@ -254,7 +257,7 @@ describe('iset',()=>{
         expect(()=>df.iset([[5,7]])).toThrow('first')
         
         df.iset(1,0,9)
-        expect(df).toEqual(
+        expect(df.iloc()).toEqual(
             new DataFrame([[5,6],[9,8]])
         )
         expect(()=>df.iset(2,0,9)).toThrow('range')
@@ -278,12 +281,12 @@ describe('iset',()=>{
     test('asymmetric',()=>{
         let df = new DataFrame([[1,2],[3,4]])
         df.iset(1,[5,6])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[1,2],[5,6]])
         )
 
         df.iset(null,0,[7,7])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[7,2],[7,6]])
         )
         expect(()=>{df.iset(3,[5,6])})
@@ -297,7 +300,7 @@ describe('iset',()=>{
             new DataFrame([[1,2,3],[4,9,10],[7,8,9]])
         )
         df.iset([0,1],1,[5,8])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[1,5,3],[4,8,10],[7,8,9]])
         )
         expect(()=>{df.iset([1,2],5,[5,6])})
@@ -315,7 +318,7 @@ describe('iset',()=>{
 
         df = new DataFrame([[1,2,3],[4,5,6],[7,8,9]])
         df.iset(null,[0,1],[[5,6],[5,6],[11,12]])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[5,6,3],
                 [5,6,6],
                 [11,12,9]])
@@ -329,7 +332,7 @@ describe('set',()=>{
     test('symmetric',()=>{
         let df = new DataFrame([[1,2],[3,4]],['a',5],['b','c'])
         df.set([[5,6],[7,8]])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[5,6],[7,8]],['a',5],['b','c'])
         )
         expect(()=>df.set([[5],[6]])).toThrow('second')
@@ -370,7 +373,7 @@ describe('set',()=>{
         )
 
         df.set(null,'c',[7,7])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[7,2],[7,6]],
                 ['a','b'],['c','d'] )
         )
@@ -387,7 +390,7 @@ describe('set',()=>{
             ['a','b','c'],['d','e','f'])
         )
         df.set(['a','b'],'e',[5,8])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[1,5,3],[4,8,10],[7,8,9]],
                 ['a','b','c'],['d','e','f'])
         )
@@ -409,7 +412,7 @@ describe('set',()=>{
         df = new DataFrame([[1,2,3],[4,5,6],[7,8,9]],
             ['a','b','c'],['d','e','f'])
         df.set(null,['d','e'],[[5,6],[5,6],[11,12]])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[5,6,3],
                 [5,6,6],
                 [11,12,9]],
@@ -429,7 +432,7 @@ describe('set',()=>{
         df = new DataFrame([[1,2],[5,6],[8,9]],
             ['a','b','c'],['e','f'])
         df.set(null,5,[10,12,16])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[1,2,10],[5,6,12],[8,9,16]],
                 ['a','b','c'],['e','f',5])
         )
@@ -448,7 +451,7 @@ describe('set',()=>{
                 ['a','b','b'],['c','c','e'])
         )
         df.set(null,['e','c'],[[1,2,3],[3,8,9],[5,6,7]])
-        expect(df).toEqual(
+        expect(df.loc()).toEqual(
             new DataFrame([[2,3,1],[8,9,3],[6,7,5]],
                 ['a','b','b'],['c','c','e'])
         )
@@ -478,7 +481,7 @@ test('insert',()=>{
     let df = new DataFrame([[1,2],[3,4]],['a',5],['b','c'])
     df.insert(-1,[7,8],'z')
     // console.log(df)
-    expect(df).toEqual(
+    expect(df.loc()).toEqual(
         new DataFrame([[1,7,2],[3,8,4]],['a',5],['b','z','c'])
     )
     
@@ -494,13 +497,13 @@ test('push',()=>{
     let df = new DataFrame([[1,2],[3,4]],['a',5],['b','c'])
     df.push([7,8],'z')
     // console.log(df)
-    expect(df).toEqual(
+    expect(df.loc()).toEqual(
         new DataFrame([[1,2,7],[3,4,8]],['a',5],['b','c','z'])
     )
     
     df = new DataFrame([[1,2],[3,4]],['a',5],['b','c'])
     df.push([7,8],'z',0)
-    expect(df).toEqual(
+    expect(df.loc()).toEqual(
         new DataFrame([[1,2],[3,4],[7,8]],['a',5,'z'],['b','c'])
     )
 })
@@ -522,7 +525,7 @@ test('drop',()=>{
     df = new DataFrame([[1,2,3],[3,8,9],[5,6,7]],
         ['a','b','b'],['c','c','e'])
     df2 = df.drop(['c'])
-    expect(df2).toEqual(
+    expect(df2.loc()).toEqual(
         new DataFrame([[3],[9],[7]],
             ['a','b','b'],['e'])
     )
@@ -540,11 +543,11 @@ describe('reset_index_columns',()=>{
     test('index',()=>{
         let df = new DataFrame([[1,2],[3,4]],['a',5],['b','b'])
         let df2 = df.reset_index()
-        expect(df2).toEqual(
+        expect(df2.loc()).toEqual(
             new DataFrame([['a',1,2],[5,3,4]],[0,1],['','b','b'])
         )
         df2 = df.reset_index('k')
-        expect(df2).toEqual(
+        expect(df2.loc()).toEqual(
             new DataFrame([['a',1,2],[5,3,4]],[0,1],['k','b','b'])
         )
     })
@@ -587,7 +590,7 @@ test('q',()=>{
     expect(df2).toEqual(new DataFrame([[5,6,7]],
         ['b'],['5',5,'e']))
     df2 = df.q('["a"]>1 && ["a"]<3',null)
-    expect(df2).toEqual(new DataFrame([[2],[8],[6]],
+    expect(df2.loc()).toEqual(new DataFrame([[2],[8],[6]],
         ['a','b','b'],[5]))
     df2 = df.q(null,'["5"]>3')
     expect(df2).toEqual(new DataFrame([[5,6,7]],
@@ -638,12 +641,12 @@ test('groupby',()=>{
     })
     df.groupby('a',0).then((gp,k,i)=>{
         if(i===0){
-            expect(gp).toEqual(new DataFrame([[3,3],[3,9],[5,7]],
+            expect(t(gp).loc()).toEqual(new DataFrame([[3,3],[3,9],[5,7]],
                 ['a','b','b'],['5','e']))
             expect(k).toEqual(3)
         }
         if(i===1){
-            expect(gp).toEqual(new DataFrame([[2],[8],[6]],
+            expect(t(gp).loc()).toEqual(new DataFrame([[2],[8],[6]],
                 ['a','b','b'],[5]))
             expect(k).toEqual(2)
         }
@@ -662,7 +665,7 @@ test('groupby',()=>{
 
     df.groupby('b',0).then((gp,k,i)=>{
         if(i===1){
-            expect(gp).toEqual(new DataFrame([[8],[8],[6],[8]],
+            expect(t(gp).loc()).toEqual(new DataFrame([[8],[8],[6],[8]],
                 ['a','b','b','c'],[5]))
             expect(k).toEqual([8,6])
         }

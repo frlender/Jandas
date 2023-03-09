@@ -3,14 +3,20 @@ import {isNum, isArr,isVal,isNumArr,isStrArr,
 
 import {Obj,GP,GroupByThen} from './df_lib'
 
-
 import * as _ from 'lodash'
+
+import * as d3 from 'd3-array'
+
+const d3_methods_selected = ['min','max','mode',
+        'sum','mean','median','cumsum',
+        'variance','deviation']
 
 //TODO?: set on duplicated index ['a','a'] with lower dimension values
 //        namely, df.loc['a'] = [1,2,3]
 //TODO: merge, mean, sum,
 // std, op(for element-wise operation in dataframe).
 //TODO: MultiIndex
+//TODO: lazy loading of tr, values?
 
 type ns_arr =  (number | string)[]
 type numx = number[] | number
@@ -253,6 +259,7 @@ const setIndex = (vals:ns_arr|Index,shape:number)=>{
     return vals instanceof Index ? vals : new Index(vals)
 }
 
+
 class Series<T>{
     values: T[]
     _index!: Index
@@ -428,10 +435,11 @@ class Series<T>{
 
 class DataFrame<T>{
     values: T[][]
-    tr: T[][] // transposed values
+    // tr: T[][] // transposed values
     shape: [number,number]
     _index!: Index
     _columns!:Index
+    _tr?:T[][]
     constructor(arr:T[][])
     constructor(arr:T[][],index:Index|ns_arr)
     constructor(arr:T[][],index:null|Index|ns_arr,
@@ -464,15 +472,7 @@ class DataFrame<T>{
         if(arr.length > 0)
             check.frame.index.set(arr[0].length,this.shape[1])
         this.values = arr
-
-        if(arr.length > 0)
-            this.tr = this._transpose(arr);
-        else{
-            this.tr = Array.from(
-                Array(this.shape[1]).keys())
-                .map(_=>[])
-            this.values = this._transpose(this.tr)
-        }
+        
     }
 
     // https://stackoverflow.com/questions/17428587/transposing-a-2d-array-in-javascript
@@ -482,6 +482,24 @@ class DataFrame<T>{
             return []
         else
             return this.__transpose(arr)
+    }
+
+    get tr():T[][]{
+        if(_.isUndefined(this._tr)){
+            if(this.values.length > 0)
+                this._tr = this._transpose(this.values);
+            else{
+                this._tr = Array.from(
+                    Array(this.shape[1]).keys())
+                    .map(_=>[])
+                // this.values = this._transpose(this.tr)
+            }
+        }
+        return this._tr 
+    }
+
+    set tr(vals:T[][]){
+        this._tr = vals
     }
 
     get index():Index{
@@ -663,13 +681,14 @@ class DataFrame<T>{
             case ir == undefined && ic == undefined:
                 check.iset.rpl.mat(rpl as T[][],this.shape)
                 this.values = rpl as T[][]
-                this.tr = this._transpose(this.values)
+                this._tr = undefined
                 break
             case isVal(ir) && isVal(ic):
                 check.iloc.num(ir as number,this.shape[0])
                 check.iloc.num(ic as number,this.shape[1])
                 this.values[ir as number][ic as number] = rpl as T
-                this.tr[ic as number][ir as number] = rpl as T
+                if(!_.isUndefined(this._tr))
+                    this.tr[ic as number][ir as number] = rpl as T
                 break
             case isArr(ir) && isArr(ic):
                 const sub_mat = vec_loc(this.values,
@@ -678,7 +697,7 @@ class DataFrame<T>{
                 sub_mat.forEach((vec,ix)=>{
                     vec_set(vec,(rpl as T[][])[ix],ic as boolean[] | number[])
                 })
-                this.tr = this._transpose(this.values)
+                this._tr = undefined
                 break
             default:
                 return null
@@ -688,12 +707,13 @@ class DataFrame<T>{
     _iset(row:undefined | numx | boolean[],col:undefined | numx | boolean[],rpl:T| T[] | T[][]){
         let res: undefined | null;
         res = this._iset_symmetric(row,col,rpl)
+        // console.log('_iset_symmetric',res,row,col,rpl)
         if(res === null){
             rpl = rpl as T[] | T[][]
             if(col === undefined || isVal(row)){
                 res = this._iset_asymmetric(this.values,this.index,this.columns,row!,rpl,col)
-                // console.log(row,rpl,col,this)
-                if(res===undefined) this.tr = this._transpose(this.values)
+                // console.log('_iset_asymmetric1',res)
+                if(res===undefined) this._tr = undefined
             }else{
                 if(rpl.length > 0 && isArr(rpl[0])) rpl = this._transpose(rpl as T[][])
                 res = this._iset_asymmetric(this.tr,this.columns,this.index,col!,rpl,row)
@@ -765,22 +785,16 @@ class DataFrame<T>{
         }
     }
 
-    _insert(i1:number,l1:Index, v1:T[][],
-        rpl:T[],name:number|string){
-        check.iloc.num(i1,l1.shape)
-        v1.splice(i1,0,rpl)
-        l1.insert(i1,name) 
-    }
-
     push(val:T[],name:number|string='',axis:0|1=1){
         if(axis===0){
             check.iset.rpl.num(val,this.shape[1])
             this.values.push(val)
             this.index.values.push(name)
             this.shape[axis] += 1
-            this.tr.forEach((v:T[],i:number)=>{
-                v.push(val[i])
-            })
+            if(!_.isUndefined(this._tr))
+                this.tr.forEach((v:T[],i:number)=>{
+                    v.push(val[i])
+                })
         }else{
             check.iset.rpl.num(val,this.shape[0])
             this.tr.push(val)
@@ -792,13 +806,21 @@ class DataFrame<T>{
         }
     }
 
+    _insert(i1:number,l1:Index, v1:T[][],
+        rpl:T[],name:number|string){
+        check.iloc.num(i1,l1.shape)
+        v1.splice(i1,0,rpl)
+        l1.insert(i1,name) 
+    }
+
+
     insert(idx:number,val:T[],name:number|string='',axis:0|1=1){
         if(axis===0){
             idx = idx < 0 ? this.shape[0]+idx : idx
             this._insert(idx,this.index,
                 this.values,val,name)
             this.shape[axis] += 1
-            this.tr = this._transpose(this.values)
+            this._tr = undefined
         }else{
             idx = idx < 0 ? this.shape[1]+idx : idx
             this._insert(idx,this.columns,
@@ -1009,5 +1031,6 @@ class DataFrame<T>{
     }
 
 }
+
 
 export {Series, DataFrame,Index,range}

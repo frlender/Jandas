@@ -35,7 +35,7 @@ test('.iloc, .loc',()=>{
 
     expect(t(df.iloc([true,false,false])).values).toEqual([[1,2]]) // [[1,2]]
     expect(df.iloc([false,false,false])).toEqual(new DataFrame([],[],['d',5])) // new DataFrame([],[],['d',5])
-    expect(df.iloc(null,[false,false])).toEqual(new DataFrame([[],[],[]],['a','b','b'],[])) // new DataFrame([[],[],[]],['a','b','b'],[])
+    expect((df.iloc(null,[false,false]) as DataFrame<number>).loc()).toEqual(new DataFrame([[],[],[]],['a','b','b'],[])) // new DataFrame([[],[],[]],['a','b','b'],[])
     
     expect(t(df.loc(['a'])).values).toEqual([[1,2]]) // [[1,2]]
     expect(t(df.loc('a')).values).toEqual([1,2]) // [1,2]
@@ -74,7 +74,7 @@ expect(df2.values).toEqual([[1,2],[7,8],[9,10]])
 df2 = df.loc() as DataFrame<number>
 df2.set(null,'e',[1,2,3]) // new DataFrame([[1,2,1],[3,4,2],[5,6,3]],
                           // ['a','b','b'],['d',5,'e'])
-expect(df2).toEqual(new DataFrame([[1,2,1],[3,4,2],[5,6,3]],['a','b','b'],['d',5,'e']))
+expect(df2.loc()).toEqual(new DataFrame([[1,2,1],[3,4,2],[5,6,3]],['a','b','b'],['d',5,'e']))
 })
 
 test('q b',()=>{
@@ -103,7 +103,7 @@ expect(df.q('[5]>3')).toEqual(
 ) //output: new DataFrame([[3,8,9],[5,6,7]],
               //        ['b','b'],['5',5,'e'])
 
-expect(df.q('[ "a"]>1 && ["a"]<3',null)).toEqual(
+expect(df.q('[ "a"]>1 && ["a"]<3',null).loc()).toEqual(
     new DataFrame([[2],[8],[6]],['a','b','b'],[5])
 )
 // output: new DataFrame([[2],[8],[6]],['a','b','b'],[5])

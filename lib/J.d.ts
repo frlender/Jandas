@@ -95,7 +95,7 @@ declare class DataFrame<T> {
     q(col_expr: string): DataFrame<T>;
     q(row_expr: null | string, col_expr: null | string): DataFrame<T>;
     iterrows(func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
-    itercols(func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
+    itercols(func: (col: Series<T>, key: number | string | ns_arr, i: number) => void): void;
     groupby(): GroupByThen<T>;
     groupby(labels: nsx | null): GroupByThen<T>;
     groupby(labels: nsx | null, axis: 0 | 1): GroupByThen<T>;

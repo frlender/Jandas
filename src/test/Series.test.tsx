@@ -372,3 +372,8 @@ test('q',()=>{
     let sx = new Series(['a','b','b'],['a','b','b'])
     expect(sx.q('x==="b"')).toEqual(new Series(['b','b'],['b','b']))
 })
+
+test('stats',()=>{
+    let ss = new Series([1,2,3],['a','b','b'])
+    // console.log(ss.min())
+})
