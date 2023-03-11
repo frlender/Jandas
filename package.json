@@ -1,6 +1,6 @@
 {
   "name": "jandas",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "A very much Pandas-like JavaScript library for data science",
   "main": "lib/J.js",
   "scripts": {

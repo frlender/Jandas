@@ -671,3 +671,59 @@ test('groupby',()=>{
         }
     })
 })
+
+test('sort values',()=>{
+    let df = new DataFrame([[3,8,3],
+                            [3,8,9],
+                            [3,6,7],
+                            [9,8,7]],
+        ['a','b','b','c'],['5',5,'e'])
+    
+    let df2 = df.sort_values('e')
+    expect(df2.values).toEqual(
+        [[3,8,3],
+        [3,6,7],
+        [9,8,7],
+        [3,8,9]]
+    )
+    df2 = df.sort_values([5,'e'])
+    expect(df2.values).toEqual(
+        [ [3,6,7],
+        [3,8,3],
+        [9,8,7],
+        [3,8,9]]
+    )
+
+    df2 = df.sort_values('c',true,0)
+    expect(df2.values).toEqual(
+        [ [3,8,3],
+        [9,8,3],
+        [7,6,3],
+        [7,8,9]]    
+    )
+
+    let df3 = new DataFrame([['10','2'],
+                        ['3','4']])
+    let dfx = df3.sort_values(0,false,0)
+    expect(dfx.values).toEqual(
+        [['2','10'],
+        ['4','3']]
+    )
+})
+
+test('value_counts',()=>{
+    let df = new DataFrame([[3,8,3],
+        [3,8,9],
+        [3,6,7],
+        [9,8,7]],
+['a','b','b','c'],['5',5,'e'])
+
+    let df2 = (df.loc(null,'5') as Series<number>)
+        .value_counts()
+    expect((df2.loc(null,'count') as Series<number>).values).toEqual([3,1])
+
+    df2 = (df.loc(null,'e') as Series<number>)
+        .value_counts()
+    expect((df2.loc(null,'count') as Series<number>).values).toEqual([2,1,1])
+
+})

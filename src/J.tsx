@@ -1,7 +1,7 @@
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
-import {Obj,GP,GroupByThen} from './df_lib'
+import {Obj,GP,GroupByThen,_sortIndices} from './df_lib'
 
 import * as _ from 'lodash'
 
@@ -16,7 +16,10 @@ const d3_methods_selected = ['min','max','mode',
 //TODO: merge, mean, sum,
 // std, op(for element-wise operation in dataframe).
 //TODO: MultiIndex
-//TODO: lazy loading of tr, values?
+//TODO: reduce, map
+//TODO: value_count
+//TODO: lazy loading of values similar to tr?
+//TODO: test sort_values
 
 type ns_arr =  (number | string)[]
 type numx = number[] | number
@@ -27,6 +30,7 @@ type nsx = number | string | ns_arr
 function cp<S>(arr:S[]){
     return arr.slice(0)
 } 
+
 
 class Index{
     private __values!:ns_arr // original values
@@ -428,6 +432,18 @@ class Series<T>{
     q(expr:string){
         const bidx = this.b(expr)
         return this.loc(bidx) as Series<T>
+    }
+
+    sort_values(ascending=true){
+        const idx = _sortIndices<T>(this.values,ascending)
+        return this.iloc(idx)
+    }
+
+    value_counts(){
+        const obj = _.countBy(this.values)
+        const pairs = _.toPairs(obj)
+        const df = new DataFrame(pairs,null,['value','count'])
+        return df.sort_values('count',false)
     }
 }
 
@@ -1030,6 +1046,64 @@ class DataFrame<T>{
         return then
     }
 
+    _sort_values(labels:nsx|null,ascending=true,axis:0|1=1){
+        if(axis === 1){
+            if(_.isNull(labels)){
+                const idx = _sortIndices(this.index.values,
+                    ascending)
+                return this.iloc(idx)
+            }else{
+                const sub = this.loc(null,labels) as DataFrame<T>
+                const idx = _sortIndices(sub.values,
+                    ascending)
+                return this.iloc(idx)
+            }
+        }else{
+            if(_.isNull(labels)){
+                const idx = _sortIndices(this.columns.values,
+                    ascending)
+                return this.iloc(null,idx)
+            }else{
+                const sub = this.loc(labels) as DataFrame<T>
+                const idx = _sortIndices(sub.tr,
+                    ascending)
+                return this.iloc(null,idx)
+            }
+        }
+    }
+
+    sort_values(labels:nsx|null,ascending=true,axis:0|1=1){
+        const index = axis === 1?this.index:this.columns
+        const iloc = axis === 1? 
+            ((idx:number[])=>this.iloc(idx)):
+            ((idx:number[])=>this.iloc(null,idx))
+        const loc = axis === 1? 
+            ((labels:nsx)=>this.loc(null,labels)):
+            ((labels:nsx)=>this.loc(labels))
+        const subFun = axis === 1? 
+            ((sub:DataFrame<T>)=>sub.values):
+            ((sub:DataFrame<T>)=>sub.tr)
+
+        if(_.isNull(labels)){
+            const idx = _sortIndices(index.values,
+                ascending)
+            return iloc(idx) as DataFrame<T>
+        }else{
+            const sub = loc(labels)
+            if(sub instanceof Series<T>){
+                const sub = loc(labels) as Series<T>
+                const idx = _sortIndices(sub.values,
+                    ascending)
+                return iloc(idx) as DataFrame<T>
+
+            }else{
+                const sub = loc(labels) as DataFrame<T>
+                const idx = _sortIndices(subFun(sub),
+                    ascending)
+                return iloc(idx) as DataFrame<T>
+            }
+        }
+    }
 }
 
 

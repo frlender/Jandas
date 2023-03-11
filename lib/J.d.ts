@@ -53,10 +53,10 @@ declare class Series<T> {
 }
 declare class DataFrame<T> {
     values: T[][];
-    tr: T[][];
     shape: [number, number];
     _index: Index;
     _columns: Index;
+    _tr?: T[][];
     constructor(arr: T[][]);
     constructor(arr: T[][], index: Index | ns_arr);
     constructor(arr: T[][], index: null | Index | ns_arr, columns: Index | ns_arr);
@@ -64,6 +64,8 @@ declare class DataFrame<T> {
     constructor(arr: Obj<T>[], index: Index | ns_arr);
     __transpose(arr: T[][]): T[][];
     _transpose(arr: T[][]): T[][];
+    get tr(): T[][];
+    set tr(vals: T[][]);
     get index(): Index;
     get columns(): Index;
     set index(vals: ns_arr | Index);
@@ -84,8 +86,8 @@ declare class DataFrame<T> {
     set(rpl: T[][]): void;
     set(row: null | locParam, rpl: T[] | T[][]): void;
     set(row: null | locParam, col: null | locParam, rpl: T | T[] | T[][]): void;
-    _insert(i1: number, l1: Index, v1: T[][], rpl: T[], name: number | string): void;
     push(val: T[], name?: number | string, axis?: 0 | 1): void;
+    _insert(i1: number, l1: Index, v1: T[][], rpl: T[], name: number | string): void;
     insert(idx: number, val: T[], name?: number | string, axis?: 0 | 1): void;
     drop(labels: nsx, axis?: 0 | 1): DataFrame<T>;
     reset_index(name?: string | number): DataFrame<T>;
