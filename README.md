@@ -126,7 +126,7 @@ dx.q('["a","c"].includes([5]) && ["e"]>7')
 //output: new DataFrame<number|string>([[3,'a',9]],
 //        ['b'],['5',5,'e'])
 
-//use [element,] to represent an arry with a single value.
+//use [element,] to represent an array with a single value.
 dx.q('["c",].includes([5])')
 //output: new DataFrame<number|string>([[5,'c',7]],
 // ['b'],['5',5,'e'])

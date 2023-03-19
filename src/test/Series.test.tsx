@@ -375,5 +375,20 @@ test('q',()=>{
 
 test('stats',()=>{
     let ss = new Series([1,2,3],['a','b','b'])
+    expect(ss.min()).toEqual(1)
+    expect(ss.max()).toEqual(3)
+    expect(ss.mean()).toEqual(2)
+    expect(ss.sum()).toEqual(6)
+    expect(ss.std()).toEqual(1)
+    expect(ss.var()).toEqual(1)
+    expect(ss.median()).toEqual(2)
+
+    ss = new Series([1,1,2,10,12])
+    expect(ss.median()).toEqual(2)
+    expect(ss.mode()).toEqual(1)
     // console.log(ss.min())
+
+    let s2 = new Series(['a','b','c'])
+    // console.log(s2.mean(),s2.std())
+    
 })

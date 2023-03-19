@@ -1,5 +1,5 @@
 // util functions
-import { DataFrame } from "./J"
+import { DataFrame } from "./core"
 import * as _ from 'lodash'
 import {range} from './util'
 

@@ -727,3 +727,21 @@ test('value_counts',()=>{
     expect((df2.loc(null,'count') as Series<number>).values).toEqual([2,1,1])
 
 })
+
+test('stats',()=>{
+    let df = new DataFrame([[1,2],[3,4]])
+    expect(df.mean(1).values).toEqual([1.5,3.5])
+    expect(df.mean(0).values).toEqual([2,3])
+
+    expect(df.median(1).values).toEqual([1.5,3.5])
+    expect(df.median(0).values).toEqual([2,3])
+
+    expect(df.min(1).values).toEqual([1,3])
+    expect(df.min(0).values).toEqual([1,2])
+
+    expect(df.max(1).values).toEqual([2,4])
+    expect(df.max(0).values).toEqual([3,4])
+
+    expect(df.sum(1).values).toEqual([3,7])
+    expect(df.sum(0).values).toEqual([4,6])
+})

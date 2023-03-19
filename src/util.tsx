@@ -1,4 +1,4 @@
-import {Index} from './J'
+import {Index} from './core'
 
 
 const isNum = (x:any) => typeof x === 'number'
