@@ -156,6 +156,21 @@ Group the dataframe by values in rows or columns designated by labels. When no `
 Check [Getting Started](https://github.com/frlender/Jandas#iteration) for examples.
 
 \
+**DataFrame.min, DataFrame.max, DataFrame.sum, DataFrame.mean, DataFrame.mode, DataFrame.median, DataFrame.std, DataFrame.var**
+```TypeScript
+min(axis:0|1=0): Series<number>
+// other functions are similarly defined
+```
+A collection of functions to compute statistics on the `axis` dimension. The default is to compute statistics for each row. They are implemented as wrappers around the corresponding functions in the [d3.array](https://github.com/d3/d3-array) package. These functions are intended to use for DataFrame with numeric values only.
+
+\
+**DataFrame.sort_values**
+```TypeScript
+sort_values(labels:nsx|null,ascending=true,axis:0|1=1): DataFrame<T>
+```
+Sort the DataFrame according to values in the rows (`axis=0`) or columns (`axis=1`) designed by `labels` in the `ascending` order. If `labels` is `null`, then sort the DataFrame by the values in index. If `labels` is an array, the sorting will compare values successively according to the order designed by `labels` to determine relative large or small. That is to say, `labels[1]` will only be considered if the values of `labels[0]` are equal. If values are numeric, they will be sorted by their numeric values. Otherwise, they will be sorted according to the rule in [Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort).
+
+\
 **DataFrame.p**
 ```TypeScript
 p(): void
@@ -168,6 +183,8 @@ Print the dataframe in console. It uses console.table to print the dataframe as 
 to_dict(axis:0|1=1):Obj<T>[]
 ```
 Return the dataframe as an array of objects. `axis` determines on which dimension to construct the array of objects. When `axis` is equal to 1, the function is the same as `DataFrame.to_dict(orient="records")` in Pandas.
+
+
 
 ### Series
 **Series.constructor**
@@ -246,7 +263,23 @@ Return an boolean array based on the evaluation of expression `expr`. The syntax
 ```TypeScript
 q(expr:string): Series<T>
 ```
-Return a new dataframe based on the query expression `expr`. The syntax of `expr` is plain JavaScript except that it uses `x` to refer a value in the series. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+Return a new dataframe based on the query expression `expr`. The syntax of `expr` is plain JavaScript except that it uses `x` to refer a value in the series. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples. These functions are intended to use for Series with numeric values only.
+
+
+\
+**Series.min, Series.max, Series.sum, Series.mean, Series.mode, Series.median, Series.std, Series.var**
+```TypeScript
+min(): number|undefined
+// other functions are similarly defined
+```
+A collection of functions to compute statistics on the Series. They are implemented as wrappers around the corresponding functions in the [d3.array](https://github.com/d3/d3-array) package.
+
+\
+**Series.sort_values**
+```TypeScript
+sort_values(ascending=true): Series<T>
+```
+Sort the Series in the `ascending` order. If values are numeric, they will be sorted by their numeric values. Otherwise, they will be sorted according to the rule in [Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort).
 
 \
 **Series.p**
