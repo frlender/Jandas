@@ -1,4 +1,4 @@
-import { Index } from './J';
+import { Index } from './core';
 declare const isNum: (x: any) => boolean;
 declare const isStr: (x: any) => boolean;
 declare const isArr: (x: any) => boolean;
