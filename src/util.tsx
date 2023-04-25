@@ -1,4 +1,5 @@
 import {Index} from './core'
+import * as _ from 'lodash'
 
 
 const isNum = (x:any) => typeof x === 'number'
@@ -117,6 +118,21 @@ const check = {
                     throw('index of the setted object is not unique. '
                     +'the only allowed array index type is boolean[].')
             }
+        }
+    },
+    op:{
+        index(idx1:Index,idx2:Index){
+            if(idx1.shape !== idx2.shape)
+            throw("The lengths of the two series' indices are not equal!")
+            if(!idx1.is_unique() || !idx2.is_unique())
+            throw("One of the series' index is not unique. Currently, Jandas only support operations on series with a unique index.")
+            const cmm = _.intersection(idx1.values,idx2.values)
+            if(cmm.length !== idx1.shape)
+            throw("The values in the two series' indices are not a exact match.")
+        },
+        values(idx:Index,values:any[]){
+            if(idx.shape !== values.length)
+            throw('The length of the series is not euqal to the length of the array.')
         }
     }
 }

@@ -1,5 +1,7 @@
 import * as core from './core'
 import * as d3 from 'd3-array'
+import * as _ from 'lodash'
+import {check} from './util'
 
 const range = core.range
 const Index = core.Index
@@ -9,6 +11,33 @@ const Index = core.Index
 //         'variance','deviation']
 
 class Series<T> extends core.Series<T>{
+    op(opStr:string): Series<T>
+    op(opStr:string,ss:Series<T>|T[]): Series<T>
+    op(opStr:string,ss?:Series<T>|T[]){
+        if(_.isUndefined(ss)){
+            const vals = this.values.map(x=>eval(opStr)) as T[]
+            return new Series(vals,this.index,this.name)
+        }else if(ss instanceof Series){
+            check.op.index(this.index,ss.index)
+            const vals:T[] = []
+            this.index.values.forEach((idx)=>{
+                const x = this.loc(idx)
+                const y = ss.loc(idx)
+                const val = eval(opStr)
+                vals.push(val)
+            })
+            return new Series(vals,this.index)
+        }else{
+            check.op.values(this.index,ss)
+            const vals:T[] = []
+            this.values.forEach((x,i)=>{
+                const y = ss[i]
+                const val = eval(opStr)
+                vals.push(val)
+            })
+            return new Series(vals,this.index)
+        }
+    }
     min(){
         return d3.min(this.values as number[])
     }
@@ -39,6 +68,39 @@ class Series<T> extends core.Series<T>{
 }
 
 class DataFrame<T> extends core.DataFrame<T>{
+    op(opStr:string): DataFrame<T>
+    op(opStr:string,df:DataFrame<T>|T[][]): DataFrame<T>
+    op(opStr:string,second?:DataFrame<T>|T[][]){
+        if(_.isUndefined(second)){
+            const vals = this.values.map(vec=>vec.map(x=>eval(opStr))) as T[][]
+            return new DataFrame(vals,this.index.cp(),this.columns.cp())
+        }else if(second instanceof DataFrame){
+            check.op.index(this.index,second.index)
+            const vals:T[][] = []
+            this.index.values.forEach((idx)=>{
+                const sx = this.loc(idx) as Series<T>
+                const sy = second.loc(idx) as Series<T>
+                const sz = sx.op(opStr,sy)
+                vals.push(sz.values)
+            })
+            return new DataFrame(vals,this.index,this.columns)
+        }else{
+            check.op.values(this.index,second)
+            check.op.values(this.columns,second[0])
+            const vals:T[][] = []
+            this.values.forEach((vec,i)=>{
+                const vec2 = second[i]
+                const vecNew:T[] = []
+                vec.forEach((x,j)=>{
+                    const y = vec2[j]
+                    vecNew.push(eval(opStr))
+                })
+                vals.push(vecNew)
+            })
+            return new DataFrame(vals,this.index,this.columns)
+        }
+    }
+
     _reduce_num(func:(a:number[])=>number|undefined,axis:0|1){
         if(axis===1){
             const vals = this.values.map(row=>func(row as number[])) as number[]
