@@ -1,12 +1,8 @@
 // util functions
-import { DataFrame } from "./core"
+import DataFrame from "./DataFrame"
 import * as _ from 'lodash'
 import {range} from './util'
 
-type ns_arr =  (number | string)[]
-// type numx = number[] | number
-// // type strx = string[] | string
-type nsx = number | string | ns_arr
 
 interface Obj<T>{
     [key: number|string]:T

@@ -745,3 +745,13 @@ test('stats',()=>{
     expect(df.sum(1).values).toEqual([3,7])
     expect(df.sum(0).values).toEqual([4,6])
 })
+
+
+test('op',()=>{
+    let df = new DataFrame([[1,2],[3,4]],['a',5],['b','c'])
+    let df2 = new DataFrame([[1,2],[3,4]],[5,'a'],['b','c'])
+
+    expect(df.op('x*x').values).toEqual([[1,4],[9,16]])
+    expect(df.op('x+y',df2).values).toEqual(
+        [[4,6],[4,6]])
+})

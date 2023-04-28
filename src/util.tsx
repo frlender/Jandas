@@ -1,4 +1,4 @@
-import {Index} from './core'
+import Index from './Index'
 import * as _ from 'lodash'
 
 
@@ -125,9 +125,9 @@ const check = {
             if(idx1.shape !== idx2.shape)
             throw("The lengths of the two series' indices are not equal!")
             if(!idx1.is_unique() || !idx2.is_unique())
-            throw("One of the series' index is not unique. Currently, Jandas only support operations on series with a unique index.")
+            throw("One of the series' index is not unique. Currently, Jandas only support element-wise operations on two series with unique indices.")
             const cmm = _.intersection(idx1.values,idx2.values)
-            if(cmm.length !== idx1.shape)
+            if(cmm.length !== idx1.shape || cmm.length !== idx2.shape )
             throw("The values in the two series' indices are not a exact match.")
         },
         values(idx:Index,values:any[]){

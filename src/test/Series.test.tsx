@@ -392,3 +392,37 @@ test('stats',()=>{
     // console.log(s2.mean(),s2.std())
     
 })
+
+test('op',()=>{
+    let s1 = new Series([1,2,3],['a','b','c'])
+    let s2 = new Series([1,2,3],['a','c','b'])
+
+    expect(s1.op('x*x').values).toEqual(
+        [1,4,9]
+    )
+    expect(s1.op('x**x').values).toEqual(
+        [1,4,27]
+    )
+    expect(s1.op('x+y',s2).values).toEqual(
+        [2,5,5]
+    )
+    expect(s1.op('x+y',s2.values).values).toEqual(
+        [2,4,6]
+    )
+    expect(s1.op('x+y*y',s2).values).toEqual(
+        [2,11,7]
+    )
+    s1 = new Series([1,2,3],['a','b','b'])
+    s2 = new Series([1,2,3],['b','b','a'])
+    expect(s1.op('x+x').values).toEqual([2,4,6])
+    expect(()=>s1.op('x+y',s2)).toThrow('unique')
+    
+    s2 = new Series([1,2],['b','b'])
+    expect(()=>s1.op('x+y',s2)).toThrow('lengths')
+    expect(()=>s1.op('x+y',s2.values)).toThrow('length')
+    
+    s1 = new Series([1,2,3],['a','b','c'])
+    s2 = new Series([1,2,3],['d','b','a'])
+    expect(()=>s1.op('x+y',s2)).toThrow('match')
+
+})
