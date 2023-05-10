@@ -132,7 +132,7 @@ const check = {
         },
         values(idx:Index,values:any[]){
             if(idx.shape !== values.length)
-            throw('The length of the series is not euqal to the length of the array.')
+            throw('The length of the series is not equal to the length of the array.')
         }
     }
 }

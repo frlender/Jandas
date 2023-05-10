@@ -194,4 +194,22 @@ df.groupby(['5',5]).then((gp,k,i)=>{
     }
 })
 ```
+### Element-wise Operation
+Jandas implement `.op()` to perform element-wise operations on a Series or a DataFrame. Its first argument is a JavaScript string that defines the operation. Its second argument is optional and is another Series or DataFrame with the same shape and index (and column) as itself. If the second argument is an array, it only needs to have the same shape.
+```TypeScript
+let s1 = new Series([1,2,3],['a','b','c'])
+let s2 = new Series([1,2,3],['a','c','b'])
+s1.op('x*x').values // [1,4,9]
+s1.op('x+y',s2).values // [2,5,5]
+s1.op('x+y',s2.values).values // [2,4,6]
 
+let df = new DataFrame([[1,2],
+                        [3,4]],['a',5],
+                        ['b','c'])
+let df2 = new DataFrame([[1,2],
+                         [3,4]],[5,'a'],
+                         ['b','c'])
+df.op('x*x').values // [[1,4],[9,16]]
+df.op('x+y',df2).values //[[4,6],[4,6]]
+df.op('x+y',df2.values).values // [[2,4],[6,8]]
+```

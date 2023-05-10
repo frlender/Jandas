@@ -754,4 +754,25 @@ test('op',()=>{
     expect(df.op('x*x').values).toEqual([[1,4],[9,16]])
     expect(df.op('x+y',df2).values).toEqual(
         [[4,6],[4,6]])
+    expect(df.op('x+y',df2.values).values).toEqual(
+        [[2,4],[6,8]]
+    )
+
+    df2 = new DataFrame([[1,2],[3,4],[5,7]],[5,'a','b'],['b','c'])
+    expect(()=>df.op('x+y',df2)).toThrow('equal')
+    expect(()=>df.op('x+y',df2.values)).toThrow('equal')
+
+    df2 = new DataFrame([[1,2],[3,4]],['a','a'],['b','c'])
+    expect(()=>df.op('x+y',df2)).toThrow('unique')
+
+    df2 = new DataFrame([[1,2],[3,4]],['a','b'],['b','c'])
+    expect(()=>df.op('x+y',df2)).toThrow('match')
+
+    df2 = new DataFrame([[1,2,3],[3,4,5]],[5,'a'],['a','b','c'])
+    expect(()=>df.op('x+y',df2.values)).toThrow('equal')
+    expect(()=>df.op('x+y',df2)).toThrow('equal')
+
+
+
+
 })
