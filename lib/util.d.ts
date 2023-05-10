@@ -1,4 +1,4 @@
-import { Index } from './core';
+import Index from './Index';
 declare const isNum: (x: any) => boolean;
 declare const isStr: (x: any) => boolean;
 declare const isArr: (x: any) => boolean;
@@ -38,6 +38,10 @@ declare const check: {
         index: {
             uniq(index: Index): void;
         };
+    };
+    op: {
+        index(idx1: Index, idx2: Index): void;
+        values(idx: Index, values: any[]): void;
     };
 };
 declare function _trans_rg(x: string, len: number): number[];

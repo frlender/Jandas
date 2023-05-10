@@ -1,4 +1,4 @@
-import { DataFrame } from "./core";
+import DataFrame from "./DataFrame";
 interface Obj<T> {
     [key: number | string]: T;
 }
