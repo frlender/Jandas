@@ -1,0 +1,14 @@
+import Index from './Index';
+import Series from './Series';
+type ns_arr = (number | string)[];
+type numx = number[] | number;
+type nsx = number | string | ns_arr;
+type locParam = nsx | Series<number | string> | boolean[] | Series<boolean> | Index;
+declare function cp<S>(arr: S[]): S[];
+declare function vec_loc<S>(vec: S[], idx: number[] | boolean[], f?: (x: S) => S): S[];
+declare function vec_loc2<S, Z>(vec1: S[], vec2: Z[], idx: number[] | boolean[]): [S[], Z[]];
+declare function vec_set<S>(vec: S[], rpl: S[], idx: number[] | boolean[]): void;
+declare function _str(x: any): any;
+declare function _trans(index: Index, idx?: nsx | Series<number | string> | boolean[] | Series<boolean> | Index): undefined | numx | boolean[];
+declare const setIndex: (vals: ns_arr | Index, shape: number) => Index;
+export { ns_arr, numx, nsx, locParam, vec_loc, vec_loc2, vec_set, cp, _str, _trans, setIndex };
