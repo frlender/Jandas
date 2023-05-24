@@ -10,7 +10,7 @@ Jandas is designed to have very similar indexing experience as  Pandas. It imple
 -   Avoid using objects as arguments.
 -   Query functions with a better syntax than Pandas.
 -   Negative number and range indexing.
--   Comprehensive overloads on indexing functions that guarantee proper return type in TypeScript.
+-   Comprehensive overloads that guarantee proper return type of indexing in TypeScript.
  
 
 

@@ -1,4 +1,4 @@
-import { ns_arr, numx, nsx } from './cmm';
+import { ns_arr, numx } from './cmm';
 declare class Index {
     private __values;
     _values: ns_arr;
@@ -17,6 +17,7 @@ declare class Index {
     unique(): (string | number)[];
     is_unique(): boolean;
     check(idx: number | string): void;
-    trans(index: nsx): numx;
+    trans(index: number | string): numx;
+    trans(index: ns_arr): number[];
 }
 export default Index;

@@ -1,4 +1,4 @@
-import { ns_arr, numx, nsx, locParam } from './cmm';
+import { ns_arr, numx, nsx, locParamArr } from './cmm';
 import Index from './Index';
 import DataFrame from './DataFrame';
 declare class Series<T> {
@@ -16,12 +16,15 @@ declare class Series<T> {
     _iloc(idx: undefined | number[] | boolean[]): Series<T>;
     iloc(idx: number): T;
     iloc(idx?: string | number[] | boolean[]): Series<T>;
-    loc(index?: locParam): T | Series<T>;
+    loc(index: number | string): T | Series<T>;
+    loc(index?: locParamArr): Series<T>;
     _iset(idx: undefined | numx | boolean[], values: T | T[]): void;
     iset(rpl: T[]): void;
-    iset(index: string | numx | boolean[], rpl: T | T[]): void;
+    iset(index: number, rpl: T): void;
+    iset(index: string | number[] | boolean[], rpl: T[]): void;
     set(rpl: T[]): void;
-    set(idx: locParam, rpl: T | T[]): void;
+    set(idx: string | number, rpl: T | T[]): void;
+    set(idx: locParamArr, rpl: T[]): void;
     push(val: T, name?: number | string): void;
     insert(idx: number, val: T, name?: number | string): void;
     drop(labels: nsx): Series<T>;
