@@ -94,6 +94,8 @@ class Index{
         throw(`${idx} does not exist in index`)
     }
 
+    trans(index:number|string): numx
+    trans(index:ns_arr):number[]
     trans(index: nsx): numx {
         // translate index to primary number index
         if(!Array.isArray(index)){

@@ -3,45 +3,44 @@ import {DataFrame,Series} from '../J'
 // import {range} from './util'
 
 test('.iloc, .loc',()=>{
-    const t = (x: any)=>x as Series<number>|DataFrame<number>
     const df = new DataFrame([[1,2],[3,4],[5,6]],['a','b','b'],['d',5])
     expect(df.iloc(null,0)).toEqual(
         new Series([1,3,5],['a','b','b'],'d')
     ) //output: new Series([1,3,5],['a','b','b'],'d')
-    expect(t(df.iloc([0,1])).values).toEqual(
+    expect(df.iloc([0,1]).values).toEqual(
         [[1,2],[3,4]]
     ) //output: [[1,2],[3,4]]
-    expect(t(df.iloc([2],[1])).values).toEqual(
+    expect(df.iloc([2],[1]).values).toEqual(
         [[6]]
     ) // [[6]]
-    expect(t(df.iloc(-1)).values).toEqual(
+    expect(df.iloc(-1).values).toEqual(
         [5,6]
     ) // [5,6]
-    expect(t(df.iloc([-3,-1])).values).toEqual(
+    expect(df.iloc([-3,-1]).values).toEqual(
         [[1,2],[5,6]]
     ) //[[1,2],[5,6]]
     
-    expect(t(df.iloc(':2')).values).toEqual(
+    expect(df.iloc(':2').values).toEqual(
         [[1,2],[3,4]]
     )// [[1,2],[3,4]]
     
-    expect(t(df.iloc('-3:-1')).values).toEqual(
+    expect(df.iloc('-3:-1').values).toEqual(
         [[1,2],[3,4]]
     ) //[[1,2],[3,4]]
 
-    expect(t(df.iloc('::-1')).values).toEqual(
+    expect(df.iloc('::-1').values).toEqual(
         [[5,6],[3,4],[1,2]]
     ) //[[5,6],[3,4],[1,2]]
 
-    expect(t(df.iloc([true,false,false])).values).toEqual([[1,2]]) // [[1,2]]
+    expect(df.iloc([true,false,false]).values).toEqual([[1,2]]) // [[1,2]]
     expect(df.iloc([false,false,false])).toEqual(new DataFrame([],[],['d',5])) // new DataFrame([],[],['d',5])
     expect((df.iloc(null,[false,false]) as DataFrame<number>).loc()).toEqual(new DataFrame([[],[],[]],['a','b','b'],[])) // new DataFrame([[],[],[]],['a','b','b'],[])
     
-    expect(t(df.loc(['a'])).values).toEqual([[1,2]]) // [[1,2]]
-    expect(t(df.loc('a')).values).toEqual([1,2]) // [1,2]
-    expect(t(df.loc('b')).values).toEqual([[3,4],[5,6]]) // [[3,4],[5,6]]
-    expect(t(df.loc(null,['d',5])).values).toEqual([[1,2],[3,4],[5,6]]) // [[1,2],[3,4],[5,6]]
-    expect(t(df.loc(null,[true,false])).values).toEqual(
+    expect(df.loc(['a']).values).toEqual([[1,2]]) // [[1,2]]
+    expect(df.loc('a').values).toEqual([1,2]) // [1,2]
+    expect(df.loc('b').values).toEqual([[3,4],[5,6]]) // [[3,4],[5,6]]
+    expect(df.loc(null,['d',5]).values).toEqual([[1,2],[3,4],[5,6]]) // [[1,2],[3,4],[5,6]]
+    expect(df.loc(null,[true,false]).values).toEqual(
         [[1],[3],[5]]
     ) //[[1],[3],[5]]
 })
@@ -49,7 +48,7 @@ test('.iloc, .loc',()=>{
 test('iset set',()=>{
 const df = new DataFrame([[1,2],[3,4],[5,6]],['a','b','b'],['d',5])
 const t = (x: any)=>x as DataFrame<number>
-let df2 = t(df.loc()) // create a copy of df
+let df2 = df.loc() // create a copy of df
 df2.iset(0,[3,3]) // df2.values equals to: [[3,3],[3,4],[5,6]]
 expect(df2.values).toEqual([[3,3],[3,4],[5,6]])
 
@@ -83,7 +82,7 @@ const t = (x: any)=>x as DataFrame<number> | Series<number>
 
 expect(ss.b('x > 2')).toEqual([false,false,true]) // output is: [false,false,true]
 expect(ss.q('x>2')).toEqual(new Series([3],['b'],'kk')) // output is: new Series([3],['b'],'kk')
-expect(t(ss.q('x>=1 && x<3')).values).toEqual([1,2]) // [1,2]
+expect(ss.q('x>=1 && x<3').values).toEqual([1,2]) // [1,2]
 
 const df = new DataFrame([[1,2,3],[3,8,9],[5,6,7]],
         ['a','b','b'],['5',5,'e'])

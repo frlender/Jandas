@@ -13,6 +13,7 @@ describe('Index',()=>{
         expect(dx.mp.get('a')).toEqual(0)
         expect(dx.mp.get('b')).toEqual([1,2])
         expect(dx.shape).toEqual(3)
+        expect(dx.unique()).toEqual(['a','b'])
 
         dx.values[3] = 'a'
         expect(dx.mp.get('a')).toEqual([0,3])
@@ -275,11 +276,11 @@ describe('set',()=>{
         expect(sv).toEqual([5,2,7,4,9])    
 
         sn.set('b',[9,10])
-        expect((sn.iloc([1,2]) as Series<number>).values)
+        expect(sn.iloc([1,2]).values)
             .toEqual([9,10])
         
         sn.set('b',9)
-        expect((sn.iloc([1,2]) as Series<number>).values)
+        expect(sn.iloc([1,2]).values)
                 .toEqual([9,9])
         
         sn.iset([1,2],[2,3])

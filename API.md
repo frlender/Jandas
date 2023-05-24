@@ -16,7 +16,7 @@ type ns_arr =  (number | string)[]
 type numx = number | number[]
 type nsx = number | string | ns_arr
 
-type locParam = nsx | Series<number|string> | boolean[] | Series<boolean> | Index
+type locParamArr = ns_arr | Series<number|string> | boolean[] | Series<boolean> | Index
 
 interface Obj<T>{
     [key: number|string]:T
@@ -32,7 +32,7 @@ constructor(arr:T[][], index:Index|ns_arr): DataFrame<T>
 constructor(arr:T[][], index:null|Index|ns_arr, columns:Index|ns_arr): DataFrame<T>
 constructor(arr:Obj<T>[]): DataFrame<T>
 constructor(arr:Obj<T>[], index:Index|ns_arr): DataFrame<T>
-constructor(arr:T[][]|Obj<T>[], index?:null|Index | ns_arr, columns?:Index | ns_arr): DataFrame<T>
+// constructor(arr:T[][]|Obj<T>[], index?:null|Index | ns_arr, columns?:Index | ns_arr): DataFrame<T>
 ```
 Construct a dataframe. The first argument could be a matrix in the form of an array of arrays or an array of objects with the same keys. The second and third optional arguments are index and columns. Use `null` for index if columns is provided but index is not.
 
@@ -46,34 +46,46 @@ Transpose a dataframe. `inplace` controls whether to transpose the dataframe inp
 \
 **DataFrame.iloc**
 ```TypeScript
-iloc(row?:null | string | numx | boolean[], col?: null | string | numx | boolean[]): T| Series<T>| DataFrame<T> 
+iloc(row:number,col:number):T
+iloc(row:number,col?:null|string|number[]|boolean[]):Series<T>
+iloc(row:null|string|number[]|boolean[],col:number):Series<T>
+iloc(row?:null|string|number[]|boolean[],col?:null|string|number[]|boolean[]):DataFrame<T>
 ```
 Access a dataframe using position-based index. `row` and `col` are row and column indices. They can be `null`, string, number, number array or boolean array. If They are of string type, they must be a range string in the form like '1:3', ':1', '-1:', '::-1' and '5:1:-2'. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
 **DataFrame.loc**
 ```TypeScript
-loc(row?: null | locParam, col?: null | locParam): T| Series<T>| DataFrame<T> 
+loc(row:number|string,col:number|string):T|Series<T>|DataFrame<T>
+loc(row:number|string,col?:null|locParamArr):Series<T>|DataFrame<T>
+loc(row:null|locParamArr,col:number|string):Series<T>|DataFrame<T>
+loc(row?:null|locParamArr,col?:null|locParamArr):DataFrame<T>
 ```
 Access a dataframe using label-based index.`row` and `col` are row and column indices. If `row` and `col` are of Series or Index type, their `.values` properties are used to index the dataframe. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
 **DataFrame.iset**
 ```TypeScript
-iset(rpl: T[][]): void
-iset(row:null | numx | boolean[],rpl: T[]|T[][]): void
-iset(row:null | numx | boolean[],col:null | numx | boolean[],rpl:T| T[] | T[][]): void
-iset(first:any, second?:any, third?:T| T[]|T[][]): void
+iset(row:number,col:number,rpl:T):void
+iset(row:number,rpl:T[]):void
+iset(row:number,col:null|string|number[]|boolean[],rpl:T[]):void
+iset(row:null|string|number[]|boolean[],col:number,rpl:T[]):void
+iset(rpl:T[][]):void
+iset(row:null|string|number[]|boolean[],rpl:T[][]):void
+iset(row:null|string|number[]|boolean[],col:null|string|number[]|boolean[],rpl:T[][]):void
 ```
 Change the values of a dataframe using position-based index. `row` and `col` are row and column indices. Please refer to DataFrame.iloc for their possible values. `rpl` is the replacement value. It must be the same shape as the dataframe defined by the `row` and `col` indices. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
 **DataFrame.set**
 ```TypeScript
-set(rpl: T[][]): void
-set(row:null | locParam,rpl:T[]|T[][]): void
-set(row:null | locParam,col:null | locParam,rpl: T|T[]|T[][]): void
-set(first:any, second?:any, third?:T|T[]|T[][]): void
+set(row:number|string,col:number|string,rpl:T|T[]|T[][]):void
+set(row:number|string,rpl:T[]|T[][]):void
+set(row:number|string,col:null|locParamArr,rpl:T[]|T[][]):void
+set(row:null|locParamArr,col:number|string,rpl:T[]|T[][]):void
+set(rpl:T[][]):void
+set(row:null|locParamArr,rpl:T[][]):void
+set(row:null|locParamArr,col:null|locParamArr,rpl:T[][]):void
 ```
 Change the values of a dataframe using label-based index. `row` and `col` are row and column indices. Please refer to DataFrame.loc for their possible values. `rpl` is the replacement value. It must be the same shape as the dataframe defined by the `row` and `col` indices. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
@@ -124,7 +136,7 @@ Return an boolean array based on the evaluation of expression `expr`. `axis` det
 ```TypeScript
 q(col_expr:string): DataFrame<T>
 q(row_expr:null|string,col_expr:null|string): DataFrame<T>
-q(first:null|string,second?:null|string): DataFrame<T>
+// q(first:null|string,second?:null|string): DataFrame<T>
 ```
 Return a new dataframe based on the query expressions `col_expr` and `row_expr`. `col_expr` is evaluated on the columns and `row_expr` on the rows. When there is one argument, it will be `col_expr`. When there are two arguments, the first will be `row_expr` and the second `col_expr`. `null` is used as a placeholder. The syntax of the expressions is plain JavaScript except that it uses `[label]` to refer a row or column. Use `[value,]` to reprsent an array with a single value in the expression. Without the comma at the end, `[value]` will be treated as a label selection with the label being `value`. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
@@ -148,7 +160,7 @@ Iterate over the columns of the dataframe. Similar to the `forEach` function, it
 groupby():GroupByThen<T>
 groupby(labels:nsx|null):GroupByThen<T>
 groupby(labels:nsx|null,axis:0|1):GroupByThen<T>
-groupby(first?:any, second?:0|1):GroupByThen<T>
+// groupby(first?:any, second?:0|1):GroupByThen<T>
 
 GroupbyThen.then(func:(group:DataFrame<T>,key:T | T[], i:number)=>void): void
 ```
@@ -175,7 +187,7 @@ Sort the DataFrame according to values in the rows (`axis=0`) or columns (`axis=
 ```TypeScript
 op(opStr:string): DataFrame<T>
 op(opStr:string,df:DataFrame<T>|T[][]): DataFrame<T>
-op(opStr:string,second?:DataFrame<T>|T[][]): DataFrame<T>
+// op(opStr:string,second?:DataFrame<T>|T[][]): DataFrame<T>
 ```
 Element-wise operation on a single dataframe or on two dataframes. If defined, `df` represents the second dataframe. It could be a dataframe or an array of array. If it is a dataframe, its index and column must contain the same elements as the first dataframe and both dataframes' indices and columns must be unique.  If it is an array of array, it must have the same shape as the first dataframe. `opStr` is a JavaScript string that defines the operation on a single element or a set of two elements of the dataframes. For operations on one dataframe, use `x` in `opStr` to represent the element in the dataframe. For operations on two dataframes, use `x` and `y` to represent the element in the first and second dataframes. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
 
@@ -201,7 +213,7 @@ Return the dataframe as an array of objects. `axis` determines on which dimensio
 constructor(values: T[]): Series<T>
 constructor(values: T[], name:string | number): Series<T>
 constructor(values: T[], index: ns_arr | Index, name?:string | number): Series<T>
-constructor(first: T[], second?:any, third?:string | number): Series<T>
+// constructor(first: T[], second?:any, third?:string | number): Series<T>
 ```
 Constructs a series. The first argument is an array of values. The second optional argument is either the name or the index of the series depending on its type. When there are three arguments, the second will be the index of the series and the third the name.
 
@@ -210,32 +222,33 @@ Constructs a series. The first argument is an array of values. The second option
 ```TypeScript
 iloc(index:number): T
 iloc(index?:string|number[]|boolean[]): Series<T>
-iloc(index?: string | numx | boolean[]): T|Series<T>
+// iloc(index?: string | numx | boolean[]): T|Series<T>
 ```
 Access a series using position-based index. The index `index` can be string, number, number array or boolean array. If They are of string type, they must be a range string in the form like '1:3', ':1', '-1:', '::-1' and '5:1:-2'. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
 **Series.loc**
 ```TypeScript
-loc(index?: locParam): T|Series<T>
+loc(index:number|string): T|Series<T>
+loc(index?:locParamArr): Series<T>
 ```
 Access a series using label-based index.If the index `index` are of Series or Index type, their `.values` properties are used to index the dataframe. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
 **Series.iset**
 ```TypeScript
-iset(rpl:T[]): void
-iset(index:string|numx|boolean[],rpl:T|T[]): void
-iset(first:any, second?:T|T[]): void
+iset(rpl:T[]):void
+iset(index:number,rpl:T):void
+iset(index:string|number[]|boolean[],rpl:T[]):void
 ```
 Change the values of a series using position-based index. Please refer to Series.iloc for possible values of `index`. `rpl` is the replacement value. It must be the same length as the series defined by `index`. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
 **Series.set**
 ```TypeScript
-set(rpl:T[]): void
-set(idx:locParam,rpl:T|T[]): void
-set(first: any, second?: T|T[]): void
+set(rpl:T[]):void
+set(idx:string|number,rpl:T|T[]):void
+set(idx:locParamArr,rpl:T[]):void
 ```
 Change the values of a series using label-based index. Please refer to Series.loc for possible values of `index`. `rpl` is the replacement value. It must be the same shape as the series defined by `index`. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
@@ -295,7 +308,7 @@ Sort the Series in the `ascending` order. If values are numeric, they will be so
 ```TypeScript
 op(opStr:string): Series<T>
 op(opStr:string,ss:Series<T>|T[]): Series<T>
-op(opStr:string,ss?:Series<T>|T[]): Series<T>
+// op(opStr:string,ss?:Series<T>|T[]): Series<T>
 ```
 Element-wise operation on a single series or on two series. If defined, `ss` represents the second series. It could be a series or an array. If it is a series, its index must contain the same elements as the first series and both series' indices must be unique.  If it is an array, it must have the same shape as the first series. `opStr` is a JavaScript string that defines the operation on a single element or a set of two elements of the series. For operations on one series, use `x` in `opStr` to represent the element in the series. For operations on two series, use `x` and `y` to represent the element in the first and second series. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
 
@@ -368,7 +381,8 @@ Check if the value `val` exisits in an index. Different to `Index.has`, it will 
 \
 **Index.trans**
 ```TypeScript
-trans(vals: nsx): numx
+trans(index:number|string): numx
+trans(index:ns_arr): number[]
 ```
 Translate an array of labels into an array of numeric positions. It will throw error if `vals` includes labels not in the index.
 
@@ -379,6 +393,6 @@ Translate an array of labels into an array of numeric positions. It will throw e
 function range(end:number):number[]
 function range(start:number,end:number):number[]
 function range(start:number,end:number,step:number):number[]
-function range(first:number,second?:number,third?:number):number[]
+// function range(first:number,second?:number,third?:number):number[]
 ```
 Return an array of numbers defined by start, end and step.

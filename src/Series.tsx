@@ -1,7 +1,7 @@
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
-import {ns_arr,numx,nsx,locParam,vec_loc,vec_loc2,
+import {ns_arr,numx,nsx,locParamArr,vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex} from './cmm'
 
 import { _sortIndices } from './df_lib'
@@ -84,11 +84,19 @@ class Series<T>{
         return this._iloc(idx as any)
     }
 
-
-
-    loc(index?: locParam):T|Series<T>{
-        const num_idx = _trans(this.index,index)
-        return this._iloc(num_idx as any)
+    loc(index:number|string): T|Series<T>
+    loc(index?:locParamArr): Series<T>
+    loc(index?: (number|string)|locParamArr):T|Series<T>{        
+        let num_idx:numx | undefined | boolean[]
+        if(_.isNumber(index)||_.isString(index))
+            num_idx = _trans(this.index,index)
+        else
+            num_idx = _trans(this.index,index)
+        
+        if(_.isNumber(num_idx))
+            return this._iloc(num_idx)
+        else
+            return this._iloc(num_idx)
     }
 
     
@@ -108,7 +116,8 @@ class Series<T>{
     }
 
     iset(rpl:T[]):void
-    iset(index:string|numx|boolean[],rpl:T|T[]):void
+    iset(index:number,rpl:T):void
+    iset(index:string|number[]|boolean[],rpl:T[]):void
     iset(first:any, second?:T|T[]):void{
         if(second===undefined){
             this._iset(undefined, first)
@@ -119,7 +128,8 @@ class Series<T>{
     }
     
     set(rpl:T[]):void
-    set(idx:locParam,rpl:T|T[]):void
+    set(idx:string|number,rpl:T|T[]):void
+    set(idx:locParamArr,rpl:T[]):void
     set(first: any, second?: T|T[]){
         if(second===undefined){
             this._iset(undefined, first)

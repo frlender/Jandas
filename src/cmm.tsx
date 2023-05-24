@@ -3,13 +3,16 @@ import {isNum, isArr,isVal,isNumArr,isStrArr,
 
 import Index from './Index'
 import Series from './Series'
+import * as _ from 'lodash'
 
 type ns_arr =  (number | string)[]
 type numx = number[] | number
 // type strx = string[] | string
 type nsx = number | string | ns_arr
 
-type locParam = nsx | Series<number|string> | boolean[] | Series<boolean> | Index
+// type locParam = nsx | Series<number|string> | boolean[] | Series<boolean> | Index
+type locParamArr = ns_arr | Series<number|string> | boolean[] | Series<boolean> | Index
+type locParam = number | string | locParamArr
 
 function cp<S>(arr:S[]){
     return arr.slice(0)
@@ -103,27 +106,29 @@ function _str(x:any){
         return JSON.stringify(x)
 }
 
+function _trans(index:Index,idx:number|string):numx
+function _trans(index:Index,idx?:locParamArr):number[]| undefined | boolean[]
 function _trans(index:Index, idx?:nsx | Series<number|string> | boolean[] | Series<boolean> | Index)
             : undefined | numx | boolean[]{
     // translate labelled index to numeric index
-    switch(true){
-        case isVal(idx):
-            idx = index.trans(idx as number | string)
-            break
-        case idx instanceof Index:
-            idx = index.trans((idx as Index).values)
-            break
-        case idx instanceof Series && idx.values.length > 0 && typeof idx.values[0] !== 'boolean':
-            idx = index.trans((idx as Series<number|string>).values)
-            break
-        case idx instanceof Series:
-            idx = (idx as Series<boolean>).values
-            break
-        case isArr(idx) && (idx as ns_arr).length > 0 && typeof (idx as ns_arr)[0] !== 'boolean':
-            idx = index.trans(idx as (number | string)[])
-            break
+    if(isVal(idx))
+    return index.trans(idx as number | string)
+    else{
+        // let res:number[]
+        switch(true){
+            case idx instanceof Index:
+                return index.trans((idx as Index).values)
+            case idx instanceof Series && idx.values.length > 0 && typeof idx.values[0] !== 'boolean':
+                return index.trans((idx as Series<number|string>).values)
+            case idx instanceof Series:
+                 return (idx as Series<boolean>).values
+            case _.isArray(idx) && idx.length > 0 && typeof idx[0] !== 'boolean':
+                return index.trans(idx as ns_arr)
+            default:
+                return idx as undefined | boolean[] | number[]
+        }
+        // throw('unexpected error. The second argument idx does not match what is predefined.')
     }
-    return idx as numx | boolean[] | undefined
 }
 
 const setIndex = (vals:ns_arr|Index,shape:number)=>{
@@ -132,5 +137,5 @@ const setIndex = (vals:ns_arr|Index,shape:number)=>{
     check.frame.index.set(shape,len)
     return vals instanceof Index ? vals : new Index(vals)
 }
-export {ns_arr,numx,nsx,locParam,vec_loc,vec_loc2,
+export {ns_arr,numx,nsx,locParam,locParamArr,vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex}

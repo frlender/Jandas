@@ -1,7 +1,7 @@
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
-import {ns_arr,numx,nsx,locParam,vec_loc,vec_loc2,
+import {ns_arr,numx,nsx,locParam,locParamArr,vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex} from './cmm'
 
 import {Obj,GP,GroupByThen,_sortIndices} from './df_lib'
@@ -164,7 +164,8 @@ class DataFrame<T>{
                 return null
         }
     }
-
+    // _iloc_symmetric(ir:number,ic:number):T
+    // _iloc_symmetric(ir?:number[]|boolean[],ic?:number[]|boolean[]):DataFrame<T>|null
     _iloc_symmetric(ir?:numx | boolean[],ic?:numx | boolean[]){
         switch(true){
             case ir == undefined && ic == undefined:
@@ -194,7 +195,10 @@ class DataFrame<T>{
         }
     }
 
-    
+    iloc(row:number,col:number):T
+    iloc(row:number,col?:null|string|number[]|boolean[]):Series<T>
+    iloc(row:null|string|number[]|boolean[],col:number):Series<T>
+    iloc(row?:null|string|number[]|boolean[],col?:null|string|number[]|boolean[]):DataFrame<T>
     iloc(row?:null | string | numx | boolean[],
         col?: null | string | numx | boolean[])
         :T| Series<T>| DataFrame<T> {
@@ -220,15 +224,20 @@ class DataFrame<T>{
         throw(`input parameters for iloc might be wrong`)
     }
 
-    loc(row?: null | locParam, col?: null | locParam){
+    // loc():DataFrame<T>
+    loc(row:number|string,col:number|string):T|Series<T>|DataFrame<T>
+    loc(row:number|string,col?:null|locParamArr):Series<T>|DataFrame<T>
+    loc(row:null|locParamArr,col:number|string):Series<T>|DataFrame<T>
+    loc(row?:null|locParamArr,col?:null|locParamArr):DataFrame<T>
+    loc(row?: null | number | string | locParamArr, col?: null | number | string | locParamArr){
         if(row === null) row = undefined
         if(col === null) col = undefined
         row = row as undefined | locParam
         col = col as undefined | locParam
         
-        const num_row = _trans(this.index, row)
-        const num_col = _trans(this.columns, col)
-        return this.iloc(num_row, num_col)
+        const num_row = _trans(this.index, row as any)
+        const num_col = _trans(this.columns, col as any)
+        return this.iloc(num_row as any, num_col as any) as T|Series<T>|DataFrame<T>
     }
 
 
@@ -303,9 +312,16 @@ class DataFrame<T>{
         if(res===null) throw('function failed. Please check the input for _iset')
     }
 
-    iset(rpl: T[][]):void
-    iset(row:null | numx | boolean[],rpl: T[]|T[][]):void
-    iset(row:null | numx | boolean[],col:null | numx | boolean[],rpl:T| T[] | T[][]):void
+    // iset(rpl: T[][]):void
+    // iset(row:null | numx | boolean[],rpl: T[]|T[][]):void
+    // iset(row:null | numx | boolean[],col:null | numx | boolean[],rpl:T| T[] | T[][]):void
+    iset(row:number,col:number,rpl:T):void
+    iset(row:number,rpl:T[]):void
+    iset(row:number,col:null|string|number[]|boolean[],rpl:T[]):void
+    iset(row:null|string|number[]|boolean[],col:number,rpl:T[]):void
+    iset(rpl:T[][]):void
+    iset(row:null|string|number[]|boolean[],rpl:T[][]):void
+    iset(row:null|string|number[]|boolean[],col:null|string|number[]|boolean[],rpl:T[][]):void
     iset(first:any, second?:any, third?:T| T[]|T[][]):void{
         if(second===undefined && third === undefined){
             this._iset(undefined, undefined, first)
@@ -333,9 +349,15 @@ class DataFrame<T>{
     //     return rpl
     // }
 
-    set(rpl: T[][]):void
-    set(row:null | locParam,rpl:T[]|T[][]):void
-    set(row:null | locParam,col:null | locParam,rpl: T|T[]|T[][]):void
+    // set(rpl: T[][]):void
+    // set(row:null | locParam,rpl:T[]|T[][]):void
+    set(row:number|string,col:number|string,rpl:T|T[]|T[][]):void
+    set(row:number|string,rpl:T[]|T[][]):void
+    set(row:number|string,col:null|locParamArr,rpl:T[]|T[][]):void
+    set(row:null|locParamArr,col:number|string,rpl:T[]|T[][]):void
+    set(rpl:T[][]):void
+    set(row:null|locParamArr,rpl:T[][]):void
+    set(row:null|locParamArr,col:null|locParamArr,rpl:T[][]):void
     set(first:any, second?:any, third?:T|T[]|T[][]):void{
         if(second===undefined && third === undefined){
             this._iset(undefined, undefined, first)
@@ -617,7 +639,8 @@ class DataFrame<T>{
                     ascending)
                 return this.iloc(idx)
             }else{
-                const sub = this.loc(null,labels) as DataFrame<T>
+                //TODO: any
+                const sub = this.loc(null,labels as any) as DataFrame<T>
                 const idx = _sortIndices(sub.values,
                     ascending)
                 return this.iloc(idx)
@@ -628,7 +651,8 @@ class DataFrame<T>{
                     ascending)
                 return this.iloc(null,idx)
             }else{
-                const sub = this.loc(labels) as DataFrame<T>
+                //TODO: any
+                const sub = this.loc(labels as any) as DataFrame<T>
                 const idx = _sortIndices(sub.tr,
                     ascending)
                 return this.iloc(null,idx)
@@ -642,8 +666,8 @@ class DataFrame<T>{
             ((idx:number[])=>this.iloc(idx)):
             ((idx:number[])=>this.iloc(null,idx))
         const loc = axis === 1? 
-            ((labels:nsx)=>this.loc(null,labels)):
-            ((labels:nsx)=>this.loc(labels))
+            ((labels:nsx)=>this.loc(null,labels as any)):
+            ((labels:nsx)=>this.loc(labels as any))
         const subFun = axis === 1? 
             ((sub:DataFrame<T>)=>sub.values):
             ((sub:DataFrame<T>)=>sub.tr)
@@ -655,14 +679,14 @@ class DataFrame<T>{
         }else{
             const sub = loc(labels)
             if(sub instanceof Series<T>){
-                const sub = loc(labels) as Series<T>
-                const idx = _sortIndices(sub.values,
+                const sub2 = sub as Series<T>
+                const idx = _sortIndices(sub2.values,
                     ascending)
                 return iloc(idx) as DataFrame<T>
 
             }else{
-                const sub = loc(labels) as DataFrame<T>
-                const idx = _sortIndices(subFun(sub),
+                const sub2 = sub as DataFrame<T>
+                const idx = _sortIndices(subFun(sub2),
                     ascending)
                 return iloc(idx) as DataFrame<T>
             }

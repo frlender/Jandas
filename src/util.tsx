@@ -2,8 +2,8 @@ import Index from './Index'
 import * as _ from 'lodash'
 
 
-const isNum = (x:any) => typeof x === 'number'
-const isStr = (x:any) => typeof x === 'string'
+const isNum = (x:any) => _.isNumber(x)
+const isStr = (x:any) => _.isString(x)
 // const isNonInteger = (x:any) => isNum(x) && !Number.isInteger(x)
 const isArr = (x:any) => Array.isArray(x)
 const isVal = (x:any) => isNum(x) || isStr(x)
