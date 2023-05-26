@@ -1,4 +1,4 @@
-import { ns_arr, numx, nsx, locParamArr } from './cmm';
+import { ns_arr, numx, nsx, locParamArr, SeriesInitOptions } from './interfaces';
 import Index from './Index';
 import DataFrame from './DataFrame';
 declare class Series<T> {
@@ -7,8 +7,7 @@ declare class Series<T> {
     shape: number;
     name: string | number;
     constructor(values: T[]);
-    constructor(values: T[], name: string | number);
-    constructor(values: T[], index: ns_arr | Index, name?: string | number);
+    constructor(values: T[], options: SeriesInitOptions);
     get index(): Index;
     set index(vals: ns_arr | Index);
     p(): void;

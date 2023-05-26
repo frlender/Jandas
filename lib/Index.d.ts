@@ -1,4 +1,4 @@
-import { ns_arr, numx } from './cmm';
+import { ns_arr, numx } from './interfaces';
 declare class Index {
     private __values;
     _values: ns_arr;

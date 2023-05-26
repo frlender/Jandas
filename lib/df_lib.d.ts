@@ -1,10 +1,5 @@
 import DataFrame from "./DataFrame";
-interface Obj<T> {
-    [key: number | string]: T;
-}
-interface GP {
-    [key: string]: number[];
-}
+import { Obj, GP } from './interfaces';
 declare class GroupByThen<T> {
     gp: GP;
     axis: 0 | 1;

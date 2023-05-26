@@ -1,5 +1,5 @@
-import { ns_arr, numx, nsx, locParamArr } from './cmm';
-import { Obj, GroupByThen } from './df_lib';
+import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions } from './interfaces';
+import { GroupByThen } from './df_lib';
 import Index from './Index';
 import Series from './Series';
 declare class DataFrame<T> {
@@ -8,11 +8,9 @@ declare class DataFrame<T> {
     _index: Index;
     _columns: Index;
     _tr?: T[][];
-    constructor(arr: T[][]);
-    constructor(arr: T[][], index: Index | ns_arr);
-    constructor(arr: T[][], index: null | Index | ns_arr, columns: Index | ns_arr);
-    constructor(arr: Obj<T>[]);
-    constructor(arr: Obj<T>[], index: Index | ns_arr);
+    constructor(arr: T[][] | Obj<T>[]);
+    constructor(arr: T[][], options: DataFrameArrInitOptions);
+    constructor(arr: Obj<T>[], options: DataFrameInitOptions);
     __transpose(arr: T[][]): T[][];
     _transpose(arr: T[][]): T[][];
     get tr(): T[][];
@@ -51,9 +49,9 @@ declare class DataFrame<T> {
     set(rpl: T[][]): void;
     set(row: null | locParamArr, rpl: T[][]): void;
     set(row: null | locParamArr, col: null | locParamArr, rpl: T[][]): void;
-    push(val: T[], name?: number | string, axis?: 0 | 1): void;
+    push(val: T[], options?: PushOptions): void;
     _insert(i1: number, l1: Index, v1: T[][], rpl: T[], name: number | string): void;
-    insert(idx: number, val: T[], name?: number | string, axis?: 0 | 1): void;
+    insert(idx: number, val: T[], options: PushOptions): void;
     drop(labels: nsx, axis?: 0 | 1): DataFrame<T>;
     reset_index(name?: string | number): DataFrame<T>;
     reset_columns(name?: string | number): DataFrame<T>;
@@ -68,7 +66,7 @@ declare class DataFrame<T> {
     groupby(labels: nsx | null, axis: 0 | 1): GroupByThen<T>;
     _groupby(labels: nsx | null, axis?: 0 | 1): GroupByThen<T>;
     _sort_values(labels: nsx | null, ascending?: boolean, axis?: 0 | 1): DataFrame<T>;
-    sort_values(labels: nsx | null, ascending?: boolean, axis?: 0 | 1): DataFrame<T>;
+    sort_values(labels: nsx | null, options?: SortOptions): DataFrame<T>;
     op(opStr: string): DataFrame<T>;
     op(opStr: string, df: DataFrame<T> | T[][]): DataFrame<T>;
     _reduce_num(func: (a: number[]) => number | undefined, axis: 0 | 1): Series<number>;
