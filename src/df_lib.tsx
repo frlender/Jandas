@@ -3,15 +3,8 @@ import DataFrame from "./DataFrame"
 import * as _ from 'lodash'
 import {range} from './util'
 
+import {Obj,GP} from './interfaces'
 
-interface Obj<T>{
-    [key: number|string]:T
-}
-
-// for groupby method
-interface GP{
-    [key: string]: number[]
-} 
 class GroupByThen<T>{
     gp:GP
     axis:0|1

@@ -27,11 +27,16 @@ interface Obj<T>{
 
 **DataFrame.constructor**
 ```TypeScript
-constructor(arr:T[][]): DataFrame<T>
-constructor(arr:T[][], index:Index|ns_arr): DataFrame<T>
-constructor(arr:T[][], index:null|Index|ns_arr, columns:Index|ns_arr): DataFrame<T>
-constructor(arr:Obj<T>[]): DataFrame<T>
-constructor(arr:Obj<T>[], index:Index|ns_arr): DataFrame<T>
+interface DataFrameInitOptions{
+    index?: Index|ns_arr
+}
+interface DataFrameArrInitOptions extends DataFrameInitOptions{
+    columns?: Index|ns_arr
+}
+
+constructor(arr:T[][]|Obj<T>[]): DataFrame<T>
+constructor(arr:T[][], options:DataFrameArrInitOptions): DataFrame<T>
+constructor(arr:Obj<T>[],options:DataFrameInitOptions): DataFrame<T>
 ```
 Construct a dataframe. The first argument could be a matrix in the form of an array of arrays or an array of objects with the same keys. The second and third optional arguments are index and columns. Use `null` for index if columns is provided but index is not.
 
@@ -91,14 +96,22 @@ Change the values of a dataframe using label-based index. `row` and `col` are ro
 \
 **DataFrame.push**
 ```TypeScript
-push(val:T[],name:number|string='',axis:0|1=1): void
+interface PushOptions{
+    name?: number|string
+    axis?: 0|1
+}
+push(val:T[],options?: PushOptions): void
 ```
 Add an array `val` as a row or column to the end of the dataframe. `name` is the label for the array. `axis` determines the dimension to add the array. It is an in-place operation. 
 
 \
 **DataFrame.insert**
 ```TypeScript
-insert(idx:number,val:T[],name:number|string='',axis:0|1=1): void
+interface PushOptions{
+    name?: number|string
+    axis?: 0|1
+}
+insert(idx:number,val:T[],options:PushOptions): void
 ```
 Insert an array `val` at designed position `idx` as a row or column in place. `idx` is position-based index. `name` is the label for the array. `axis` determines the dimension to insert the array.
 
@@ -162,7 +175,7 @@ groupby(labels:nsx|null,axis:0|1):GroupByThen<T>
 
 GroupbyThen.then(func:(group:DataFrame<T>,key:T | T[], i:number)=>void): void
 ```
-Group the dataframe by values in rows or columns designated by labels. When no `labels` are provided, it groups the dataframe by the row or column index. When no `axis` is provided, the `axis` defaults to 1 and the function groups by columns or the row index. It returns a `GroupByThen` object that has a `then` method. The method accepts a function as argument where the `group`, `key` and `i` are the group, group key and numric index in each iteration.
+Group the dataframe by values in rows or columns designated by labels. When no `labels` is provided or `labels` is equal to `null`, it groups the dataframe by the row or column index. When no `axis` is provided, the `axis` defaults to 1 and the function groups by  the designed labels in the columns. It returns a `GroupByThen` object that has a `then` method. The method accepts a function as argument where the `group`, `key` and `i` are the group, group key and numric index in each iteration.
 Check [Getting Started](https://github.com/frlender/Jandas#iteration) for examples.
 
 \
@@ -176,12 +189,16 @@ A collection of functions to compute statistics on the `axis` dimension. The def
 \
 **DataFrame.sort_values**
 ```TypeScript
-sort_values(labels:nsx|null,ascending=true,axis:0|1=1): DataFrame<T>
+interface SortOptions{
+    ascending?: boolean
+    axis?: 0|1
+}
+sort_values(labels:nsx|null,options?:SortOptions): DataFrame<T>
 ```
 Sort the DataFrame according to values in the rows (`axis=0`) or columns (`axis=1`) designed by `labels` in the `ascending` order. If `labels` is `null`, then sort the DataFrame by the values in index. If `labels` is an array, the sorting will compare values successively according to the order designed by `labels` to determine relative large or small. That is to say, `labels[1]` will only be considered if the values of `labels[0]` are equal. If values are numeric, they will be sorted by their numeric values. Otherwise, they will be sorted according to the rule in [Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort).
 
 \
-**Series.op**
+**DataFrame.op**
 ```TypeScript
 op(opStr:string): DataFrame<T>
 op(opStr:string,df:DataFrame<T>|T[][]): DataFrame<T>
@@ -207,9 +224,12 @@ Return the dataframe as an array of objects. `axis` determines on which dimensio
 ### Series
 **Series.constructor**
 ```TypeScript
+interface SeriesInitOptions{
+    name?: string|number
+    index?: ns_arr | Index
+}
 constructor(values: T[]): Series<T>
-constructor(values: T[], name:string | number): Series<T>
-constructor(values: T[], index: ns_arr | Index, name?:string | number): Series<T>
+constructor(values: T[], options:SeriesInitOptions): Series<T>
 ```
 Constructs a series. The first argument is an array of values. The second optional argument is either the name or the index of the series depending on its type. When there are three arguments, the second will be the index of the series and the third the name.
 

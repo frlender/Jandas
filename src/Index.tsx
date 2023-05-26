@@ -1,5 +1,6 @@
-import {ns_arr,numx,nsx,cp} from './cmm'
+import {cp} from './cmm'
 import {check} from './util'
+import { ns_arr,numx,nsx } from './interfaces'
 
 class Index{
     private __values!:ns_arr // original values

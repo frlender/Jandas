@@ -1,8 +1,11 @@
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
-import {ns_arr,numx,nsx,locParamArr,vec_loc,vec_loc2,
+import {vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex} from './cmm'
+
+
+import {ns_arr,numx,nsx,locParamArr,SeriesInitOptions} from './interfaces'
 
 import { _sortIndices } from './df_lib'
 import Index from './Index'
@@ -18,29 +21,17 @@ class Series<T>{
     shape: number
     name: string | number
     constructor(values: T[])
-    constructor(values: T[], name:string | number)
-    constructor(values: T[], index: ns_arr | Index, name?:string | number)
-    constructor(first: T[], second?:any, third?:string | number){
+    constructor(values: T[], options:SeriesInitOptions)
+    constructor(first: T[], second?:SeriesInitOptions){
+        if(_.isUndefined(second))
+            second = {}
+        second = _.defaults(second,
+            {name:'',index:new Index(first.map((_,i)=>i))})
         this.values = first
         this.shape = this.values.length
-        switch(true){
-            case second === undefined && third === undefined:
-                this.name = ''
-                this.index = new Index(this.values.map((_,i)=>i))
-                break
-            case third === undefined && (isNum(second) || isStr(second)):
-                this.name = second
-                this.index = new Index(this.values.map((_,i)=>i))
-                break
-            case third === undefined:
-                this.name = ''
-                this.index = second instanceof Index ? second : new Index(second)
-                break
-            default:
-                this.name = third!
-                this.values = first
-                this.index = second instanceof Index ? second : new Index(second)
-        }
+        this.name = second.name!
+        this.index = second.index! instanceof Index ? 
+            second.index! : new Index(second.index!)
     }
 
     get index():Index{
@@ -63,7 +54,8 @@ class Series<T>{
     _iloc(idx?: numx | boolean[]){
         switch(true){
             case idx === undefined:
-                return new Series(cp(this.values),this.index.cp(),this.name)
+                return new Series(cp(this.values),
+                    {index:this.index.cp(),name:this.name})
             case isNum(idx):
                 check.iloc.num(idx as number, this.shape)
                 return this.values[idx as number]
@@ -71,7 +63,7 @@ class Series<T>{
                 const [vec,new_idx] = vec_loc2(this.values,
                     this.index.values,idx as number[] | boolean[])
                 const new_index = new Index(new_idx,this.index.name)
-                return new Series(vec,new_idx,this.name)
+                return new Series(vec,{index:new_idx,name:this.name})
         }
     }
 
@@ -200,8 +192,8 @@ class Series<T>{
     value_counts(){
         const obj = _.countBy(this.values)
         const pairs = _.toPairs(obj)
-        const df = new DataFrame(pairs,null,['value','count'])
-        return df.sort_values('count',false)
+        const df = new DataFrame(pairs,{columns:['value','count']})
+        return df.sort_values('count',{ascending:false})
     }
 
     op(opStr:string): Series<T>
@@ -209,7 +201,7 @@ class Series<T>{
     op(opStr:string,ss?:Series<T>|T[]){
         if(_.isUndefined(ss)){
             const vals = this.values.map(x=>eval(opStr)) as T[]
-            return new Series(vals,this.index,this.name)
+            return new Series(vals,{index:this.index,name:this.name})
         }else if(ss instanceof Series){
             check.op.index(this.index,ss.index)
             const vals:T[] = []

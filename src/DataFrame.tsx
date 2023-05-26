@@ -1,10 +1,15 @@
+import {ns_arr,numx,nsx,locParam,locParamArr,Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
+SortOptions} from './interfaces'
+
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
-import {ns_arr,numx,nsx,locParam,locParamArr,vec_loc,vec_loc2,
+import {vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex} from './cmm'
 
-import {Obj,GP,GroupByThen,_sortIndices} from './df_lib'
+import {GroupByThen,_sortIndices} from './df_lib'
+
+
 
 import Index from './Index'
 import Series from './Series'
@@ -20,38 +25,38 @@ class DataFrame<T>{
     _index!: Index
     _columns!:Index
     _tr?:T[][]
-    constructor(arr:T[][])
-    constructor(arr:T[][],index:Index|ns_arr)
-    constructor(arr:T[][],index:null|Index|ns_arr,
-                    columns:Index|ns_arr)
-    constructor(arr:Obj<T>[])
-    constructor(arr:Obj<T>[],index:Index|ns_arr)
-    constructor(arr:T[][]|Obj<T>[],index?:null|Index | ns_arr,columns?:Index | ns_arr){
+    constructor(arr:T[][]|Obj<T>[])
+    constructor(arr:T[][],options:DataFrameArrInitOptions)
+    constructor(arr:Obj<T>[],options:DataFrameInitOptions)
+    constructor(arr:T[][]|Obj<T>[],options?:DataFrameInitOptions|DataFrameArrInitOptions){
+        if(_.isUndefined(options))
+            options = {}
+        let columns:Index|ns_arr
         if(arr.length > 0 && !isArr(arr[0])){
             columns = Object.keys(arr[0])
             const _cols = columns as ns_arr
-            arr = arr.map(obj=>_cols.map(key=>(obj as Obj<T>)[key]))
-            index = index ? index : null
+            arr = arr.map(obj=>_cols.map(key=>(obj as Obj<T>)[key]));
+            // index = options && !_.isUndefined(options.index) ? 
+            //         options.index : null
+            (options as DataFrameArrInitOptions).columns = _cols
         }
-        arr = arr as T[][]
+        let _arr = arr as T[][]
+       
+        let _options = options as DataFrameArrInitOptions
+        _options =  _.defaults(_options,
+            {columns:_arr.length===0?[]:_arr[0].map((_,i)=>i),
+            index:_arr.map((_,i)=>i)})
 
-        if(columns === undefined && arr.length === 0)
-            columns = []
-        if(columns === undefined) 
-            columns = arr[0].map((_,i)=>i)
-        if(index === null || index === undefined)
-            index = arr.map((_,i)=>i)
-
-        this._index = index instanceof Index ?
-                index : new Index(index)
-        this._columns = columns instanceof Index ?
-                columns : new Index(columns)
+        this._index = _options.index instanceof Index ?
+            _options.index : new Index(_options.index!)
+        this._columns = _options.columns instanceof Index ?
+            _options.columns : new Index(_options.columns!)
         this.shape = [this.index.shape,this.columns.shape]
 
-        check.frame.index.set(arr.length,this.shape[0])
-        if(arr.length > 0)
-            check.frame.index.set(arr[0].length,this.shape[1])
-        this.values = arr
+        check.frame.index.set(_arr.length,this.shape[0])
+        if(_arr.length > 0)
+            check.frame.index.set(_arr[0].length,this.shape[1])
+        this.values = _arr
         
     }
 
@@ -129,7 +134,7 @@ class DataFrame<T>{
             return this
         }else{
             return new DataFrame(cp(this.tr),
-                this.columns.cp(),this.index.cp())
+                {index:this.columns.cp(),columns:this.index.cp()})
         }
     }
     
@@ -141,7 +146,8 @@ class DataFrame<T>{
             case isNum(i1) && i2 === undefined:
                 check.iloc.num(i1 as number, l1.shape)
                 const i1x = i1 as number
-                return new Series<T>(cp(v1[i1x]),l2.cp(),l1.values[i1x])
+                return new Series<T>(cp(v1[i1x]),
+                    {index:l2.cp(),name:l1.values[i1x]})
             case isNum(i1) && isArr(i2):
                 { check.iloc.num(i1 as number, l1.shape)
                 const i2x = i2 as number[] | boolean[]
@@ -150,7 +156,8 @@ class DataFrame<T>{
                 const [new_vec,new_idx] = 
                     vec_loc2(vec,l2.values,i2x)
                 const final_index = new Index(new_idx,l2.name)
-                return new Series<T>(new_vec, final_index,l1.values[i1x]) }
+                return new Series<T>(new_vec, 
+                    {index:final_index,name:l1.values[i1x]}) }
             case isArr(i1) && i2 === undefined:
                 { const i1x = i1 as number[] | boolean[]
                 const [new_mat,new_idx] = 
@@ -158,7 +165,7 @@ class DataFrame<T>{
                 const final_l1 = new Index(new_idx,l1.name)
                 const final_l2 = l2.cp()
                 const df =  new DataFrame(new_mat,
-                    final_l1,final_l2)
+                    {index:final_l1,columns:final_l2})
                 return transpose ? df.transpose(true) : df }
             default:
                 return null
@@ -170,7 +177,8 @@ class DataFrame<T>{
         switch(true){
             case ir == undefined && ic == undefined:
                 const vals = this.values.map(r =>cp(r))
-                return new DataFrame<T>(vals,this.index.cp(),this.columns.cp())
+                return new DataFrame<T>(vals,{index:this.index.cp(),
+                    columns:this.columns.cp()})
             case isNum(ir) && isNum(ic):
                 check.iloc.num(ir as number,this.shape[0])
                 check.iloc.num(ic as number,this.shape[1])
@@ -189,7 +197,7 @@ class DataFrame<T>{
                 const final_columns = new Index(
                     vec_loc(this.columns.values,icx), 
                     this.columns.name)
-                return new DataFrame(final_vals,final_index,final_columns)
+                return new DataFrame(final_vals,{index:final_index,  columns:final_columns})
             default:
                 return null
         }
@@ -365,7 +373,7 @@ class DataFrame<T>{
             if(first === null) first = undefined
             if(isVal(first) && !this.index.has(first))
                 //using set to add new row
-                this.push(second,first,0) 
+                this.push(second,{name:first,axis:0}) 
             else{
                 // second = this._hdl_duplicate(first,this.index,second)
                 const num_row = _trans(this.index, first)
@@ -376,7 +384,7 @@ class DataFrame<T>{
             if(second === null) second = undefined
             if(first === undefined && isVal(second) && !this.columns.has(second))
                 //using set to add new column
-                this.push(third as T[],second,1)
+                this.push(third as T[],{name:second,axis:1})
             else{
                 // third = this._hdl_duplicate(second,this.columns,third)
                 // third = this._hdl_duplicate(first,this.index,third)
@@ -387,7 +395,11 @@ class DataFrame<T>{
         }
     }
 
-    push(val:T[],name:number|string='',axis:0|1=1){
+    // push(val:T[],name:number|string='',axis:0|1=1){
+    push(val:T[],options?: PushOptions){
+        if(_.isUndefined(options))
+            options = {}
+        let {axis,name} = _.defaults(options,{name:'',axis:1})
         if(axis===0){
             check.iset.rpl.num(val,this.shape[1])
             this.values.push(val)
@@ -416,7 +428,11 @@ class DataFrame<T>{
     }
 
 
-    insert(idx:number,val:T[],name:number|string='',axis:0|1=1){
+    // insert(idx:number,val:T[],name:number|string='',axis:0|1=1){
+    insert(idx:number,val:T[],options:PushOptions){
+        if(_.isUndefined(options))
+            options = {}
+        let {axis,name} = _.defaults(options,{name:'',axis:1})
         if(axis===0){
             idx = idx < 0 ? this.shape[0]+idx : idx
             this._insert(idx,this.index,
@@ -447,26 +463,26 @@ class DataFrame<T>{
     }
 
     reset_index(name?:string|number){
-        const df = new DataFrame(cp(this.values),null,
-            this.columns.cp())
+        const df = new DataFrame(cp(this.values),
+            {columns:this.columns.cp()})
         const val = this.index.values
         name = name ? name : this.index.name
         // workaround for val using "as T[]""
         // maybe there is a better way to 
         // handle this.
-        df.insert(0,val as T[],name,1)
+        df.insert(0,val as T[],{name:name,axis:1})
         return df
     }
 
     reset_columns(name?:string|number){
         const df = new DataFrame(cp(this.values),
-            this.index.cp())
+            {index:this.index.cp()})
         const val = this.columns.values
         name = name ? name : this.columns.name
         // workaround for val using "as T[]""
         // maybe there is a better way to 
         // handle this.
-        df.insert(0,val as T[],name,0)
+        df.insert(0,val as T[],{name:name,axis:0})
         return df
     }
 
@@ -660,7 +676,12 @@ class DataFrame<T>{
         }
     }
 
-    sort_values(labels:nsx|null,ascending=true,axis:0|1=1){
+    // sort_values(labels:nsx|null,ascending=true,axis:0|1=1){
+    sort_values(labels:nsx|null,options?:SortOptions){
+        if(_.isUndefined(options))
+            options = {}
+        let {ascending, axis} = _.defaults(options,
+                {ascending:true,axis:1})
         const index = axis === 1?this.index:this.columns
         const iloc = axis === 1? 
             ((idx:number[])=>this.iloc(idx)):
@@ -698,7 +719,8 @@ class DataFrame<T>{
     op(opStr:string,second?:DataFrame<T>|T[][]){
         if(_.isUndefined(second)){
             const vals = this.values.map(vec=>vec.map(x=>eval(opStr))) as T[][]
-            return new DataFrame(vals,this.index.cp(),this.columns.cp())
+            return new DataFrame(vals,{index:this.index.cp(),
+                columns:this.columns.cp()})
         }else if(second instanceof DataFrame){
             check.op.index(this.index,second.index)
             const vals:T[][] = []
@@ -708,7 +730,8 @@ class DataFrame<T>{
                 const sz = sx.op(opStr,sy)
                 vals.push(sz.values)
             })
-            return new DataFrame(vals,this.index,this.columns)
+            return new DataFrame(vals,{index:this.index,
+                columns:this.columns})
         }else{
             check.op.values(this.index,second)
             check.op.values(this.columns,second[0])
@@ -722,7 +745,8 @@ class DataFrame<T>{
                 })
                 vals.push(vecNew)
             })
-            return new DataFrame(vals,this.index,this.columns)
+            return new DataFrame(vals,{index:this.index,
+                columns:this.columns})
         }
     }
 

@@ -5,14 +5,8 @@ import Index from './Index'
 import Series from './Series'
 import * as _ from 'lodash'
 
-type ns_arr =  (number | string)[]
-type numx = number[] | number
-// type strx = string[] | string
-type nsx = number | string | ns_arr
+import {ns_arr,numx,nsx,locParam,locParamArr} from './interfaces'
 
-// type locParam = nsx | Series<number|string> | boolean[] | Series<boolean> | Index
-type locParamArr = ns_arr | Series<number|string> | boolean[] | Series<boolean> | Index
-type locParam = number | string | locParamArr
 
 function cp<S>(arr:S[]){
     return arr.slice(0)
@@ -137,5 +131,4 @@ const setIndex = (vals:ns_arr|Index,shape:number)=>{
     check.frame.index.set(shape,len)
     return vals instanceof Index ? vals : new Index(vals)
 }
-export {ns_arr,numx,nsx,locParam,locParamArr,vec_loc,vec_loc2,
-    vec_set,cp,_str,_trans,setIndex}
+export {vec_loc,vec_loc2,vec_set,cp,_str,_trans,setIndex}

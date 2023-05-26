@@ -40,8 +40,8 @@ Jandas uses `.loc()` to access values with a label based-index and `.iloc()` a p
 const df = new DataFrame([[1,2],
                           [3,4],
                           [5,6]],
-           ['a','b','b'],['d',5])
-df.iloc(null,0) //output: new Series([1,3,5],['a','b','b'],'d')
+           {index:['a','b','b'],columns:['d',5]})
+df.iloc(null,0) //output: new Series([1,3,5],{index:['a','b','b'],name:'d'})
 df.iloc([0,1]).values //output: [[1,2],[3,4]]
 df.iloc([2],[1]).values // [[6]]
 df.iloc(-1).values // [5,6]
@@ -52,8 +52,8 @@ df.iloc('-3:-1').values //[[1,2],[3,4]]
 df.iloc('::-1').values //[[5,6],[3,4],[1,2]]
 
 df.iloc([true,false,false]).values // [[1,2]]
-df.iloc([false,false,false]) // new DataFrame([],[],['d',5])
-df.iloc(null,[false,false]) // new DataFrame([[],[],[]],['a','b','b'],[])
+df.iloc([false,false,false]) // new DataFrame([],{index:[],columns:['d',5]})
+df.iloc(null,[false,false]) // new DataFrame([[],[],[]],{index:['a','b','b'],columns:[]})
 
 df.loc(['a']).values // [[1,2]]
 df.loc('a').values // [1,2]
@@ -67,7 +67,7 @@ Jandas uses `.set()` or `.iset()` to change values inplace with a label- or posi
 const df = new DataFrame([[1,2],
                           [3,4],
                           [5,6]],
-           ['a','b','b'],['d',5])
+           {index:['a','b','b'],columns:['d',5]})
 let df2 = df.loc() // create a copy of df
 df2.iset(0,[3,3]) // df2.values equals to: [[3,3],[3,4],[5,6]]
 
@@ -87,50 +87,50 @@ df2.set('b',[[7,8],[9,10]]) // [[1,2],[7,8],[9,10]]
 //support adding new elements using label index
 df2 = df.loc()
 df2.set(null,'e',[1,2,3]) // new DataFrame([[1,2,1],[3,4,2],[5,6,3]],
-                          // ['a','b','b'],['d',5,'e'])
+                          // {index:['a','b','b'],columns:['d',5,'e']})
 ```
 Jandas implements two query functions `.b()` and `.q()` for Series and DataFrame. `.b()` returns a boolean index and `.q()` returns a DataFrame indexed by the boolean index. The query syntaxes are slightly different bewtween Series and DataFrame.
 
 ```TypeScript
-const ss = new Series([1,2,3],['a','b','b'],'kk')
+const ss = new Series([1,2,3],{index:['a','b','b'],name:'kk'})
 ss.b('x > 2') // output is: [false,false,true]
-ss.q('x>2') // output is: new Series([3],['b'],'kk')
+ss.q('x>2') // output is: new Series([3],{index:['b'],name:'kk'})
 ss.q('x>=1 && x<3').values // [1,2]
 
 const df = new DataFrame([[1,2,3],
                           [3,8,9],
                           [5,6,7]],
-        ['a','b','b'],['5',5,'e'])
+        {index:['a','b','b'],columns:['5',5,'e']})
 df.b('[ "5" ]>3') // output: [false,false,true]
 df.b('["a"]<=2',0) // [true,true,false]
 
 df.q('["5"]>3') //output: new DataFrame([[5,6,7]],
-                //        ['b'],['5',5,'e'])
+                //     {index:['b'],columns:['5',5,'e']})
 
 // pandas query function does not support numeric column names.
 df.q('[5]>3') //output: new DataFrame([[3,8,9],[5,6,7]],
-              //        ['b','b'],['5',5,'e'])
+              //        {index:['b','b'],columns:['5',5,'e']})
 
 df.q('[ "a"]>1 && ["a"]<3',null)
-// output: new DataFrame([[2],[8],[6]],['a','b','b'],[5])
+// output: new DataFrame([[2],[8],[6]],{index:['a','b','b'],columns:[5]})
 
 df.q('[ "a" ]>1','[ 5 ]>3') //output: new DataFrame([[8,9],[6,7]],
-                        //        ['b','b'],[5,'e'])
+                        //       {index:['b','b'],columns:[5,'e']})
 
 const dx = new DataFrame<number|string>(
                [[1,'e',3],
                 [3,'a',9],
                 [5,'c',7]],
-  ['a','b','b'],['5',5,'e'])
+  {index:['a','b','b'],columns:['5',5,'e']})
 
 dx.q('["a","c"].includes([5]) && ["e"]>7')
 //output: new DataFrame<number|string>([[3,'a',9]],
-//        ['b'],['5',5,'e'])
+//        {index:['b'],columns:['5',5,'e']})
 
 //use [element,] to represent an array with a single value.
 dx.q('["c",].includes([5])')
 //output: new DataFrame<number|string>([[5,'c',7]],
-// ['b'],['5',5,'e'])
+// {index:['b'],columns:['5',5,'e']})
 ```
 
 Jandas implements `.to_dict()` to convert a dataframe into an array of objects. It is similar to `.to_dict('records')` in Pandas. It also implements `.reset_index()` and `.reset_columns()` to reset index along the row and column axes.
@@ -142,7 +142,7 @@ Jandas implements `.iterrows()` and `.itercols` to iter over the rows and column
 const df = new DataFrame([[1,2],
                           [3,4],
                           [5,6]],
-           ['a','b','b'],['d',5])
+           {index:['a','b','b'],columns:['d',5]})
 
 df.iterrows((row,key,i)=>{
   console.log(row.values,key)
@@ -162,20 +162,20 @@ It implements `.groupby()` to group a DataFrame by values in rows or columns des
 let df = new DataFrame([[3,2,3],
                         [3,8,9],
                         [5,6,7]],
-    ['a','b','b'],['5',5,'e'])
+    {index:['a','b','b'],columns:['5',5,'e']})
 
 df.groupby().then((gp,k,i)=>{
     if(i===1){
         // gp: new DataFrame([[3,8,9],
         //                    [5,6,7]],
-        //        ['b','b'],['5',5,'e']))
+        //        {index:['b','b'],columns:['5',5,'e']})
         // k: 'b'
     }
 })
 df.groupby('a',0).then((gp,k,i)=>{
     if(i===1){
         // gp: new DataFrame([[2],[8],[6]],
-        //             ['a','b','b'],[5]))
+        //            {index:['a','b','b'],columns:[5]})
         // k: 2
     }
 })
@@ -184,13 +184,13 @@ df = new DataFrame([[3,8,3],
                     [3,8,9],
                     [3,6,7],
                     [9,8,7]],
-['a','b','b','c'],['5',5,'e'])
+{index:['a','b','b','c'],columns:['5',5,'e']})
 
 df.groupby(['5',5]).then((gp,k,i)=>{
     if(i===0){
         // gp: new DataFrame([[3,8,3],
         //                    [3,8,9]],
-        //         ['a','b'],['5',5,'e']))
+        //         {index:['a','b'],columns:['5',5,'e']})
         //k: [3,8]
     }
 })
@@ -198,18 +198,18 @@ df.groupby(['5',5]).then((gp,k,i)=>{
 ### Element-wise Operation
 Jandas implement `.op()` to perform element-wise operations on a Series or a DataFrame. Its first argument is a JavaScript string that defines the operation. Its second argument is optional and is another Series or DataFrame with the same shape and index (and column) as its caller. If the second argument is an array, it only needs to have the same shape.
 ```TypeScript
-let s1 = new Series([1,2,3],['a','b','c'])
-let s2 = new Series([1,2,3],['a','c','b'])
+let s1 = new Series([1,2,3],{index:['a','b','c']})
+let s2 = new Series([1,2,3],{index:['a','c','b']})
 s1.op('x*x').values // [1,4,9]
 s1.op('x+y',s2).values // [2,5,5]
 s1.op('x+y',s2.values).values // [2,4,6]
 
 let df = new DataFrame([[1,2],
-                        [3,4]],['a',5],
-                        ['b','c'])
+                        [3,4]],
+                {index:['a',5],columns:['b','c']})
 let df2 = new DataFrame([[1,2],
-                         [3,4]],[5,'a'],
-                         ['b','c'])
+                         [3,4]],
+                {index:[5,'a'],columns:['b','c']})
 df.op('x*x').values // [[1,4],[9,16]]
 df.op('x+y',df2).values //[[4,6],[4,6]]
 df.op('x+y',df2.values).values // [[2,4],[6,8]]
