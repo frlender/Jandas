@@ -31,6 +31,10 @@ Include the library in a script tag:
 ```
 The above statement insert an object named `jandas` in the global namespace. Users can access Jandas classes and functions through the properties of the object. The minified version can be found at `dist/jandas.min.js`.
 
+A CodePen playground is provided here:
+
+https://codepen.io/frlender/pen/WNaBvZa
+
 ## [API Reference](https://github.com/frlender/Jandas/blob/main/API.md)
 ## Getting Started
 ### Indexing
