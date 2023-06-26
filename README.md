@@ -10,7 +10,7 @@ Jandas is designed to have very similar indexing experience as  Pandas. It imple
 -   Avoid using objects as arguments.
 -   Query functions with a better syntax than Pandas.
 -   Negative number and range indexing.
--   Comprehensive overloads on indexing ensures proper return type in TypeScript.
+-   Comprehensive overloads on indexing ensuring proper return types in TypeScript.
  
 
 
@@ -31,7 +31,7 @@ Include the library in a script tag:
 ```
 The above statement insert an object named `jandas` in the global namespace. Users can access Jandas classes and functions through the properties of the object. The minified version can be found at `dist/jandas.min.js`.
 
-A CodePen playground is provided here:
+A CodePen **Playground** is provided here:
 
 https://codepen.io/frlender/pen/WNaBvZa
 
