@@ -134,6 +134,15 @@ const check = {
             if(idx.shape !== values.length)
             throw('The length of the series is not equal to the length of the array.')
         }
+    },
+    concat:{
+        index:{
+            uniq(index:Index){
+                // console.log('aaa',index)
+                if(!index.is_unique())
+                    throw('index of concatenated objects must be unique.')
+            }
+        }
     }
 }
 

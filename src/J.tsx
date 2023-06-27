@@ -4,6 +4,8 @@ import DataFrame from './DataFrame'
 import {range} from './util'
 
 
-
+// add playground
+// add merge
+// change examples in stackoverflow
 
 export {DataFrame, Series, Index, range}
