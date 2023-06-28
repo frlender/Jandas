@@ -12,7 +12,7 @@ import * as _ from 'lodash'
 function concat<T>(ssArr:Series<T>[]):Series<T>|DataFrame<T>
 function concat<T>(dfArr:DataFrame<T>[]):DataFrame<T>
 function concat<T>(ssArr:Series<T>[],axis:0|1):Series<T>|DataFrame<T>
-function concat<T>(dfArr:DataFrame<T>[],axis:0|1):Series<T>|DataFrame<T>
+function concat<T>(dfArr:DataFrame<T>[],axis:0|1):DataFrame<T>
 function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
     if(sdArr[0] instanceof Series<T>){
         let idx: ns_arr = []
@@ -102,7 +102,8 @@ function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
             dfArr.forEach(df=>{
                 idx = idx.concat(getIndex(df).values)
             })
-            const new_df = new DataFrame([],{index:idx})
+            console.log('aaaa',idx)
+            const new_df = new DataFrame(idx.map(x=>[]),{index:idx})
             return axis === 0 ?  new_df : new_df.transpose(true)
         }
         const new_df = new DataFrame(vals,{index:idx,columns:cols})
