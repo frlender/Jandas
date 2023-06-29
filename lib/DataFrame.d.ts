@@ -1,4 +1,4 @@
-import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions } from './interfaces';
+import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions } from './interfaces';
 import { GroupByThen } from './df_lib';
 import Index from './Index';
 import Series from './Series';
@@ -53,6 +53,8 @@ declare class DataFrame<T> {
     _insert(i1: number, l1: Index, v1: T[][], rpl: T[], name: number | string): void;
     insert(idx: number, val: T[], options: PushOptions): void;
     drop(labels: nsx, axis?: 0 | 1): DataFrame<T>;
+    set_index(label: number | string): DataFrame<T>;
+    set_columns(label: number | string): DataFrame<T>;
     reset_index(name?: string | number): DataFrame<T>;
     reset_columns(name?: string | number): DataFrame<T>;
     to_dict(axis?: 0 | 1): Obj<T>[];
@@ -69,6 +71,7 @@ declare class DataFrame<T> {
     sort_values(labels: nsx | null, options?: SortOptions): DataFrame<T>;
     op(opStr: string): DataFrame<T>;
     op(opStr: string, df: DataFrame<T> | T[][]): DataFrame<T>;
+    merge(df: DataFrame<T>, options?: MergeOptions): DataFrame<T>;
     _reduce_num(func: (a: number[]) => number | undefined, axis: 0 | 1): Series<number>;
     min(axis?: 0 | 1): Series<number>;
     max(axis?: 0 | 1): Series<number>;

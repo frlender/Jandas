@@ -1,5 +1,5 @@
 import {ns_arr,numx,nsx,locParam,locParamArr,Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
-SortOptions} from './interfaces'
+SortOptions,MergeOptions} from './interfaces'
 
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
@@ -8,7 +8,7 @@ import {vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex} from './cmm'
 
 import {GroupByThen,_sortIndices} from './df_lib'
-
+import { concat } from './util2'
 
 
 import Index from './Index'
@@ -462,6 +462,24 @@ class DataFrame<T>{
         }
     }
 
+    set_index(label:number|string){
+        check.set_index.label_uniq(label,this.columns)
+        const vec = this.loc(null,label).values as T[]
+        const df = this.drop(label)
+        //TODO: consider validate if vec is ns_arr
+        df.index = new Index(vec as ns_arr,label)
+        return df
+    }
+
+    set_columns(label:number|string){
+        check.set_index.label_uniq(label,this.index)
+        const vec = this.loc(label).values as T[]
+        const df = this.drop(label,0)
+        //TODO: consider validate if vec is ns_arr
+        df.columns = new Index(vec as ns_arr,label)
+        return df
+    }
+
     reset_index(name?:string|number){
         const df = new DataFrame(cp(this.values),
             {columns:this.columns.cp()})
@@ -747,6 +765,40 @@ class DataFrame<T>{
             })
             return new DataFrame(vals,{index:this.index,
                 columns:this.columns})
+        }
+    }
+
+    merge(df:DataFrame<T>,options?:MergeOptions):DataFrame<T>{
+        if(_.isUndefined(options))
+            options = {}
+        let {on, axis} = _.defaults(options,
+                {on:undefined,axis:1})
+        let leftDf: DataFrame<T>;
+        if(!_.isUndefined(on)){
+            if(axis === 1){
+                leftDf = this.set_index(on)
+                df = df.set_index(on)
+            }else{
+                leftDf = this.set_columns(on)
+                df = df.set_columns(on)
+            }
+        }else{
+            leftDf = this
+        }
+        // console.log('aaa',leftDf,df)
+        const res = concat([leftDf,df],axis)
+        // console.log('aaa',res)
+        
+        if(_.isUndefined(on))
+            return res
+        else{
+            if(axis === 1){
+                res.index.name = on
+                return res.reset_index()
+            }else{
+                res.columns.name = on
+                return res.reset_columns()
+            }
         }
     }
 

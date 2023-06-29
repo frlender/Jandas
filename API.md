@@ -122,6 +122,19 @@ drop(labels:nsx,axis:0|1=1): DataFrame<T>
 ```
 Drop rows or columns from the dataframe and returns a new dataframe. `labels` can be a string, a number or an array. `axis` determines the dimension to drop.
 
+**DataFrame.set_index**
+```TypeScript
+set_index(label:number|string): DataFrame<T>
+```
+Set the column designated by label as the index of the dataframe. `label` will be the name of the index.
+
+\
+**DataFrame.set_columns**
+```TypeScript
+set_columns(label:number|string): DataFrame<T>
+```
+Set the row designated by label as the columns of the dataframe. `label` will be the name of the columns.
+
 \
 **DataFrame.reset_index**
 ```TypeScript
@@ -190,8 +203,8 @@ A collection of functions to compute statistics on the `axis` dimension. The def
 **DataFrame.sort_values**
 ```TypeScript
 interface SortOptions{
-    ascending?: boolean
-    axis?: 0|1
+    ascending?: boolean // defaults to true
+    axis?: 0|1 // defaults to 1
 }
 sort_values(labels:nsx|null,options?:SortOptions): DataFrame<T>
 ```
@@ -204,6 +217,18 @@ op(opStr:string): DataFrame<T>
 op(opStr:string,df:DataFrame<T>|T[][]): DataFrame<T>
 ```
 Element-wise operation on a single dataframe or on two dataframes. If defined, `df` represents the second dataframe. It could be a dataframe or an array of array. If it is a dataframe, its index and column must contain the same elements as the first dataframe and both dataframes' indices and columns must be unique.  If it is an array of array, it must have the same shape as the first dataframe. `opStr` is a JavaScript string that defines the operation on a single element or a set of two elements of the dataframes. For operations on one dataframe, use `x` in `opStr` to represent the element in the dataframe. For operations on two dataframes, use `x` and `y` to represent the element in the first and second dataframes. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
+
+\
+**DataFrame.merge**
+```TypeScript
+interface MergeOptions{
+    on?: number|string|undefined // default: undefined
+    axis?: 0|1 // default: 1
+}
+merge(df:DataFrame<T>,options?:MergeOptions): DataFrame<T>
+```
+Merge one dataframe to another on their index or a designated column or row. If `axis` equals to 1, it merges the two dataframes by index (if `on` is undefined) or a column designated by `on`. If `axis` equals to 0, it merges the two dataframes by columns (if `on` is undefined) or a row designated by `on`. Currently, the merge function only supports **inner** join of two dataframes and the values in the index, row or column that is merged on must be **unique**. It roughly equals to: 
+`pandas.DataFrame.merge(...,how='inner',validate='one_to_one')`. 
 
 \
 **DataFrame.p**
@@ -409,3 +434,13 @@ function range(start:number,end:number):number[]
 function range(start:number,end:number,step:number):number[]
 ```
 Return an array of numbers defined by start, end and step.
+
+**concat**
+```TypeScript
+function concat<T>(ssArr:Series<T>[]):Series<T>|DataFrame<T>
+function concat<T>(dfArr:DataFrame<T>[]):DataFrame<T>
+function concat<T>(ssArr:Series<T>[],axis:0|1):Series<T>|DataFrame<T>
+function concat<T>(dfArr:DataFrame<T>[],axis:0|1):DataFrame<T>
+```
+Concatenate an array of series or dataFrames into a combined series or dataFrame. It supports only **inner** join of concatenated Series or DataFrames. That is, only the common elements in the indices of the concatenated series or dataframes are kept in the combined series or dataframe. Roughly equals to `pandas.concat(...,join='inner')`.
+

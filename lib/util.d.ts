@@ -43,6 +43,14 @@ declare const check: {
         index(idx1: Index, idx2: Index): void;
         values(idx: Index, values: any[]): void;
     };
+    set_index: {
+        label_uniq(label: number | string, index: Index): void;
+    };
+    concat: {
+        index: {
+            uniq(index: Index): void;
+        };
+    };
 };
 declare function _trans_rg(x: string, len: number): number[];
 declare function range(end: number): number[];

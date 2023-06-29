@@ -708,7 +708,84 @@ test('op',()=>{
     expect(()=>df.op('x+y',df2.values)).toThrow('equal')
     expect(()=>df.op('x+y',df2)).toThrow('equal')
 
+})
 
+test('set_index/columns',()=>{
+    let df = new DataFrame([[1, 2], [3, 4]],
+        {index:['a', 5],columns:['b', 'c']})
+    let df2 = df.set_index('b')
+    let de = new DataFrame([[2], [4]],
+        {index:new Index([1, 3],'b')
+        ,columns:['c']})
+    let tr = de.tr
+    expect(df2).toEqual(de)
+    
+    df2 = df.set_columns(5)
+    de = new DataFrame([[1,2]],{
+        index:['a'],columns:new Index([3,4],5)
+    })
+    // tr = de.tr
+    expect(df2).toEqual(de)
 
+    df = new DataFrame([[1, 2], [3, 4]],
+        {index:['a', 5],columns:['b', 'b']})
+    expect(()=>df.set_index('b')).toThrow('unique')
+})
 
+describe('merge',()=>{
+    test('merge by column',()=>{
+        let df = new DataFrame([[1, 2], 
+            [3, 4]],
+        {index:new Index(['a', 5],'nx'),columns:['b', 'c']})
+
+        let df2 = new DataFrame([[3, 2], 
+                    [1, 4]],
+        {index:[5, 'a'],columns:['b', 'c']})
+
+        let ff = df.merge(df2)
+        let de = new DataFrame([[1,2,1,4],[3,4,3,2]],
+        {index:['a',5],columns:['b','c','b','c']})
+        let tr = de.tr
+        expect(ff).toEqual(de)
+
+        ff = df.merge(df2,{on:'b'})
+        de = new DataFrame([[1,2,4],[3,4,2]],
+        {columns:['b','c','c']})
+        tr = de.tr
+        expect(ff).toEqual(de)
+
+        df2 = new DataFrame([[3, 2], 
+        [3, 4]],
+        {index:[5, 'a'],columns:['b', 'c']})
+        expect(()=>(df.merge(df2,{on:'b'}))).toThrow('unique')
+    })
+    
+    test('merge by row',()=>{
+        let df = new DataFrame([[1, 2], 
+            [3, 4]],
+        {index:new Index(['a', 5],'nx'),columns:['b', 'c']})
+        .transpose()
+
+        let df2 = new DataFrame([[3, 2], 
+                    [1, 4]],
+        {index:[5, 'a'],columns:['b', 'c']})
+        .transpose()
+
+        let ff = df.merge(df2,{axis:0})
+        let de = new DataFrame([[1,2,1,4],[3,4,3,2]],
+        {index:['a',5],columns:['b','c','b','c']}).transpose()
+        // let tr = de.tr
+        expect(ff).toEqual(de)
+
+        ff = df.merge(df2,{on:'b',axis:0})
+        de = new DataFrame([[1,2,4],[3,4,2]],
+        {columns:['b','c','c']}).transpose()
+        // tr = de.tr
+        expect(ff).toEqual(de)
+
+        df2 = new DataFrame([[3, 2], 
+        [3, 4]],
+        {index:[5, 'a'],columns:['b', 'c']}).transpose()
+        expect(()=>(df.merge(df2,{on:'b',axis:0}))).toThrow('unique')
+    })
 })

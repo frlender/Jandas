@@ -29,4 +29,8 @@ interface SortOptions {
     ascending?: boolean;
     axis?: 0 | 1;
 }
-export { ns_arr, numx, nsx, locParamArr, locParam, Obj, GP, SeriesInitOptions, DataFrameInitOptions, DataFrameArrInitOptions, SortOptions, PushOptions };
+interface MergeOptions {
+    on?: number | string;
+    axis?: 0 | 1;
+}
+export { ns_arr, numx, nsx, locParamArr, locParam, Obj, GP, SeriesInitOptions, DataFrameInitOptions, DataFrameArrInitOptions, SortOptions, PushOptions, MergeOptions };

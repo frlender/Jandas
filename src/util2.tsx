@@ -102,7 +102,7 @@ function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
             dfArr.forEach(df=>{
                 idx = idx.concat(getIndex(df).values)
             })
-            console.log('aaaa',idx)
+            // console.log('aaaa',idx)
             const new_df = new DataFrame(idx.map(x=>[]),{index:idx})
             return axis === 0 ?  new_df : new_df.transpose(true)
         }

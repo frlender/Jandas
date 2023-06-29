@@ -115,8 +115,8 @@ const check = {
             uniq(index:Index){
                 // console.log('aaa',index)
                 if(!index.is_unique())
-                    throw('index of the setted object is not unique. '
-                    +'the only allowed array index type is boolean[].')
+                    throw('Index of the setted object is not unique. '
+                    +'The only allowed array index type is boolean[].')
             }
         }
     },
@@ -133,6 +133,13 @@ const check = {
         values(idx:Index,values:any[]){
             if(idx.shape !== values.length)
             throw('The length of the series is not equal to the length of the array.')
+        }
+    },
+    set_index:{
+        label_uniq(label:number|string,index:Index){
+            const res = index.trans(label)
+            if(isArr(res))
+                throw('Label set in set_index function must be unique.')
         }
     },
     concat:{

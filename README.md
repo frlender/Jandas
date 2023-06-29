@@ -21,7 +21,7 @@ npm install jandas
 ```
 Then import Jandas classes and functions in TypeScript:
 ```TypeScript
-import {Series, DataFrame,Index,range} from 'jandas'
+import {Series, DataFrame,Index,range, concat} from 'jandas'
 ```
 
 \
