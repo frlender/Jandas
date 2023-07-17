@@ -45,7 +45,7 @@ interface SortOptions{
 }
 
 interface MergeOptions{
-    on?: number|string
+    on?: number|string|undefined
     axis?: 0|1
 }
 
