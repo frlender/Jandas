@@ -9,7 +9,7 @@ import * as _ from 'lodash'
 //     return arr.map(x=>cp(x))
 // }
 
-function concat<T>(ssArr:Series<T>[]):Series<T>|DataFrame<T>
+function concat<T>(ssArr:Series<T>[]):Series<T>
 function concat<T>(dfArr:DataFrame<T>[]):DataFrame<T>
 function concat<T>(ssArr:Series<T>[],axis:0|1):Series<T>|DataFrame<T>
 function concat<T>(dfArr:DataFrame<T>[],axis:0|1):DataFrame<T>

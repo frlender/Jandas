@@ -34,7 +34,7 @@ describe('concat',()=>{
     test('Series',()=>{
         let s1 = new Series([1,2],{index:['a','b'],name:'dd'})
         let s2 = new Series([3,4],{index:['a','b']})
-        let s12 = concat([s1,s2])
+        let s12: Series<number>|DataFrame<number> = concat([s1,s2])
         expect(s12).toEqual(
             new Series([1,2,3,4],{index:['a','b','a','b']})
         )
