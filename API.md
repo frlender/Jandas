@@ -38,7 +38,7 @@ constructor(arr:T[][]|Obj<T>[]): DataFrame<T>
 constructor(arr:T[][], options:DataFrameArrInitOptions): DataFrame<T>
 constructor(arr:Obj<T>[],options:DataFrameInitOptions): DataFrame<T>
 ```
-Construct a dataframe. The first argument could be a matrix in the form of an array of arrays or an array of objects with the same keys. The second argument is optional and used to set index or columns for the dataframe. If the first argument is an array of object, onlyh index can be set.
+Construct a dataframe. The first argument could be a matrix in the form of an array of arrays or an array of objects with the same keys. The second argument is optional and used to set index or columns for the dataframe. If the first argument is an array of objects, onlyh index can be set.
 
 \
 **DataFrame.transpose**
