@@ -102,7 +102,7 @@ interface PushOptions{
 }
 push(val:T[],options?: PushOptions): void
 ```
-Add an array `val` as a row or column to the end of the dataframe. `name` is the label for the array. `axis` determines the dimension to add the array. It is an in-place operation. 
+Add an array `val` as a row or column to the end of the dataframe. `name` is the label for the array. `axis` determines the dimension to add the array. It is an **inplace** operation. 
 
 \
 **DataFrame.insert**
@@ -113,7 +113,7 @@ interface PushOptions{
 }
 insert(idx:number,val:T[],options:PushOptions): void
 ```
-Insert an array `val` at designed position `idx` as a row or column in place. `idx` is position-based index. `name` is the label for the array. `axis` determines the dimension to insert the array.
+Insert an array `val` at designed position `idx` as a row or column in place. `idx` is position-based index. `name` is the label for the array. `axis` determines the dimension to insert the array. It is an **inplace** operation.
 
 \
 **DataFrame.drop**
