@@ -38,7 +38,7 @@ constructor(arr:T[][]|Obj<T>[]): DataFrame<T>
 constructor(arr:T[][], options:DataFrameArrInitOptions): DataFrame<T>
 constructor(arr:Obj<T>[],options:DataFrameInitOptions): DataFrame<T>
 ```
-Construct a dataframe. The first argument could be a matrix in the form of an array of arrays or an array of objects with the same keys. The second argument is optional and used to set index or columns for the dataframe. If the first argument is an array of objects, onlyh index can be set.
+Construct a dataframe. The first argument could be a matrix in the form of an array of arrays or an array of objects with the same keys. The second argument is optional and used to set index and columns for the dataframe. If the first argument is an array of objects, only index can be set.
 
 \
 **DataFrame.transpose**
@@ -256,7 +256,7 @@ interface SeriesInitOptions{
 constructor(values: T[]): Series<T>
 constructor(values: T[], options:SeriesInitOptions): Series<T>
 ```
-Constructs a series. The first argument is an array of values. The second optional argument is either the name or the index of the series depending on its type. When there are three arguments, the second will be the index of the series and the third the name.
+Constructs a series. The first argument is an array of values. The second argument is optional and used to set the name and the index of the series.
 
 \
 **Series.iloc**
