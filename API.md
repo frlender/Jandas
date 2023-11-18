@@ -358,7 +358,7 @@ unique(): T[]
 ```
 Return the unique values as an array.
 
-**Series.unique**
+**Series.value_counts**
 ```TypeScript
 value_counts(): Series<number>
 ```
