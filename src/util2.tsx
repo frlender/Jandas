@@ -14,7 +14,7 @@ function concat<T>(dfArr:DataFrame<T>[]):DataFrame<T>
 function concat<T>(ssArr:Series<T>[],axis:0|1):Series<T>|DataFrame<T>
 function concat<T>(dfArr:DataFrame<T>[],axis:0|1):DataFrame<T>
 function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
-    if(sdArr[0] instanceof Series<T>){
+    if(sdArr[0] instanceof Series){
         let idx: ns_arr = []
         const ssArr = sdArr as Series<T>[]
         if(axis===0){

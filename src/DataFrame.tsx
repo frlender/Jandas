@@ -717,7 +717,7 @@ class DataFrame<T>{
             return iloc(idx) as DataFrame<T>
         }else{
             const sub = loc(labels)
-            if(sub instanceof Series<T>){
+            if(sub instanceof Series){
                 const sub2 = sub as Series<T>
                 const idx = _sortIndices(sub2.values,
                     ascending)

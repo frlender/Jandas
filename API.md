@@ -352,6 +352,19 @@ op(opStr:string,ss:Series<T>|T[]): Series<T>
 Element-wise operation on a single series or on two series. If defined, `ss` represents the second series. It could be a series or an array. If it is a series, its index must contain the same elements as the first series and both series' indices must be unique.  If it is an array, it must have the same shape as the first series. `opStr` is a JavaScript string that defines the operation on a single element or a set of two elements of the series. For operations on one series, use `x` in `opStr` to represent the element in the series. For operations on two series, use `x` and `y` to represent the element in the first and second series. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
 
 \
+**Series.unique**
+```TypeScript
+unique(): T[]
+```
+Return the unique values as an array.
+
+**Series.unique**
+```TypeScript
+value_counts(): Series<number>
+```
+Return the counts of each unique value as a Series. The unique values will be the index of the Series. It is the same as pandas `value_counts()` function. Note only **number or string** values are supported by this method.
+
+\
 **Series.p**
 ```TypeScript
 p(): void

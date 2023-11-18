@@ -190,10 +190,23 @@ class Series<T>{
     }
 
     value_counts(){
-        const obj = _.countBy(this.values)
-        const pairs = _.toPairs(obj)
-        const df = new DataFrame(pairs,{columns:['value','count']})
-        return df.sort_values('count',{ascending:false})
+        // only work if values are string or number
+        const mp = new Map<number|string, number>
+        this.values.forEach((e=>{
+            const e2 = e as number|string
+            if(!mp.has(e2))
+                mp.set(e2,0)
+            mp.set(e2,mp.get(e2)!+1)
+        }))
+        const arr:(string | number)[][] = []
+        mp.forEach((count,key)=>{
+            arr.push([key,count])
+        })
+        const df = new DataFrame(arr,{columns:['value','count']})
+        const ss = df.sort_values('count',{ascending:false}).set_index('value').loc(null,'count') as Series<number>
+        ss.name = ''
+        ss.index.name = ''
+        return ss
     }
 
     op(opStr:string): Series<T>
@@ -222,6 +235,9 @@ class Series<T>{
             })
             return new Series(vals,this.index)
         }
+    }
+    unique(){
+        return _.uniq(this.values)
     }
     min(){
         return d3.min(this.values as number[])

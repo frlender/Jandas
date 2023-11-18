@@ -654,13 +654,13 @@ test('sort values',()=>{
 test('value_counts',()=>{
     let df = new DataFrame([[3, 8, 3], [3, 8, 9], [3, 6, 7], [9, 8, 7]],{index:['a', 'b', 'b', 'c'],columns:['5', 5, 'e']})
 
-    let df2 = (df.loc(null,'5') as Series<number>)
+    let ss = (df.loc(null,'5') as Series<number>)
         .value_counts()
-    expect((df2.loc(null,'count') as Series<number>).values).toEqual([3,1])
+    expect(ss.values).toEqual([3,1])
 
-    df2 = (df.loc(null,'e') as Series<number>)
+    ss = (df.loc(null,'e') as Series<number>)
         .value_counts()
-    expect((df2.loc(null,'count') as Series<number>).values).toEqual([2,1,1])
+    expect(ss.values).toEqual([2,1,1])
 
 })
 

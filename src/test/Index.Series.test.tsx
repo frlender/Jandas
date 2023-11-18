@@ -429,3 +429,23 @@ test('op',()=>{
     expect(()=>s1.op('x+y',s2)).toThrow('match')
 
 })
+
+test('unique',()=>{
+    let s1 = new Series([1,2,2],{index:['a','b','c']})
+    expect(s1.unique()).toEqual([1,2])
+    let s2 = new Series(['a','a',2],{index:['a','b','c']})
+    expect(s2.unique()).toEqual(['a',2])
+
+})
+
+test('value_counts',()=>{
+    let s1 = new Series([1,3,3],{index:['a','b','c']})
+    expect(s1.value_counts()).toEqual(new Series(
+        [2,1],{index:[3,1]}
+    ))
+    let s2 = new Series(['a','a','b','b',2],
+        {index:['a','b','c','d','e']})
+    expect(s2.value_counts()).toEqual(new Series(
+        [2,2,1],{index:['a','b',2]}
+    ))
+})
