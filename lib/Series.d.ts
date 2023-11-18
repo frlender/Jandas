@@ -1,6 +1,5 @@
 import { ns_arr, numx, nsx, locParamArr, SeriesInitOptions } from './interfaces';
 import Index from './Index';
-import DataFrame from './DataFrame';
 declare class Series<T> {
     values: T[];
     _index: Index;
@@ -30,9 +29,10 @@ declare class Series<T> {
     b(expr: string): boolean[];
     q(expr: string): Series<T>;
     sort_values(ascending?: boolean): Series<T>;
-    value_counts(): DataFrame<string | number>;
+    value_counts(): Series<number>;
     op(opStr: string): Series<T>;
     op(opStr: string, ss: Series<T> | T[]): Series<T>;
+    unique(): T[];
     min(): number | undefined;
     max(): number | undefined;
     sum(): number;
