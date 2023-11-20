@@ -449,3 +449,13 @@ test('value_counts',()=>{
         [2,2,1],{index:['a','b',2]}
     ))
 })
+
+test('rank',()=>{
+    let s1 = new Series([1,3,3],{index:['a','b','c']})
+    expect(s1.rank()).toEqual(new Series(
+        [1,2.5,2.5], {index:s1.index}
+    ))
+    expect(s1.rank({'method':'min'})).toEqual(new Series(
+        [1,2,2], {index:s1.index}
+    ))
+})

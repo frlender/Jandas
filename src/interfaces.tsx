@@ -49,8 +49,15 @@ interface MergeOptions{
     axis?: 0|1
 }
 
+interface SeriesRankOptions{
+    method?: 'average' | 'min' | 'max' | 'ordinal' | 'dense'
+    missing?: 'last' | 'first' | 'remove'
+    encoding?: (string|number|null|undefined)[]
+}
+
 export {ns_arr,numx,nsx,locParamArr,locParam,
     Obj,GP,SeriesInitOptions,
     DataFrameInitOptions,
     DataFrameArrInitOptions,
-    SortOptions,PushOptions,MergeOptions}
+    SortOptions,PushOptions,MergeOptions,
+    SeriesRankOptions}

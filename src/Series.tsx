@@ -5,7 +5,8 @@ import {vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex} from './cmm'
 
 
-import {ns_arr,numx,nsx,locParamArr,SeriesInitOptions} from './interfaces'
+import {ns_arr,numx,nsx,locParamArr,SeriesInitOptions,
+ SeriesRankOptions} from './interfaces'
 
 import { _sortIndices } from './df_lib'
 import Index from './Index'
@@ -13,7 +14,7 @@ import DataFrame from './DataFrame'
 
 import * as d3 from 'd3-array'
 import * as _ from 'lodash'
-
+import ranks = require('@stdlib/stats-ranks')
 
 class Series<T>{
     values: T[]
@@ -238,6 +239,13 @@ class Series<T>{
     }
     unique(){
         return _.uniq(this.values)
+    }
+    rank(options?:SeriesRankOptions){
+        if(_.isUndefined(options))
+        options = {}
+        const vals = ranks(this.values as number[],options)
+        return new Series(vals,
+            {index:this.index,name:this.name})
     }
     min(){
         return d3.min(this.values as number[])
