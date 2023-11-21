@@ -1,4 +1,4 @@
-import { ns_arr, numx, nsx, locParamArr, SeriesInitOptions } from './interfaces';
+import { ns_arr, numx, nsx, locParamArr, SeriesInitOptions, SeriesRankOptions } from './interfaces';
 import Index from './Index';
 declare class Series<T> {
     values: T[];
@@ -33,6 +33,7 @@ declare class Series<T> {
     op(opStr: string): Series<T>;
     op(opStr: string, ss: Series<T> | T[]): Series<T>;
     unique(): T[];
+    rank(options?: SeriesRankOptions): Series<number>;
     min(): number | undefined;
     max(): number | undefined;
     sum(): number;
