@@ -8,6 +8,5 @@ import {concat} from './util2'
 // drop_duplicates
 // isna?
 // explore generic types in merge and concat ?
-// rank
 
 export {DataFrame, Series, Index, range, concat}

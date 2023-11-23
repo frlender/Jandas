@@ -231,6 +231,20 @@ Merge one dataframe to another on their index or a designated column or row. If 
 `pandas.DataFrame.merge(...,how='inner',validate='one_to_one')`. 
 
 \
+**DataFrame.rank**
+```TypeScript
+interface DataFrameRankOptions{
+    method?: 'average' | 'min' | 'max' | 'ordinal' | 'dense'
+    missing?: 'last' | 'first' | 'remove'
+    encoding?: (string|number|null|undefined)[]
+    axis?: 0|1
+}
+rank(options?:DataFrameRankOptions): DataFrame<number>
+```
+Return ranks along `axis` (defaults to 0).  The `method` parameter determines how the ranks are calculated. It defaults to `'average'`. The underlying ranking function is implemented by the `ranks` function in the [@stdlib/stats-ranks](https://github.com/stdlib-js/stats-ranks) package. Please check its homepage for parameter usage.
+
+
+\
 **DataFrame.p**
 ```TypeScript
 p(): void
@@ -363,6 +377,17 @@ Return the unique values as an array.
 value_counts(): Series<number>
 ```
 Return the counts of each unique value as a Series. The unique values will be the index of the Series. It is the same as pandas `value_counts()` function. Note only **number or string** values are supported by this method.
+
+**Series.rank**
+```TypeScript
+interface SeriesRankOptions{
+    method?: 'average' | 'min' | 'max' | 'ordinal' | 'dense'
+    missing?: 'last' | 'first' | 'remove'
+    encoding?: (string|number|null|undefined)[]
+}
+rank(options?:SeriesRankOptions): Series<number>
+```
+Return the ranks of the values in the Series. The `method` parameter determines how the ranks are calculated. It defaults to `'average'`. The underlying ranking function is implemented by the `ranks` function in the [@stdlib/stats-ranks](https://github.com/stdlib-js/stats-ranks) package. Please check its homepage for parameter usage.
 
 \
 **Series.p**

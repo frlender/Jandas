@@ -1,5 +1,5 @@
 import {ns_arr,numx,nsx,locParam,locParamArr,Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
-SortOptions,MergeOptions} from './interfaces'
+SortOptions,MergeOptions,DataFrameRankOptions} from './interfaces'
 
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
@@ -16,6 +16,7 @@ import Series from './Series'
 
 import * as d3 from 'd3-array'
 import * as _ from 'lodash'
+import ranks = require('@stdlib/stats-ranks')
 
 
 class DataFrame<T>{
@@ -801,7 +802,25 @@ class DataFrame<T>{
             }
         }
     }
-
+    rank(options?:DataFrameRankOptions){
+        if(_.isUndefined(options))
+            options = {}
+        options = _.defaults(options,{axis:0})
+        if(options.axis === 0){
+            const rankMat = this.tr.map(vec=>
+                ranks(vec as number[],options))
+            const df = new DataFrame(rankMat,{index:this.columns.cp(),
+                columns:this.index.cp()})
+            df.transpose(true)
+            return df
+        }else{
+            const rankMat = this.values.map(vec=>
+                ranks(vec as number[],options))
+            const df = new DataFrame(rankMat,{index:this.index.cp(),
+                columns:this.columns.cp()})
+            return df
+        }
+    }
     _reduce_num(func:(a:number[])=>number|undefined,axis:0|1){
         if(axis===1){
             const vals = this.values.map(row=>func(row as number[])) as number[]

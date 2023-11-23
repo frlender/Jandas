@@ -55,9 +55,13 @@ interface SeriesRankOptions{
     encoding?: (string|number|null|undefined)[]
 }
 
+interface DataFrameRankOptions extends SeriesRankOptions{
+    axis?: 0|1
+}
+
 export {ns_arr,numx,nsx,locParamArr,locParam,
     Obj,GP,SeriesInitOptions,
     DataFrameInitOptions,
     DataFrameArrInitOptions,
     SortOptions,PushOptions,MergeOptions,
-    SeriesRankOptions}
+    SeriesRankOptions,DataFrameRankOptions}

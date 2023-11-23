@@ -789,3 +789,31 @@ describe('merge',()=>{
         expect(()=>(df.merge(df2,{on:'b',axis:0}))).toThrow('unique')
     })
 })
+
+test('rank',()=>{
+    let df2 = new DataFrame([[3, 2], 
+        [1, 4]],    
+    {index:[5, 'a'],columns:['b', 'c']})
+    let target = new DataFrame([[2,1],[1,2]],
+        {index:[5, 'a'],columns:['b', 'c']})
+    expect(df2.rank({axis:1})).toEqual(target)
+    expect(df2.rank()).toEqual(target.transpose(true).transpose(true))
+    expect(df2).toEqual(new DataFrame([[3, 2], 
+        [1, 4]],    
+    {index:[5, 'a'],columns:['b', 'c']})
+        .transpose(true).transpose(true))
+
+    df2 = new DataFrame([[3, 3], 
+        [1, 4]],    
+    {index:[5, 'a'],columns:['b', 'c']})
+    expect(df2.rank({axis:1})).toEqual(
+        new DataFrame([[1.5, 1.5], [1, 2]],    
+    {index:[5, 'a'],columns:['b', 'c']}))
+    expect(df2.rank({axis:1,method:'max'})).toEqual(
+        new DataFrame([[2, 2], [1, 2]],    
+    {index:[5, 'a'],columns:['b', 'c']}))
+    expect(df2.rank({axis:1,method:'ordinal'})).toEqual(
+        new DataFrame([[1,2], [1, 2]],    
+    {index:[5, 'a'],columns:['b', 'c']}))
+    
+})

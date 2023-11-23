@@ -455,6 +455,7 @@ test('rank',()=>{
     expect(s1.rank()).toEqual(new Series(
         [1,2.5,2.5], {index:s1.index}
     ))
+    expect(s1).toEqual(new Series([1,3,3],{index:['a','b','c']}))
     expect(s1.rank({'method':'min'})).toEqual(new Series(
         [1,2,2], {index:s1.index}
     ))

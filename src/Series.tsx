@@ -242,7 +242,7 @@ class Series<T>{
     }
     rank(options?:SeriesRankOptions){
         if(_.isUndefined(options))
-        options = {}
+            options = {}
         const vals = ranks(this.values as number[],options)
         return new Series(vals,
             {index:this.index,name:this.name})
