@@ -1,4 +1,4 @@
-import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions } from './interfaces';
+import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions, DataFrameRankOptions } from './interfaces';
 import { GroupByThen } from './df_lib';
 import Index from './Index';
 import Series from './Series';
@@ -72,6 +72,7 @@ declare class DataFrame<T> {
     op(opStr: string): DataFrame<T>;
     op(opStr: string, df: DataFrame<T> | T[][]): DataFrame<T>;
     merge(df: DataFrame<T>, options?: MergeOptions): DataFrame<T>;
+    rank(options?: DataFrameRankOptions): DataFrame<number>;
     _reduce_num(func: (a: number[]) => number | undefined, axis: 0 | 1): Series<number>;
     min(axis?: 0 | 1): Series<number>;
     max(axis?: 0 | 1): Series<number>;
