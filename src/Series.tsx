@@ -12,7 +12,7 @@ import { _sortIndices } from './df_lib'
 import Index from './Index'
 import DataFrame from './DataFrame'
 
-import * as d3 from 'd3-array'
+import * as stat from 'simple-statistics'
 import * as _ from 'lodash'
 import ranks = require('@stdlib/stats-ranks')
 
@@ -248,31 +248,31 @@ class Series<T>{
             {index:this.index,name:this.name})
     }
     min(){
-        return d3.min(this.values as number[])
+        return stat.min(this.values as number[])
     }
     max(){
-        return d3.max(this.values as number[])
+        return stat.max(this.values as number[])
     }
     sum(){
-        return d3.sum(this.values as number[])
+        return stat.sum(this.values as number[])
     }
     mean(){
-        return d3.mean(this.values as number[])
+        return stat.mean(this.values as number[])
     }
     mode(){
-        return d3.mode(this.values as number[])
+        return stat.mode(this.values as number[])
     }
     median(){
-        return d3.median(this.values as number[])
+        return stat.median(this.values as number[])
     }
     // cumsum(){
     //     return d3.cumsum(this.values as number[])
     // }
     std(){
-        return d3.deviation(this.values as number[])
+        return stat.sampleStandardDeviation(this.values as number[])
     }
     var(){
-        return d3.variance(this.values as number[])
+        return stat.sampleVariance(this.values as number[])
     }
 }
 

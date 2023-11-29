@@ -1,6 +1,6 @@
 {
   "name": "jandas",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "A very much Pandas-like JavaScript library for data science",
   "main": "lib/J.js",
   "scripts": {
@@ -12,7 +12,6 @@
   "author": "Qiaonan Duan",
   "license": "ISC",
   "devDependencies": {
-    "@types/d3-array": "^3.0.4",
     "@types/jest": "^29.4.0",
     "@types/lodash": "^4.14.191",
     "esbuild": "0.17.5",
@@ -38,7 +37,7 @@
   ],
   "dependencies": {
     "@stdlib/stats-ranks": "^0.1.0",
-    "d3-array": "^3.2.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "simple-statistics": "^7.8.3"
   }
 }

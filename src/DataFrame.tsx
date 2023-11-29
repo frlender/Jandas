@@ -14,7 +14,7 @@ import { concat } from './util2'
 import Index from './Index'
 import Series from './Series'
 
-import * as d3 from 'd3-array'
+import * as stat from 'simple-statistics'
 import * as _ from 'lodash'
 import ranks = require('@stdlib/stats-ranks')
 
@@ -831,28 +831,28 @@ class DataFrame<T>{
         }
     }
     min(axis:0|1=0){
-        return this._reduce_num(d3.min,axis)
+        return this._reduce_num(stat.min,axis)
     }
     max(axis:0|1=0){
-        return this._reduce_num(d3.max,axis)
+        return this._reduce_num(stat.max,axis)
     }
     sum(axis:0|1=0){
-        return this._reduce_num(d3.sum,axis)
+        return this._reduce_num(stat.sum,axis)
     }
     mean(axis:0|1=0){
-        return this._reduce_num(d3.mean,axis)
+        return this._reduce_num(stat.mean,axis)
     }
     median(axis:0|1=0){
-        return this._reduce_num(d3.median,axis)
+        return this._reduce_num(stat.median,axis)
     }
     std(axis:0|1=0){
-        return this._reduce_num(d3.deviation,axis)
+        return this._reduce_num(stat.sampleStandardDeviation,axis)
     }
     var(axis:0|1=0){
-        return this._reduce_num(d3.variance,axis)
+        return this._reduce_num(stat.sampleVariance,axis)
     }
     mode(axis:0|1=0){
-        return this._reduce_num(d3.mode,axis)
+        return this._reduce_num(stat.mode,axis)
     }
 }
 

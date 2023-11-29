@@ -197,7 +197,8 @@ Check [Getting Started](https://github.com/frlender/Jandas#iteration) for exampl
 min(axis:0|1=0): Series<number>
 // other functions are similarly defined
 ```
-A collection of functions to compute statistics on the `axis` dimension. The default is to compute statistics for each row. They are implemented as wrappers around the corresponding functions in the [d3.array](https://github.com/d3/d3-array) package. These functions are intended to use for DataFrame with numeric values only.
+A collection of functions to compute statistics on the `axis` dimension. The default is to compute statistics for each row. They are implemented as wrappers around the corresponding functions in the [simple-statistics](https://github.com/simple-statistics/simple-statistics) package. The `std` and `var` functions are implemented using the `sampleStandardDeviation` and `sampleVariance` functions in the package.
+These functions are intended to use for DataFrame with numeric values only.
 
 \
 **DataFrame.sort_values**
@@ -348,7 +349,7 @@ Return a new dataframe based on the query expression `expr`. The syntax of `expr
 min(): number|undefined
 // other functions are similarly defined
 ```
-A collection of functions to compute statistics on the Series. They are implemented as wrappers around the corresponding functions in the [d3.array](https://github.com/d3/d3-array) package.
+A collection of functions to compute statistics on the Series. They are implemented as wrappers around the corresponding functions in the [simple-statistics](https://github.com/simple-statistics/simple-statistics) package. The `std` and `var` functions are implemented using the `sampleStandardDeviation` and `sampleVariance` functions in the package. These functions are intended to use for Series with numeric values only.
 
 \
 **Series.sort_values**

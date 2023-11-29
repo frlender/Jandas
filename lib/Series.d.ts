@@ -34,13 +34,13 @@ declare class Series<T> {
     op(opStr: string, ss: Series<T> | T[]): Series<T>;
     unique(): T[];
     rank(options?: SeriesRankOptions): Series<number>;
-    min(): number | undefined;
-    max(): number | undefined;
+    min(): number;
+    max(): number;
     sum(): number;
-    mean(): number | undefined;
+    mean(): number;
     mode(): number;
-    median(): number | undefined;
-    std(): number | undefined;
-    var(): number | undefined;
+    median(): number;
+    std(): number;
+    var(): number;
 }
 export default Series;
