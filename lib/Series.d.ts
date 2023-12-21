@@ -42,5 +42,13 @@ declare class Series<T> {
     median(): number;
     std(): number;
     var(): number;
+    to_raw(copy?: boolean): {
+        values: T[];
+        name: string | number;
+        index: {
+            values: (string | number)[];
+            name: string | number;
+        };
+    };
 }
 export default Series;

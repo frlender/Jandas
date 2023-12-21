@@ -19,5 +19,9 @@ declare class Index {
     check(idx: number | string): void;
     trans(index: number | string): numx;
     trans(index: ns_arr): number[];
+    to_raw(copy?: boolean): {
+        values: (string | number)[];
+        name: string | number;
+    };
 }
 export default Index;
