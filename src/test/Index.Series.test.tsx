@@ -1,5 +1,6 @@
 import { expect, test, describe} from '@jest/globals';
 import {Series,Index} from '../J'
+import { from_raw } from '../util2';
 
 const ss = new Series([1,2,3,4,5],{index:['a','b','c','d','e']})
 const sn = new Series([1,2,3,4,5],{index:['a','b','b','d','e'],name:'k'})
@@ -459,4 +460,17 @@ test('rank',()=>{
     expect(s1.rank({'method':'min'})).toEqual(new Series(
         [1,2,2], {index:s1.index}
     ))
+})
+
+test('to_raw, from_raw',()=>{
+    const s1 = new Index(['a','b','b'])
+    const s1_raw = s1.to_raw()
+    expect(s1_raw.values).toEqual(s1.values)
+    expect(s1_raw.name).toEqual(s1.name)
+
+    const s2 = new Series([1,2,3],{name:'e',index:s1})
+    const s2_raw = s2.to_raw()
+    expect(s2_raw.values).toEqual(s2.values)
+    expect(s2_raw.name).toEqual(s2.name)
+    expect(from_raw(s2_raw)).toEqual(s2)
 })

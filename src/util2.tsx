@@ -1,6 +1,7 @@
 import Series from './Series'
 import DataFrame from './DataFrame'
-import { ns_arr } from './interfaces'
+import Index from './Index'
+import { ns_arr, IndexRaw, SeriesRaw } from './interfaces'
 import {check} from './util'
 import * as _ from 'lodash'
 // import {cp} from './cmm'
@@ -111,4 +112,15 @@ function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
     }
 }
 
-export {concat}
+
+function from_raw<T>(data:IndexRaw|SeriesRaw<T>):Index|Series<T>{
+    if(_.hasIn(data,'index') && _.hasIn(data,'name'))
+        return new Series(data.values as T[],
+            {name:data.name,
+            index:from_raw((data as SeriesRaw<T>).index as IndexRaw) as Index})
+    else
+        return new Index((data as IndexRaw).values,
+            data.name)
+}
+
+export {concat,from_raw}

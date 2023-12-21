@@ -59,9 +59,24 @@ interface DataFrameRankOptions extends SeriesRankOptions{
     axis?: 0|1
 }
 
+interface IndexRaw{
+    values: (string | number)[];
+    name: string | number;
+}
+
+interface SeriesRaw<T>{
+    values: T[];
+    name: string | number;
+    index: {
+        values: (string | number)[];
+        name: string | number;
+    };
+}
+
 export {ns_arr,numx,nsx,locParamArr,locParam,
     Obj,GP,SeriesInitOptions,
     DataFrameInitOptions,
     DataFrameArrInitOptions,
     SortOptions,PushOptions,MergeOptions,
-    SeriesRankOptions,DataFrameRankOptions}
+    SeriesRankOptions,DataFrameRankOptions,
+    IndexRaw, SeriesRaw}

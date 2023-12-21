@@ -1,6 +1,7 @@
 import {cp} from './cmm'
 import {check} from './util'
 import { ns_arr,numx,nsx } from './interfaces'
+import * as _ from 'lodash'
 
 class Index{
     private __values!:ns_arr // original values
@@ -111,6 +112,14 @@ class Index{
             })
             return arr
         }
+    }
+
+    to_raw(copy?:boolean){
+        copy = _.isUndefined(copy) ? true : copy
+        if(copy)
+            return {values:cp(this.__values),name:this.name}
+        else
+            return {values:this.__values,name:this.name}
     }
 }
 

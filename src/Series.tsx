@@ -274,6 +274,18 @@ class Series<T>{
     var(){
         return stat.sampleVariance(this.values as number[])
     }
+
+    to_raw(copy?:boolean){
+        copy = _.isUndefined(copy) ? true : copy
+        if(copy)
+            return {values:cp(this.values),
+                name:this.name,
+                index:this.index.to_raw()}
+        else
+            return {values:this.values,
+                name:this.name,
+                index:this.index.to_raw(copy)}
+    }
 }
 
 export default Series
