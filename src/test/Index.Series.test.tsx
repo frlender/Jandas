@@ -375,6 +375,8 @@ test('q',()=>{
 
     let sx = new Series(['a','b','b'],{index:['a','b','b']})
     expect(sx.q('x==="b"')).toEqual(new Series(['b','b'],{index:['b','b']}))
+    expect(sx.query('x==="b"')).toEqual(new Series(['b','b'],{index:['b','b']}))
+
 })
 
 test('stats',()=>{
@@ -463,14 +465,19 @@ test('rank',()=>{
 })
 
 test('to_raw, from_raw',()=>{
-    const s1 = new Index(['a','b','b'])
-    const s1_raw = s1.to_raw()
+    let s1 = new Index(['a','b','b'])
+    let s1_raw = s1.to_raw()
     expect(s1_raw.values).toEqual(s1.values)
     expect(s1_raw.name).toEqual(s1.name)
 
-    const s2 = new Series([1,2,3],{name:'e',index:s1})
-    const s2_raw = s2.to_raw()
+    let s2 = new Series([1,2,3],{name:'e',index:s1})
+    let s2_raw = s2.to_raw()
     expect(s2_raw.values).toEqual(s2.values)
     expect(s2_raw.name).toEqual(s2.name)
     expect(from_raw(s2_raw)).toEqual(s2)
+
+    s2_raw = s2.to_raw(false)
+    s2.set('b',5)
+    expect(from_raw(s2_raw).values).toEqual([1,5,5])
+
 })

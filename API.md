@@ -150,11 +150,26 @@ reset_columns(name?:string|number): DataFrame<T>
 Reset the columns as a row in the dataframe. `name` changes the default name of the columns and use it as the label of the index.
 
 \
+**DataFrame.bool**
+```TypeScript
+bool(expr:string,axis:0|1=1): boolean[]
+```
+Alias for `DataFrame.b`.
+
+\
 **DataFrame.b**
 ```TypeScript
 b(expr:string,axis:0|1=1): boolean[]
 ```
 Return an boolean array based on the evaluation of expression `expr`. `axis` determines the dimension on which to evaluate the expression. The syntax of `expr` is plain JavaScript except that it uses `[label]` to refer a row or column. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+
+\
+**DataFrame.query**
+```TypeScript
+query(col_expr:string): DataFrame<T>
+query(row_expr:null|string,col_expr:null|string): DataFrame<T>
+```
+Alias for `DataFrame.q`.
 
 \
 **DataFrame.q**
@@ -258,6 +273,13 @@ Print the dataframe in console. It uses console.table to print the dataframe as 
 to_dict(axis:0|1=1):Obj<T>[]
 ```
 Return the dataframe as an array of objects. `axis` determines on which dimension to construct the array of objects. When `axis` is equal to 1, the function is the same as `DataFrame.to_dict(orient="records")` in Pandas.
+
+\
+**DataFrame.to_raw**
+```TypeScript
+to_raw(copy:boolean=true):DataFrameRaw<T>
+```
+Return the dataframe as a plain object of key-value pairs. The returned object can be copied using the `structuredClone` function or saved in the local storage. The dataframe can be reconstructed from a raw copy using the `jandas.from_raw` utility function. `copy` determines whether create a new copy of values in the raw copy or just pass by reference.
 
 
 
@@ -397,6 +419,13 @@ p(): void
 ```
 Print the series in console.
 
+\
+**Series.to_raw**
+```TypeScript
+to_raw(copy:boolean=true):SeriesRaw<T>
+```
+Return the series as a plain object of key-value pairs. The returned object can be copied using the `structuredClone` function or saved in the local storage. The series can be reconstructed from a raw copy using the `jandas.from_raw` utility function. `copy` determines whether create a new copy of values in the raw copy or just pass by reference.
+
 
 ### Index
 **Index.constructor**
@@ -464,6 +493,13 @@ trans(index:ns_arr): number[]
 ```
 Translate an array of labels into an array of numeric positions. It will throw error if `vals` includes labels not in the index.
 
+\
+**Index.to_raw**
+```TypeScript
+to_raw(copy:boolean=true):IndexRaw
+```
+Return the index as a plain object of key-value pairs. The returned object can be copied using the `structuredClone` function or saved in the local storage. The index can be reconstructed from a raw copy using the `jandas.from_raw` utility function. `copy` determines whether create a new copy of values in the raw copy or just pass by reference.
+
 
 ### Utility
 **range**
@@ -483,3 +519,10 @@ function concat<T>(dfArr:DataFrame<T>[],axis:0|1):DataFrame<T>
 ```
 Concatenate an array of series or dataFrames into a combined series or dataFrame. It supports only **inner** join of concatenated Series or DataFrames. That is, only the common elements in the indices of the concatenated series or dataframes are kept in the combined series or dataframe. Roughly equals to `pandas.concat(...,join='inner')`.
 
+**from_raw**
+```TypeScript
+function from_raw<T>(data:IndexRaw):Index
+function from_raw<T>(data:SeriesRaw<T>):Series<T>
+function from_raw<T>(data:DataFrameRaw<T>):DataFrame<T>
+```
+Create an index, a series or a dataframe from its raw copy. See the `to_raw` method for detailed usage.

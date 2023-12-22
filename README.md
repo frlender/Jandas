@@ -93,7 +93,7 @@ df2 = df.loc()
 df2.set(null,'e',[1,2,3]) // new DataFrame([[1,2,1],[3,4,2],[5,6,3]],
                           // {index:['a','b','b'],columns:['d',5,'e']})
 ```
-Jandas implements two query functions `.b()` and `.q()` for Series and DataFrame. `.b()` returns a boolean index and `.q()` returns a DataFrame indexed by the boolean index. The query syntaxes are slightly different bewtween Series and DataFrame.
+Jandas implements two query functions `.b()` and `.q()` for Series and DataFrame. `.b()` returns a boolean index and `.q()` returns a DataFrame matching the query string. The query syntaxes are slightly different bewtween Series and DataFrame. `.bool()` and `.query()` are implemented as alias for `.b()` and `.q()`
 
 ```TypeScript
 const ss = new Series([1,2,3],{index:['a','b','b'],name:'kk'})
@@ -218,3 +218,5 @@ df.op('x*x').values // [[1,4],[9,16]]
 df.op('x+y',df2).values //[[4,6],[4,6]]
 df.op('x+y',df2.values).values // [[2,4],[6,8]]
 ```
+### Raw copy
+An Index, Series or DataFrame object created by Jandas cannot be copied using the `structuredClone` function or saved in the local storage as it has proxy methods. So each class has a `to_raw` method implemented to create a raw copy that can be cloned or saved. A `from_raw` utility function is provided to reconstruct the original object from a raw copy.

@@ -1,7 +1,7 @@
 import Series from './Series'
 import DataFrame from './DataFrame'
 import Index from './Index'
-import { ns_arr, IndexRaw, SeriesRaw } from './interfaces'
+import { ns_arr, IndexRaw, SeriesRaw, DataFrameRaw } from './interfaces'
 import {check} from './util'
 import * as _ from 'lodash'
 // import {cp} from './cmm'
@@ -112,15 +112,25 @@ function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
     }
 }
 
-
-function from_raw<T>(data:IndexRaw|SeriesRaw<T>):Index|Series<T>{
-    if(_.hasIn(data,'index') && _.hasIn(data,'name'))
-        return new Series(data.values as T[],
-            {name:data.name,
-            index:from_raw((data as SeriesRaw<T>).index as IndexRaw) as Index})
-    else
-        return new Index((data as IndexRaw).values,
-            data.name)
+function from_raw<T>(data:IndexRaw):Index
+function from_raw<T>(data:SeriesRaw<T>):Series<T>
+function from_raw<T>(data:DataFrameRaw<T>):DataFrame<T>
+function from_raw<T>(data:IndexRaw|SeriesRaw<T>|DataFrameRaw<T>){
+    if(_.hasIn(data,'index') && _.hasIn(data,'name')){
+        const data2 = data as SeriesRaw<T>
+        return new Series(data2.values,
+                    {name:data2.name,
+                    index:from_raw(data2.index)})
+    }else if(!_.hasIn(data,'columns')){
+        const data2 = data as IndexRaw
+        return new Index(data2.values,data2.name)
+    }else{
+        const data2 = data as DataFrameRaw<T>
+        return new DataFrame(data2.values,{
+            index: from_raw(data2.index),
+            columns: from_raw(data2.columns)
+        })
+    }
 }
 
 export {concat,from_raw}

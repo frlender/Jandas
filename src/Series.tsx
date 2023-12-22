@@ -176,10 +176,16 @@ class Series<T>{
         return this.iloc(new_idx)
     }
 
+    bool(expr:string){
+        return this.b(expr)
+    }
     b(expr:string){
         return this.values.map(x=>eval(expr)) as boolean[]
     }
 
+    query(expr:string){
+        return this.q(expr)
+    }
     q(expr:string){
         const bidx = this.b(expr)
         return this.loc(bidx) as Series<T>
@@ -275,8 +281,7 @@ class Series<T>{
         return stat.sampleVariance(this.values as number[])
     }
 
-    to_raw(copy?:boolean){
-        copy = _.isUndefined(copy) ? true : copy
+    to_raw(copy:boolean=true){
         if(copy)
             return {values:cp(this.values),
                 name:this.name,

@@ -1,5 +1,7 @@
-import {ns_arr,numx,nsx,locParam,locParamArr,Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
-SortOptions,MergeOptions,DataFrameRankOptions} from './interfaces'
+import {ns_arr,numx,nsx,locParam,locParamArr,
+    Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
+SortOptions,MergeOptions,DataFrameRankOptions,
+DataFrameRaw} from './interfaces'
 
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
@@ -520,6 +522,9 @@ class DataFrame<T>{
         })
     }
 
+    bool(expr:string,axis:0|1=1){
+        return this.b(expr,axis)
+    }
     b(expr:string,axis:0|1=1){
         // ["bc"] > 5 && [5] > 6
         const arr:number[] = []
@@ -586,13 +591,21 @@ class DataFrame<T>{
 
     }
 
+    query(col_expr:string):DataFrame<T>
+    query(row_expr:null|string,col_expr:null|string):DataFrame<T>
+    query(first:null|string,second?:null|string):DataFrame<T>{
+        return _.isUndefined(second) ? 
+            this.q(first as string) : 
+            this.q(first,second) 
+    }
+    
     q(col_expr:string):DataFrame<T>
     q(row_expr:null|string,col_expr:null|string):DataFrame<T>
     q(first:null|string,second?:null|string):DataFrame<T>{
         let row_index:null|boolean[] = null
         let col_index:null|boolean[] = null
         switch(true){
-            case first !== null && second === undefined:
+            case first !== null && _.isUndefined(second):
                 row_index = this.b(first as string,1)
                 break
             case first !== null && second === null:
@@ -820,6 +833,19 @@ class DataFrame<T>{
                 columns:this.columns.cp()})
             return df
         }
+    }
+    to_raw(copy:boolean=true):DataFrameRaw<T>{
+        // copy = _.isUndefined(copy) ? true : copy
+        if(copy)
+            return {values:cp(this.values),
+                index:this.index.to_raw(),
+                columns:this.index.to_raw()
+            }
+        else
+            return {values:this.values,
+                index:this.index.to_raw(copy),
+                columns:this.index.to_raw(copy)
+            }
     }
     _reduce_num(func:(a:number[])=>number|undefined,axis:0|1){
         if(axis===1){

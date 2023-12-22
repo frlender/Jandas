@@ -1,6 +1,6 @@
 import { expect, test, describe} from '@jest/globals';
 import {DataFrame,Index,Series} from '../J'
-
+import { from_raw } from '../util2';
 
 
 test('constructor',()=>{
@@ -557,6 +557,9 @@ test('q',()=>{
     let dx = new DataFrame<number|string>([[1, 2, 3], ['e', 'a', 'c'], [5, 6, 7]],{index:['a', 'b', 'b'],columns:['5', 5, 'e']})
     let dx2 = dx.q('["a","c"].includes([5]) && ["e"]<7')
     expect(dx2).toEqual(new DataFrame<number|string>([],{index:[],columns:['5', 5, 'e']}))
+    let dx3 = dx.query('["a","c"].includes([5]) && ["e"]<7')
+    expect(dx3).toEqual(new DataFrame<number|string>([],{index:[],columns:['5', 5, 'e']}))
+
 
     dx = new DataFrame<number|string>([[1, 'e', 3], [3, 'a', 9], [5, 'c', 7]],{index:['a', 'b', 'b'],columns:['5', 5, 'e']})
     dx2 = dx.q('["a","c"].includes([5]) && ["e"]>7')
@@ -816,4 +819,14 @@ test('rank',()=>{
         new DataFrame([[1,2], [1, 2]],    
     {index:[5, 'a'],columns:['b', 'c']}))
     
+})
+
+test('to_raw, from_raw',()=>{
+    let df = new DataFrame([[1,2],[3,4]])
+    let df_raw = df.to_raw()
+    expect(from_raw(df_raw)).toEqual(df)
+
+    df_raw = df.to_raw(false)
+    df.set(0,1,10)
+    expect(from_raw(df_raw).iloc(0,1)).toEqual(10)
 })
