@@ -26,7 +26,9 @@ declare class Series<T> {
     push(val: T, name?: number | string): void;
     insert(idx: number, val: T, name?: number | string): void;
     drop(labels: nsx): Series<T>;
+    bool(expr: string): boolean[];
     b(expr: string): boolean[];
+    query(expr: string): Series<T>;
     q(expr: string): Series<T>;
     sort_values(ascending?: boolean): Series<T>;
     value_counts(): Series<number>;

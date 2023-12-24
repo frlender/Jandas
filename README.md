@@ -219,4 +219,4 @@ df.op('x+y',df2).values //[[4,6],[4,6]]
 df.op('x+y',df2.values).values // [[2,4],[6,8]]
 ```
 ### Raw copy
-An Index, Series or DataFrame object created by Jandas cannot be copied using the `structuredClone` function or saved in the local storage as it has proxy methods. So each class has a `to_raw` method implemented to create a raw copy that can be cloned or saved. A `from_raw` utility function is provided to reconstruct the original object from a raw copy.
+An Index, Series or DataFrame object created by Jandas cannot be cloned using the `structuredClone` function or saved in the local storage as it has proxy methods. A `to_raw` method was implemented for each class to create a raw copy that can be cloned or saved. A `from_raw` utility function is provided to reconstruct the original object from a raw copy.

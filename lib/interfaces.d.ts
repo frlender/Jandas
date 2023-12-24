@@ -53,4 +53,15 @@ interface SeriesRaw<T> {
         name: string | number;
     };
 }
-export { ns_arr, numx, nsx, locParamArr, locParam, Obj, GP, SeriesInitOptions, DataFrameInitOptions, DataFrameArrInitOptions, SortOptions, PushOptions, MergeOptions, SeriesRankOptions, DataFrameRankOptions, IndexRaw, SeriesRaw };
+interface DataFrameRaw<T> {
+    values: T[][];
+    index: {
+        values: (string | number)[];
+        name: string | number;
+    };
+    columns: {
+        values: (string | number)[];
+        name: string | number;
+    };
+}
+export { ns_arr, numx, nsx, locParamArr, locParam, Obj, GP, SeriesInitOptions, DataFrameInitOptions, DataFrameArrInitOptions, SortOptions, PushOptions, MergeOptions, SeriesRankOptions, DataFrameRankOptions, IndexRaw, SeriesRaw, DataFrameRaw };

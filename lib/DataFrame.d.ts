@@ -1,4 +1,4 @@
-import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions, DataFrameRankOptions } from './interfaces';
+import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions, DataFrameRankOptions, DataFrameRaw } from './interfaces';
 import { GroupByThen } from './df_lib';
 import Index from './Index';
 import Series from './Series';
@@ -58,7 +58,10 @@ declare class DataFrame<T> {
     reset_index(name?: string | number): DataFrame<T>;
     reset_columns(name?: string | number): DataFrame<T>;
     to_dict(axis?: 0 | 1): Obj<T>[];
+    bool(expr: string, axis?: 0 | 1): boolean[];
     b(expr: string, axis?: 0 | 1): boolean[];
+    query(col_expr: string): DataFrame<T>;
+    query(row_expr: null | string, col_expr: null | string): DataFrame<T>;
     q(col_expr: string): DataFrame<T>;
     q(row_expr: null | string, col_expr: null | string): DataFrame<T>;
     iterrows(func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
@@ -73,6 +76,7 @@ declare class DataFrame<T> {
     op(opStr: string, df: DataFrame<T> | T[][]): DataFrame<T>;
     merge(df: DataFrame<T>, options?: MergeOptions): DataFrame<T>;
     rank(options?: DataFrameRankOptions): DataFrame<number>;
+    to_raw(copy?: boolean): DataFrameRaw<T>;
     _reduce_num(func: (a: number[]) => number | undefined, axis: 0 | 1): Series<number>;
     min(axis?: 0 | 1): Series<number>;
     max(axis?: 0 | 1): Series<number>;
