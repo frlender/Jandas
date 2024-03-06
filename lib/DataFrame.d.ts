@@ -76,6 +76,7 @@ declare class DataFrame<T> {
     op(opStr: string, df: DataFrame<T> | T[][]): DataFrame<T>;
     merge(df: DataFrame<T>, options?: MergeOptions): DataFrame<T>;
     rank(options?: DataFrameRankOptions): DataFrame<number>;
+    drop_duplicates_by_index(): DataFrame<T>;
     to_raw(copy?: boolean): DataFrameRaw<T>;
     _reduce_num(func: (a: number[]) => number | undefined, axis: 0 | 1): Series<number>;
     min(axis?: 0 | 1): Series<number>;

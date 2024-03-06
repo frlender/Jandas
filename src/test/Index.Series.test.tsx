@@ -481,3 +481,10 @@ test('to_raw, from_raw',()=>{
     expect(from_raw(s2_raw).values).toEqual([1,5,5])
 
 })
+
+test('drop_duplicates_by_index',()=>{
+    let s1 = new Index(['a','b','b'])
+    let s2 = new Series([1,2,3],{index:s1})
+    expect(s2.drop_duplicates_by_index())
+        .toEqual(new Series([1,2],{index:['a','b']}))
+})
