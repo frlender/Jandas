@@ -831,10 +831,10 @@ test('to_raw, from_raw',()=>{
     expect(from_raw(df_raw).iloc(0,1)).toEqual(10)
 })
 
-test('drop_duplicates_by_index',()=>{
-    let df = new DataFrame([[1,2],[3,4],[5,6]],
-        {index:['a','a','b']})
-    expect(df.drop_duplicates_by_index())
-       .toEqual(new DataFrame([[1,2],[5,6]],{index:['a','b']}))
+// test('drop_duplicates_by_index',()=>{
+//     let df = new DataFrame([[1,2],[3,4],[5,6]],
+//         {index:['a','a','b']})
+//     expect(df.drop_duplicates_by_index())
+//        .toEqual(new DataFrame([[1,2],[5,6]],{index:['a','b']}))
 
-})
+// })

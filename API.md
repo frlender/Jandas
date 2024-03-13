@@ -493,6 +493,12 @@ trans(index:ns_arr): number[]
 ```
 Translate an array of labels into an array of numeric positions. It will throw error if `vals` includes labels not in the index.
 
+**Index.duplicated**
+```TypeScript
+duplicated(keep:'first'|'last'|false='first'): boolean[]
+```
+Return duplicated index values as a boolean array. The `keep` parameter determines which duplicated values to keep. If `keep` is `'first'`, the first occurrence of each duplicated value will be kept and marked as `false`. If `keep` is `'last'`, the last occurrence of each duplicated value will be kept and marked as `false`. If `keep` is `false`, all duplicated values will be marked as `true`.
+
 \
 **Index.to_raw**
 ```TypeScript

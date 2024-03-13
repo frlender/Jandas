@@ -133,23 +133,23 @@ const setIndex = (vals:ns_arr|Index,shape:number)=>{
     return vals instanceof Index ? vals : new Index(vals)
 }
 
-function drop_duplicates_by_index<T>(
-    x:Series<T>):Series<T>
-function drop_duplicates_by_index<T>(
-    x:DataFrame<T>):DataFrame<T>
-function drop_duplicates_by_index<T>(
-    x:Series<T>|DataFrame<T>){
-    const rec:(string|number)[] = []
-    const bidx = x.index.values.map(v=>{
-        if(rec.includes(v))
-            return false
-        else{
-            rec.push(v)
-            return true
-        }
-    })
-    return x.iloc(bidx)
-}
+// function drop_duplicates_by_index<T>(
+//     x:Series<T>):Series<T>
+// function drop_duplicates_by_index<T>(
+//     x:DataFrame<T>):DataFrame<T>
+// function drop_duplicates_by_index<T>(
+//     x:Series<T>|DataFrame<T>){
+//     const rec:(string|number)[] = []
+//     const bidx = x.index.values.map(v=>{
+//         if(rec.includes(v))
+//             return false
+//         else{
+//             rec.push(v)
+//             return true
+//         }
+//     })
+//     return x.iloc(bidx)
+// }
 
 export {vec_loc,vec_loc2,vec_set,cp,_str,_trans,
-    setIndex,drop_duplicates_by_index}
+    setIndex}

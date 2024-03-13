@@ -2,8 +2,7 @@ import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
 import {vec_loc,vec_loc2,
-    vec_set,cp,_str,_trans,setIndex,
-    drop_duplicates_by_index} from './cmm'
+    vec_set,cp,_str,_trans,setIndex} from './cmm'
 
 
 import {ns_arr,numx,nsx,locParamArr,SeriesInitOptions,
@@ -177,9 +176,9 @@ class Series<T>{
         return this.iloc(new_idx)
     }
 
-    drop_duplicates_by_index():Series<T>{
-        return drop_duplicates_by_index(this)
-    }
+    // drop_duplicates_by_index():Series<T>{
+    //     return drop_duplicates_by_index(this)
+    // }
 
     bool(expr:string){
         return this.b(expr)

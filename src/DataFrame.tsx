@@ -7,8 +7,7 @@ import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
 import {vec_loc,vec_loc2,
-    vec_set,cp,_str,_trans,setIndex,
-    drop_duplicates_by_index} from './cmm'
+    vec_set,cp,_str,_trans,setIndex} from './cmm'
 
 import {GroupByThen,_sortIndices} from './df_lib'
 import { concat } from './util2'
@@ -836,9 +835,9 @@ class DataFrame<T>{
         }
     }
 
-    drop_duplicates_by_index(){
-        return drop_duplicates_by_index(this)
-    }
+    // drop_duplicates_by_index(){
+    //     return drop_duplicates_by_index(this)
+    // }
 
     to_raw(copy:boolean=true):DataFrameRaw<T>{
         // copy = _.isUndefined(copy) ? true : copy

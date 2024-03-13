@@ -29,6 +29,15 @@ describe('Index',()=>{
         expect(dx.values[1]).toEqual('c')
         expect(dx.mp.get('c')).toEqual(1)
     })
+
+    test('duplicated',()=>{
+        const dx = new Index(['a','b','b'])
+        expect(dx.duplicated()).toEqual([false,false,true])
+        expect(dx.duplicated('last'))
+            .toEqual([false,true,false])
+        expect(dx.duplicated(false))
+            .toEqual([false,true,true])
+    })
 })
 
 describe('Series general', ()=>{
@@ -482,9 +491,9 @@ test('to_raw, from_raw',()=>{
 
 })
 
-test('drop_duplicates_by_index',()=>{
-    let s1 = new Index(['a','b','b'])
-    let s2 = new Series([1,2,3],{index:s1})
-    expect(s2.drop_duplicates_by_index())
-        .toEqual(new Series([1,2],{index:['a','b']}))
-})
+// test('drop_duplicates_by_index',()=>{
+//     let s1 = new Index(['a','b','b'])
+//     let s2 = new Series([1,2,3],{index:s1})
+//     expect(s2.drop_duplicates_by_index())
+//         .toEqual(new Series([1,2],{index:['a','b']}))
+// })

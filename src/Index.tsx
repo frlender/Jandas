@@ -114,6 +114,29 @@ class Index{
         }
     }
 
+    duplicated(keep:'first'|'last'|false='first'){
+        const mp: {[k:string]:number} = {}
+        const arr: boolean[] = []
+        this.values.forEach((k,i) => {
+            if(!(k in mp)){
+                arr[i] = false
+                mp[k] = i
+            }else{
+                if(keep === 'first')
+                    arr[i] = true
+                else if(keep === 'last'){
+                    arr[mp[k]] = true
+                    mp[k] = i
+                    arr[i] = false
+                }else{
+                    arr[mp[k]] = true
+                    arr[i] = true
+                }
+            }
+        })
+        return arr
+    }
+
     to_raw(copy?:boolean){
         copy = _.isUndefined(copy) ? true : copy
         if(copy)
