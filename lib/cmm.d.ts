@@ -1,7 +1,5 @@
 import Index from './Index';
-import Series from './Series';
 import { ns_arr, numx, locParamArr } from './interfaces';
-import DataFrame from './DataFrame';
 declare function cp<S>(arr: S[]): S[];
 declare function vec_loc<S>(vec: S[], idx: number[] | boolean[], f?: (x: S) => S): S[];
 declare function vec_loc2<S, Z>(vec1: S[], vec2: Z[], idx: number[] | boolean[]): [S[], Z[]];
@@ -10,6 +8,4 @@ declare function _str(x: any): any;
 declare function _trans(index: Index, idx: number | string): numx;
 declare function _trans(index: Index, idx?: locParamArr): number[] | undefined | boolean[];
 declare const setIndex: (vals: ns_arr | Index, shape: number) => Index;
-declare function drop_duplicates_by_index<T>(x: Series<T>): Series<T>;
-declare function drop_duplicates_by_index<T>(x: DataFrame<T>): DataFrame<T>;
-export { vec_loc, vec_loc2, vec_set, cp, _str, _trans, setIndex, drop_duplicates_by_index };
+export { vec_loc, vec_loc2, vec_set, cp, _str, _trans, setIndex };
