@@ -2,7 +2,8 @@ import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
 import {vec_loc,vec_loc2,
-    vec_set,cp,_str,_trans,setIndex} from './cmm'
+    vec_set,cp,_str,_trans,setIndex,
+    duplicated} from './cmm'
 
 
 import {ns_arr,numx,nsx,locParamArr,SeriesInitOptions,
@@ -70,6 +71,7 @@ class Series<T>{
 
     iloc(idx:number):T
     iloc(idx?:string|number[]|boolean[]):Series<T>
+    iloc(idx?: string | numx | boolean[]):T|Series<T>
     iloc(idx?: string | numx | boolean[]):T|Series<T>{
         idx = _trans_iloc(idx,this.shape)
         // have to use any here. Refer to:
@@ -77,8 +79,10 @@ class Series<T>{
         return this._iloc(idx as any)
     }
 
+
     loc(index:number|string): T|Series<T>
     loc(index?:locParamArr): Series<T>
+    loc(index?: (number|string)|locParamArr):T|Series<T>
     loc(index?: (number|string)|locParamArr):T|Series<T>{        
         let num_idx:numx | undefined | boolean[]
         if(_.isNumber(index)||_.isString(index))
@@ -179,6 +183,10 @@ class Series<T>{
     // drop_duplicates_by_index():Series<T>{
     //     return drop_duplicates_by_index(this)
     // }
+    drop_duplicates(keep:'first'|'last'|false='first'){
+        const new_idx = duplicated(this.values,keep)
+        return this.loc(new_idx.map(x=>!x))
+    }
 
     bool(expr:string){
         return this.b(expr)

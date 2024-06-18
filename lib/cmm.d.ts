@@ -8,4 +8,5 @@ declare function _str(x: any): any;
 declare function _trans(index: Index, idx: number | string): numx;
 declare function _trans(index: Index, idx?: locParamArr): number[] | undefined | boolean[];
 declare const setIndex: (vals: ns_arr | Index, shape: number) => Index;
-export { vec_loc, vec_loc2, vec_set, cp, _str, _trans, setIndex };
+declare const duplicated: (vals: any[], keep?: 'first' | 'last' | false, keyFunc?: (x: any) => string) => boolean[];
+export { vec_loc, vec_loc2, vec_set, cp, _str, _trans, setIndex, duplicated };

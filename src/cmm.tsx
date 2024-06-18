@@ -133,6 +133,34 @@ const setIndex = (vals:ns_arr|Index,shape:number)=>{
     return vals instanceof Index ? vals : new Index(vals)
 }
 
+
+
+const duplicated = (vals:any[],keep:'first'|'last'|false='first',keyFunc:(x:any)=>string=JSON.stringify)=>{
+    const mp: {[k:string]:number} = {}
+    const arr: boolean[] = []
+    vals.forEach((val,i) => {
+        const k = _.isString(val) || _.isNumber(val) 
+                ? val : keyFunc(val)
+        if(!(k in mp)){
+            arr[i] = false
+            mp[k] = i
+        }else{
+            if(keep === 'first')
+                arr[i] = true
+            else if(keep === 'last'){
+                arr[mp[k]] = true
+                mp[k] = i
+                arr[i] = false
+            }else{
+                arr[mp[k]] = true
+                arr[i] = true
+            }
+        }
+    })
+    return arr
+}
+
+
 // function drop_duplicates_by_index<T>(
 //     x:Series<T>):Series<T>
 // function drop_duplicates_by_index<T>(
@@ -152,4 +180,4 @@ const setIndex = (vals:ns_arr|Index,shape:number)=>{
 // }
 
 export {vec_loc,vec_loc2,vec_set,cp,_str,_trans,
-    setIndex}
+    setIndex,duplicated}

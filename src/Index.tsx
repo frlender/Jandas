@@ -1,4 +1,4 @@
-import {cp} from './cmm'
+import {cp,duplicated} from './cmm'
 import {check} from './util'
 import { ns_arr,numx,nsx } from './interfaces'
 import * as _ from 'lodash'
@@ -115,26 +115,7 @@ class Index{
     }
 
     duplicated(keep:'first'|'last'|false='first'){
-        const mp: {[k:string]:number} = {}
-        const arr: boolean[] = []
-        this.values.forEach((k,i) => {
-            if(!(k in mp)){
-                arr[i] = false
-                mp[k] = i
-            }else{
-                if(keep === 'first')
-                    arr[i] = true
-                else if(keep === 'last'){
-                    arr[mp[k]] = true
-                    mp[k] = i
-                    arr[i] = false
-                }else{
-                    arr[mp[k]] = true
-                    arr[i] = true
-                }
-            }
-        })
-        return arr
+        return duplicated(this.values,keep)
     }
 
     to_raw(copy?:boolean){

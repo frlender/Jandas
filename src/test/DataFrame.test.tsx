@@ -831,10 +831,55 @@ test('to_raw, from_raw',()=>{
     expect(from_raw(df_raw).iloc(0,1)).toEqual(10)
 })
 
-// test('drop_duplicates_by_index',()=>{
-//     let df = new DataFrame([[1,2],[3,4],[5,6]],
-//         {index:['a','a','b']})
-//     expect(df.drop_duplicates_by_index())
-//        .toEqual(new DataFrame([[1,2],[5,6]],{index:['a','b']}))
+test('drop_duplicates',()=>{
+    let df = new DataFrame([[3, 8, 3], 
+                            [3, 8, 9], 
+                            [3, 6, 7], 
+                            [9, 8, 7]],
+        {index:['a', 'b', 'b', 'c'],
+        columns:['5', 5, 'e']})
 
-// })
+    expect(df.drop_duplicates('5')).toEqual(
+        new DataFrame([[3,8,3],[9,8,7]],
+            {index:['a','c'],columns:['5',5,'e']})
+    )
+    expect(df.drop_duplicates(['5',5])).toEqual(
+        new DataFrame([[3,8,3],[3,6,7],[9,8,7]],
+            {index:['a','b','c'],columns:['5',5,'e']})
+    )
+    expect(df.drop_duplicates(['5',5],{keep:'last'})).toEqual(
+        new DataFrame([[3,8,9],[3,6,7],[9,8,7]],
+            {index:['b','b','c'],columns:['5',5,'e']})
+    )
+    let df2 = new DataFrame([[3,8],[3,8],[3,6],[9,8]],
+        {index:['a','b','b','c'],columns:['5',5]})
+    expect(df.drop_duplicates('a',{axis:0})).toEqual(
+        df2.transpose(true).transpose(true)
+    )
+
+    df = new DataFrame([[3, 8, 3, 3], 
+                        [7, 8, 9, 7], 
+                        [3, 7, 7, 8],
+                        [3, 9, 9, 7]],
+    {index:['a', 'd','b', 'b'],
+    columns:['5', 5, 'e','d']})
+
+    expect(df.drop_duplicates(['a','d'],{keep:'last',axis:0}))
+        .toEqual(
+            new DataFrame([[8, 3, 3], 
+                            [8, 9, 7], 
+                            [7, 7, 8],
+                            [9, 9, 7]],
+            {index:['a', 'd','b', 'b'],
+            columns:[ 5, 'e','d']}).transpose(true).transpose(true)
+        )
+    expect(df.drop_duplicates('b',{axis:0}))
+        .toEqual(
+            new DataFrame([[3, 8,  3], 
+                            [7, 8,  7], 
+                            [3, 7,  8],
+                            [3, 9, 7]],
+            {index:['a', 'd','b', 'b'],
+            columns:['5', 5,'d']}).transpose(true).transpose(true)
+        )
+})

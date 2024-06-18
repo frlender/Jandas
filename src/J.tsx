@@ -5,7 +5,7 @@ import {range} from './util'
 import {concat,from_raw} from './util2'
 
 // TODO
-// drop_duplicates
+// pivot, unpivot
 // isna?
 // explore generic types in merge and concat ?
 

@@ -85,10 +85,16 @@ interface DataFrameRaw<T>{
     }
 }
 
+interface DropDuplicatesOptions{
+    keep?: 'first' | 'last' | false
+    axis?: 0|1
+}
+
 export {ns_arr,numx,nsx,locParamArr,locParam,
     Obj,GP,SeriesInitOptions,
     DataFrameInitOptions,
     DataFrameArrInitOptions,
     SortOptions,PushOptions,MergeOptions,
     SeriesRankOptions,DataFrameRankOptions,
-    IndexRaw, SeriesRaw, DataFrameRaw}
+    IndexRaw, SeriesRaw, DataFrameRaw,
+    DropDuplicatesOptions}

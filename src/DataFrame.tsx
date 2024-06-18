@@ -1,13 +1,14 @@
 import {ns_arr,numx,nsx,locParam,locParamArr,
     Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
 SortOptions,MergeOptions,DataFrameRankOptions,
-DataFrameRaw} from './interfaces'
+DataFrameRaw,DropDuplicatesOptions} from './interfaces'
 
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
 import {vec_loc,vec_loc2,
-    vec_set,cp,_str,_trans,setIndex} from './cmm'
+    vec_set,cp,_str,_trans,setIndex,
+    duplicated} from './cmm'
 
 import {GroupByThen,_sortIndices} from './df_lib'
 import { concat } from './util2'
@@ -212,6 +213,9 @@ class DataFrame<T>{
     iloc(row?:null|string|number[]|boolean[],col?:null|string|number[]|boolean[]):DataFrame<T>
     iloc(row?:null | string | numx | boolean[],
         col?: null | string | numx | boolean[])
+        :T| Series<T>| DataFrame<T>
+    iloc(row?:null | string | numx | boolean[],
+        col?: null | string | numx | boolean[])
         :T| Series<T>| DataFrame<T> {
         if(row === null) row = undefined
         if(col === null) col = undefined
@@ -240,6 +244,7 @@ class DataFrame<T>{
     loc(row:number|string,col?:null|locParamArr):Series<T>|DataFrame<T>
     loc(row:null|locParamArr,col:number|string):Series<T>|DataFrame<T>
     loc(row?:null|locParamArr,col?:null|locParamArr):DataFrame<T>
+    loc(row?: null | number | string | locParamArr, col?: null | number | string | locParamArr):T|Series<T>|DataFrame<T>
     loc(row?: null | number | string | locParamArr, col?: null | number | string | locParamArr){
         if(row === null) row = undefined
         if(col === null) col = undefined
@@ -462,6 +467,23 @@ class DataFrame<T>{
             const new_idx = range(this.columns.shape).filter(
                 i=>!labels2.includes(this.columns.values[i]))
             return this.iloc(null,new_idx) as DataFrame<T>
+        }
+    }
+
+    drop_duplicates(labels:nsx,options?:DropDuplicatesOptions){
+        if(_.isUndefined(options))
+            options = {}
+        let {keep,axis} = _.defaults(options,{keep:'first',axis:1})
+        if(axis === 1){
+            const sub = this.loc(null,labels) as Series<T>|DataFrame<T>
+            const idx = duplicated(sub.values,keep)
+            return this.loc(idx.map(x=>!x))
+        }else{
+            let sub = this.loc(labels) as Series<T>|DataFrame<T>
+            if(sub instanceof DataFrame)
+                sub = sub.transpose()
+            const idx = duplicated(sub.values,keep)
+            return this.loc(null,idx.map(x=>!x))
         }
     }
 

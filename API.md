@@ -54,6 +54,7 @@ iloc(row:number,col:number):T
 iloc(row:number,col?:null|string|number[]|boolean[]):Series<T>
 iloc(row:null|string|number[]|boolean[],col:number):Series<T>
 iloc(row?:null|string|number[]|boolean[],col?:null|string|number[]|boolean[]):DataFrame<T>
+iloc(row?:null | string | numx | boolean[], col?: null | string | numx | boolean[]):T| Series<T>| DataFrame<T>
 ```
 Access a dataframe using position-based index. `row` and `col` are row and column indices. They can be `null`, string, number, number array or boolean array. If They are of string type, they must be a range string in the form like '1:3', ':1', '-1:', '::-1' and '5:1:-2'. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
@@ -64,6 +65,7 @@ loc(row:number|string,col:number|string):T|Series<T>|DataFrame<T>
 loc(row:number|string,col?:null|locParamArr):Series<T>|DataFrame<T>
 loc(row:null|locParamArr,col:number|string):Series<T>|DataFrame<T>
 loc(row?:null|locParamArr,col?:null|locParamArr):DataFrame<T>
+loc(row?: null | number | string | locParamArr, col?: null | number | string | locParamArr):T|Series<T>|DataFrame<T>
 ```
 Access a dataframe using label-based index.`row` and `col` are row and column indices. If `row` and `col` are of Series or Index type, their `.values` properties are used to index the dataframe. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
@@ -122,6 +124,19 @@ drop(labels:nsx,axis:0|1=1): DataFrame<T>
 ```
 Drop rows or columns from the dataframe and returns a new dataframe. `labels` can be a string, a number or an array. `axis` determines the dimension to drop.
 
+\
+**DataFrame.drop_duplicates**
+```TypeScript
+interface DropDuplicatesOptions{
+    keep?: 'first' | 'last' | false // defaults to 'first'
+    axis?: 0|1 // defaults to 1
+}
+
+drop_duplicates(labels:nsx,options?:DropDuplicatesOptions): DataFrame<T>
+```
+Drop rows or columns from the dataframe based on duplicate values specified by column or row `labels`. `keep` determines which duplicates to keep. If `keep` is `false`, all duplicates are dropped. If `keep` is `'first'`, the first occurrence of each duplicate is kept. If `keep` is `'last'`, the last occurrence of each duplicate is kept. The default is `'first'`. `axis` determines the dimension to drop: `1` to drop rows and `0` to drop columns. 
+
+\
 **DataFrame.set_index**
 ```TypeScript
 set_index(label:number|string): DataFrame<T>
@@ -300,6 +315,7 @@ Constructs a series. The first argument is an array of values. The second argume
 ```TypeScript
 iloc(index:number): T
 iloc(index?:string|number[]|boolean[]): Series<T>
+iloc(idx?: string | numx | boolean[]):T|Series<T>
 ```
 Access a series using position-based index. The index `index` can be string, number, number array or boolean array. If They are of string type, they must be a range string in the form like '1:3', ':1', '-1:', '::-1' and '5:1:-2'. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
@@ -308,6 +324,7 @@ Access a series using position-based index. The index `index` can be string, num
 ```TypeScript
 loc(index:number|string): T|Series<T>
 loc(index?:locParamArr): Series<T>
+loc(index?: (number|string)|locParamArr):T|Series<T>
 ```
 Access a series using label-based index.If the index `index` are of Series or Index type, their `.values` properties are used to index the dataframe. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
@@ -349,6 +366,15 @@ Insert a new value `val` at designated position `idx` in place.  `name` is the l
 drop(labels:nsx): Series<T>
 ```
 Drop values from the series and returns a new series. `labels` can be a string, a number or an array.
+
+\
+**Series.drop_duplicates**
+```TypeScript
+
+drop_duplicates(keep:'first'|'last'|false='first'): Series<T>
+```
+Drop duplicate values from the Series. `keep` determines which duplicates to keep. If `keep` is `false`, all duplicates are dropped. If `keep` is `'first'`, the first occurrence of each duplicate is kept. If `keep` is `'last'`, the last occurrence of each duplicate is kept. The default is `'first'`. 
+
 
 \
 **Series.b**

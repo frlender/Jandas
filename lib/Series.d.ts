@@ -14,8 +14,10 @@ declare class Series<T> {
     _iloc(idx: undefined | number[] | boolean[]): Series<T>;
     iloc(idx: number): T;
     iloc(idx?: string | number[] | boolean[]): Series<T>;
+    iloc(idx?: string | numx | boolean[]): T | Series<T>;
     loc(index: number | string): T | Series<T>;
     loc(index?: locParamArr): Series<T>;
+    loc(index?: (number | string) | locParamArr): T | Series<T>;
     _iset(idx: undefined | numx | boolean[], values: T | T[]): void;
     iset(rpl: T[]): void;
     iset(index: number, rpl: T): void;
@@ -26,6 +28,7 @@ declare class Series<T> {
     push(val: T, name?: number | string): void;
     insert(idx: number, val: T, name?: number | string): void;
     drop(labels: nsx): Series<T>;
+    drop_duplicates(keep?: 'first' | 'last' | false): Series<T>;
     bool(expr: string): boolean[];
     b(expr: string): boolean[];
     query(expr: string): Series<T>;

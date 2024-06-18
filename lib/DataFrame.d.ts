@@ -1,4 +1,4 @@
-import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions, DataFrameRankOptions, DataFrameRaw } from './interfaces';
+import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions, DataFrameRankOptions, DataFrameRaw, DropDuplicatesOptions } from './interfaces';
 import { GroupByThen } from './df_lib';
 import Index from './Index';
 import Series from './Series';
@@ -28,10 +28,12 @@ declare class DataFrame<T> {
     iloc(row: number, col?: null | string | number[] | boolean[]): Series<T>;
     iloc(row: null | string | number[] | boolean[], col: number): Series<T>;
     iloc(row?: null | string | number[] | boolean[], col?: null | string | number[] | boolean[]): DataFrame<T>;
+    iloc(row?: null | string | numx | boolean[], col?: null | string | numx | boolean[]): T | Series<T> | DataFrame<T>;
     loc(row: number | string, col: number | string): T | Series<T> | DataFrame<T>;
     loc(row: number | string, col?: null | locParamArr): Series<T> | DataFrame<T>;
     loc(row: null | locParamArr, col: number | string): Series<T> | DataFrame<T>;
     loc(row?: null | locParamArr, col?: null | locParamArr): DataFrame<T>;
+    loc(row?: null | number | string | locParamArr, col?: null | number | string | locParamArr): T | Series<T> | DataFrame<T>;
     _iset_asymmetric(v1: T[][], l1: Index, l2: Index, i1: numx | boolean[], rpl: T[] | T[][], i2?: numx | boolean[]): null | undefined;
     _iset_symmetric(ir: undefined | numx | boolean[], ic: undefined | numx | boolean[], rpl: T | T[] | T[][]): null | undefined;
     _iset(row: undefined | numx | boolean[], col: undefined | numx | boolean[], rpl: T | T[] | T[][]): void;
@@ -53,6 +55,7 @@ declare class DataFrame<T> {
     _insert(i1: number, l1: Index, v1: T[][], rpl: T[], name: number | string): void;
     insert(idx: number, val: T[], options: PushOptions): void;
     drop(labels: nsx, axis?: 0 | 1): DataFrame<T>;
+    drop_duplicates(labels: nsx, options?: DropDuplicatesOptions): DataFrame<T>;
     set_index(label: number | string): DataFrame<T>;
     set_columns(label: number | string): DataFrame<T>;
     reset_index(name?: string | number): DataFrame<T>;

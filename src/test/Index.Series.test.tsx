@@ -491,9 +491,17 @@ test('to_raw, from_raw',()=>{
 
 })
 
-// test('drop_duplicates_by_index',()=>{
-//     let s1 = new Index(['a','b','b'])
-//     let s2 = new Series([1,2,3],{index:s1})
-//     expect(s2.drop_duplicates_by_index())
-//         .toEqual(new Series([1,2],{index:['a','b']}))
-// })
+test('drop_duplicates',()=>{
+    let s1 = new Index(['a','b','b'])
+    let s2 = new Series([1,1,3],{index:s1})
+    expect(s2.drop_duplicates()).toEqual(
+        new Series([1,3],{index:['a','b']})
+    )
+    expect(s2.drop_duplicates('last')).toEqual(
+        new Series([1,3],{index:['b','b']})
+    )
+    expect(s2.drop_duplicates(false)).toEqual(
+        new Series([3],{index:['b']})
+    )
+})
+
