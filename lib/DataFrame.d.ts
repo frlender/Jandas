@@ -1,24 +1,42 @@
-import { ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions, DataFrameRankOptions, DataFrameRaw, DropDuplicatesOptions } from './interfaces';
+import { ns, ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions, DataFrameRankOptions, DataFrameRaw, DropDuplicatesOptions } from './interfaces';
 import { GroupByThen } from './df_lib';
 import Index from './Index';
 import Series from './Series';
 declare class DataFrame<T> {
     values: T[][];
     shape: [number, number];
-    _index: Index;
-    _columns: Index;
-    _tr?: T[][];
+    private _index;
+    private _columns;
+    private _tr?;
     constructor(arr: T[][] | Obj<T>[]);
     constructor(arr: T[][], options: DataFrameArrInitOptions);
     constructor(arr: Obj<T>[], options: DataFrameInitOptions);
+    constructor(arr: T[][] | Obj<T>[], options?: DataFrameInitOptions | DataFrameArrInitOptions);
     __transpose(arr: T[][]): T[][];
     _transpose(arr: T[][]): T[][];
     get tr(): T[][];
     set tr(vals: T[][]);
     get index(): Index;
     get columns(): Index;
+    _indexSetterEffect(): void;
     set index(vals: ns_arr | Index);
     set columns(vals: ns_arr | Index);
+    rename(labelMap: {
+        index?: {
+            [key: ns]: ns;
+        };
+        columns?: {
+            [key: ns]: ns;
+        };
+    }, inplace?: false): DataFrame<T>;
+    rename(labelMap: {
+        index?: {
+            [key: ns]: ns;
+        };
+        columns?: {
+            [key: ns]: ns;
+        };
+    }, inplace: true): void;
     _p(): void;
     p(): void;
     transpose(inplace?: boolean): DataFrame<T>;
@@ -51,7 +69,9 @@ declare class DataFrame<T> {
     set(rpl: T[][]): void;
     set(row: null | locParamArr, rpl: T[][]): void;
     set(row: null | locParamArr, col: null | locParamArr, rpl: T[][]): void;
-    push(val: T[], options?: PushOptions): void;
+    _push(val: T[], options: PushOptions): void;
+    _series_push(val: Series<T>, options: PushOptions): void;
+    push(val: T[] | Series<T>, options?: PushOptions): void;
     _insert(i1: number, l1: Index, v1: T[][], rpl: T[], name: number | string): void;
     insert(idx: number, val: T[], options: PushOptions): void;
     drop(labels: nsx, axis?: 0 | 1): DataFrame<T>;

@@ -1,7 +1,7 @@
 import { ns_arr, numx } from './interfaces';
 declare class Index {
     private __values;
-    _values: ns_arr;
+    private _values;
     mp: Map<number | string, numx>;
     shape: number;
     name: string | number;

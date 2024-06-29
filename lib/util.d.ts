@@ -51,12 +51,6 @@ declare const check: {
             uniq(index: Index): void;
         };
     };
-    mulDataFrame: {
-        init: {
-            override(label: 'index' | 'columns', index1: Index, index2: Index): void;
-            align(label: 'index' | 'columns', indexIdx: Index, valuesIdx: Index): void;
-        };
-    };
 };
 declare function _trans_rg(x: string, len: number): number[];
 declare function range(end: number): number[];

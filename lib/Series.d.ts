@@ -1,17 +1,30 @@
-import { ns_arr, numx, nsx, locParamArr, SeriesInitOptions, SeriesRankOptions } from './interfaces';
+import { ns, ns_arr, numx, nsx, locParamArr, SeriesInitOptions, SeriesRankOptions } from './interfaces';
 import Index from './Index';
 declare class Series<T> {
     values: T[];
-    _index: Index;
+    private _index;
     shape: number;
-    name: string | number;
+    private _name;
     constructor(values: T[]);
     constructor(values: T[], options: SeriesInitOptions);
+    constructor(values: T[], options?: SeriesInitOptions);
     get index(): Index;
     set index(vals: ns_arr | Index);
+    get name(): string | number;
+    set name(val: string | number);
+    rename(labelMap: {
+        [key: ns]: ns;
+    }, inplace: true): void;
+    rename(labelMap: {
+        [key: ns]: ns;
+    }, inplace: false): Series<T>;
+    rename(labelMap: {
+        [key: ns]: ns;
+    }, inplace?: boolean): void | Series<T>;
     p(): void;
     _iloc(idx: number): T;
     _iloc(idx: undefined | number[] | boolean[]): Series<T>;
+    _iloc(idx?: numx | boolean[]): T | Series<T>;
     iloc(idx: number): T;
     iloc(idx?: string | number[] | boolean[]): Series<T>;
     iloc(idx?: string | numx | boolean[]): T | Series<T>;
@@ -22,9 +35,11 @@ declare class Series<T> {
     iset(rpl: T[]): void;
     iset(index: number, rpl: T): void;
     iset(index: string | number[] | boolean[], rpl: T[]): void;
+    iset(first: T[] | string | numx | boolean[], second?: T | T[]): void;
     set(rpl: T[]): void;
     set(idx: string | number, rpl: T | T[]): void;
     set(idx: locParamArr, rpl: T[]): void;
+    set(first: T[] | string | numx | locParamArr, second?: T | T[]): void;
     push(val: T, name?: number | string): void;
     insert(idx: number, val: T, name?: number | string): void;
     drop(labels: nsx): Series<T>;
