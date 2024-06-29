@@ -96,15 +96,25 @@ set(row:null|locParamArr,col:null|locParamArr,rpl:T[][]):void
 Change the values of a dataframe using label-based index. `row` and `col` are row and column indices. Please refer to DataFrame.loc for their possible values. `rpl` is the replacement value. It must be the same shape as the dataframe defined by the `row` and `col` indices. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
+**DataFrame.rename**
+```TypeScript
+rename(labelMap:{index?:{[key:ns]:ns},columns?:{[key:ns]:ns}},
+        inplace?:false):DataFrame<T>
+rename(labelMap:{index?:{[key:ns]:ns},columns?:{[key:ns]:ns}},
+            inplace:true):void
+```
+Rename a label in the index or columns of the dataframe. `labelMap` is an object with two properties: `index` and `columns`. Each property is an object with old label names as keys and new label names as values. `inplace` controls whether to rename the labels inplace or return a new dataframe.
+
+\
 **DataFrame.push**
 ```TypeScript
 interface PushOptions{
     name?: number|string
-    axis?: 0|1
+    axis?: 0|1 // defaults to 1, add a column
 }
-push(val:T[],options?: PushOptions): void
+push(val:T[]|Series<T>,options?: PushOptions): void
 ```
-Add an array `val` as a row or column to the end of the dataframe. `name` is the label for the array. `axis` determines the dimension to add the array. It is an **inplace** operation. 
+Add an array or Series `val` as a row or column to the end of the dataframe. `name` is the label for the array. `axis` determines the dimension to add the array. It is an **inplace** operation. When a series is pushed, the function will try to align its index with the dataframe's index even if they are not exactly the same or not the same shape.
 
 \
 **DataFrame.insert**
@@ -345,6 +355,15 @@ set(idx:string|number,rpl:T|T[]):void
 set(idx:locParamArr,rpl:T[]):void
 ```
 Change the values of a series using label-based index. Please refer to Series.loc for possible values of `index`. `rpl` is the replacement value. It must be the same shape as the series defined by `index`. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+
+\
+**Series.rename**
+```TypeScript
+rename(labelMap:{[key:ns]:ns},inplace:true):void
+rename(labelMap:{[key:ns]:ns},inplace:false):Series<T>
+rename(labelMap:{[key:ns]:ns},inplace?:boolean):void|Series<T>
+```
+Rename a label in the series. `labelMap` is an object with old label names as keys and new label names as values. `inplace` controls whether to rename the labels inplace or return a new series.
 
 \
 **Series.push**
