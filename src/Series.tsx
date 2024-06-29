@@ -3,10 +3,10 @@ import {isNum, isArr,isVal,isNumArr,isStrArr,
 
 import {vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex,
-    duplicated} from './cmm'
+    duplicated,_rename} from './cmm'
 
 
-import {ns_arr,numx,nsx,locParamArr,SeriesInitOptions,
+import {ns,ns_arr,numx,nsx,locParamArr,SeriesInitOptions,
  SeriesRankOptions} from './interfaces'
 
 import { _sortIndices } from './df_lib'
@@ -19,11 +19,12 @@ import ranks = require('@stdlib/stats-ranks')
 
 class Series<T>{
     values: T[]
-    _index!: Index
+    private _index: Index
     shape: number
-    name: string | number
+    private _name: string | number
     constructor(values: T[])
     constructor(values: T[], options:SeriesInitOptions)
+    constructor(values: T[], options?:SeriesInitOptions)
     constructor(first: T[], second?:SeriesInitOptions){
         if(_.isUndefined(second))
             second = {}
@@ -31,8 +32,8 @@ class Series<T>{
             {name:'',index:new Index(first.map((_,i)=>i))})
         this.values = first
         this.shape = this.values.length
-        this.name = second.name!
-        this.index = second.index! instanceof Index ? 
+        this._name = second.name!
+        this._index = second.index! instanceof Index ? 
             second.index! : new Index(second.index!)
     }
 
@@ -44,6 +45,28 @@ class Series<T>{
         this._index = setIndex(vals,this.shape)
     }
 
+    get name():string|number{
+        return this._name
+    }
+
+    set name(val:string|number){
+        this._name = val
+        // this.nameSetterEffect()
+    }
+
+    rename(labelMap:{[key:ns]:ns},inplace:true):void
+    rename(labelMap:{[key:ns]:ns},inplace:false):Series<T>
+    rename(labelMap:{[key:ns]:ns},inplace?:boolean):void|Series<T>
+    rename(labelMap:{[key:ns]:ns},inplace:boolean=false):void|Series<T>{
+       if(inplace)
+            _rename(this.index,labelMap,true)
+        else{
+            const index = _rename(this.index,labelMap,false)
+            return new Series(cp(this.values),
+                {index,name:this.name})
+        }
+    }
+
     p(){
         const name_str = this.name ? ' '+this.name : ''
         console.log(this.index.values.map(x=>x.toString()).join('\t') + '\n' +
@@ -53,6 +76,7 @@ class Series<T>{
 
     _iloc(idx:number):T
     _iloc(idx:undefined|number[]|boolean[]):Series<T>
+    _iloc(idx?: numx | boolean[]):T|Series<T>
     _iloc(idx?: numx | boolean[]){
         switch(true){
             case idx === undefined:
@@ -74,9 +98,7 @@ class Series<T>{
     iloc(idx?: string | numx | boolean[]):T|Series<T>
     iloc(idx?: string | numx | boolean[]):T|Series<T>{
         idx = _trans_iloc(idx,this.shape)
-        // have to use any here. Refer to:
-        // https://stackoverflow.com/questions/67972427/typescript-function-overloading-no-overload-matches-this-call
-        return this._iloc(idx as any)
+        return this._iloc(idx)
     }
 
 
@@ -115,6 +137,7 @@ class Series<T>{
     iset(rpl:T[]):void
     iset(index:number,rpl:T):void
     iset(index:string|number[]|boolean[],rpl:T[]):void
+    iset(first:T[]|string|numx|boolean[],second?:T|T[]):void
     iset(first:any, second?:T|T[]):void{
         if(second===undefined){
             this._iset(undefined, first)
@@ -127,6 +150,7 @@ class Series<T>{
     set(rpl:T[]):void
     set(idx:string|number,rpl:T|T[]):void
     set(idx:locParamArr,rpl:T[]):void
+    set(first:T[]|string|numx|locParamArr,second?:T|T[]):void
     set(first: any, second?: T|T[]){
         if(second===undefined){
             this._iset(undefined, first)

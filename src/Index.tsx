@@ -3,9 +3,10 @@ import {check} from './util'
 import { ns_arr,numx,nsx } from './interfaces'
 import * as _ from 'lodash'
 
+
 class Index{
     private __values!:ns_arr // original values
-    _values!: ns_arr // proxy values
+    private _values!: ns_arr // proxy values
     mp!: Map<number | string, numx>
     shape!: number
     name: string | number
@@ -20,7 +21,7 @@ class Index{
     set values(vals:ns_arr){
         const self = this
         this.__values = vals
-        this._values = new Proxy(vals,{
+        this._values= new Proxy(vals,{
             set(target,k,v){
                 // k will always be string here
                 // console.log(target,k,v)

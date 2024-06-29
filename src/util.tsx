@@ -150,21 +150,6 @@ const check = {
                     throw('index of concatenated objects must be unique.')
             }
         }
-    },
-    mulDataFrame:{
-        init:{
-            override(label:'index'|'columns',index1:Index,index2:Index){
-                if(index1.shape !== index2.shape)
-                    throw(`Index Overriding: The index length of the ${label} dataframe is not the same as the ${label} length of the values dataframe.`)
-            },
-            align(label:'index'|'columns',indexIdx:Index, valuesIdx:Index){
-                if(!valuesIdx.is_unique())
-                    throw(`Index Align: The ${label} of the values dataframe is not unique.`)
-                const diff = _.difference(valuesIdx.values,indexIdx.values)
-                if(diff.length > 0)
-                    throw(`Index Align: There are values in the index of the ${label} dataframe that are not in the ${label} of the values dataframe.`)
-            }
-        }
     }
 }
 

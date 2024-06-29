@@ -1,4 +1,4 @@
-import {ns_arr,numx,nsx,locParam,locParamArr,
+import {ns,ns_arr,numx,nsx,locParam,locParamArr,
     Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
 SortOptions,MergeOptions,DataFrameRankOptions,
 DataFrameRaw,DropDuplicatesOptions} from './interfaces'
@@ -8,7 +8,7 @@ import {isNum, isArr,isVal,isNumArr,isStrArr,
 
 import {vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex,
-    duplicated} from './cmm'
+    duplicated,_rename} from './cmm'
 
 import {GroupByThen,_sortIndices} from './df_lib'
 import { concat } from './util2'
@@ -26,12 +26,13 @@ class DataFrame<T>{
     values: T[][]
     // tr: T[][] // transposed values
     shape: [number,number]
-    _index!: Index
-    _columns!:Index
-    _tr?:T[][]
+    private _index: Index
+    private _columns:Index
+    private _tr?:T[][]
     constructor(arr:T[][]|Obj<T>[])
     constructor(arr:T[][],options:DataFrameArrInitOptions)
     constructor(arr:Obj<T>[],options:DataFrameInitOptions)
+    constructor(arr:T[][]|Obj<T>[],options?:DataFrameInitOptions|DataFrameArrInitOptions)
     constructor(arr:T[][]|Obj<T>[],options?:DataFrameInitOptions|DataFrameArrInitOptions){
         if(_.isUndefined(options))
             options = {}
@@ -98,11 +99,40 @@ class DataFrame<T>{
         return this._columns
     }
 
+    _indexSetterEffect(){
+        // interface
+        // any side effects one may want to
+        // invoke when index is set
+    }
+
     set index(vals: ns_arr|Index){
         this._index = setIndex(vals,this.shape[0])
+        this._indexSetterEffect()
     }
     set columns(vals:ns_arr|Index){
         this._columns = setIndex(vals,this.shape[1])
+    }
+
+    rename(labelMap:{index?:{[key:ns]:ns},columns?:{[key:ns]:ns}},
+        inplace?:false):DataFrame<T>
+    rename(labelMap:{index?:{[key:ns]:ns},columns?:{[key:ns]:ns}},
+            inplace:true):void
+    rename(labelMap:{index?:{[key:ns]:ns},columns?:{[key:ns]:ns}},
+        inplace:boolean=false):void|DataFrame<T>{
+            
+        if(inplace){
+            if(labelMap.index)
+                _rename(this.index,labelMap.index,true)
+            if(labelMap.columns)
+                _rename(this.columns,labelMap.columns,true)
+        }else{
+            const [index,columns] = [this.index.cp(),this.columns.cp()]
+            if(labelMap.index)
+                _rename(index,labelMap.index,true)
+            if(labelMap.columns)
+                _rename(columns,labelMap.columns,true)
+            return new DataFrame(cp(this.values),{index,columns})
+        }
     }
 
 
@@ -404,9 +434,8 @@ class DataFrame<T>{
     }
 
     // push(val:T[],name:number|string='',axis:0|1=1){
-    push(val:T[],options?: PushOptions){
-        if(_.isUndefined(options))
-            options = {}
+    _push(val:T[],options: PushOptions){
+
         let {axis,name} = _.defaults(options,{name:'',axis:1})
         if(axis===0){
             check.iset.rpl.num(val,this.shape[1])
@@ -419,12 +448,45 @@ class DataFrame<T>{
                 })
         }else{
             check.iset.rpl.num(val,this.shape[0])
-            this.tr.push(val)
+            if(!_.isUndefined(this._tr))
+                this.tr.push(val)
             this.columns.values.push(name)
             this.shape[axis] += 1
             this.values.forEach((v:T[],i:number)=>{
                 v.push(val[i])
             })
+        }
+    }
+    _series_push(val:Series<T>,options:PushOptions){
+        const label = options.axis === 0? 'columns' : 'index'
+        if(JSON.stringify(val.index.values) === 
+            JSON.stringify(this[label].values))
+            this._push(val.values,options)
+        else{
+            if(this[label].is_unique()){
+                try{
+                    val = val.loc(this[label].values)
+                }catch(e){
+                    throw(`There are values in the DataFrame's ${label} that are not in the to be pushed Series' index.`)
+                }
+                if(val.shape > this[label].shape)
+                    throw(`The series' index values that are indexed by the DataFrame's ${label} are not unique.`)
+                this._push(val.values,options)
+            }else{
+                throw(`If the to be pushed Series' index does not match the DataFrame's ${label} exactly, the DataFrame's${label} must have only unique values.` )
+            }
+        }
+    }
+    push(val:T[]|Series<T>,options?: PushOptions){
+        if(_.isUndefined(options))
+            options = {}
+
+        if(val instanceof Series){
+            _.defaults(options,{name:val.name,axis:1})
+           this._series_push(val,options)
+        }else{
+            _.defaults(options,{name:'',axis:1})
+            this._push(val,options) 
         }
     }
 
@@ -596,8 +658,15 @@ class DataFrame<T>{
 
         const num_idx = labels.map(x=>{
             const indices = index.trans(x)
-            // for duplicate index, use the last one as in pandas query function
-            const idx = isArr(indices) ? (indices as [])[(indices as []).length-1] : indices
+            let idx:numx
+            if(isArr(indices)){
+                // for duplicate index, use the last one as in pandas query function
+                idx = (indices as [])[(indices as []).length-1]
+                console.warn(`label ${x} is duplicated in the DataFrame's ${axis === 1 ? 'columns' : 'index'}. The last one is used.`)
+            }else{
+                idx = indices
+            }
+            
             return idx
         })
 

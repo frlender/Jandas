@@ -5,7 +5,7 @@ import Index from './Index'
 import Series from './Series'
 import * as _ from 'lodash'
 
-import {ns_arr,numx,nsx,locParam,locParamArr} from './interfaces'
+import {ns,ns_arr,numx,nsx,locParam,locParamArr} from './interfaces'
 import  DataFrame  from './DataFrame'
 
 
@@ -100,9 +100,10 @@ function _str(x:any){
     else
         return JSON.stringify(x)
 }
-
-function _trans(index:Index,idx:number|string):numx
-function _trans(index:Index,idx?:locParamArr):number[]| undefined | boolean[]
+function _trans(index:Index):undefined
+function _trans(index:Index,idx:ns|ns[]|Index|Series<ns>):numx
+function _trans(index:Index,idx:boolean[]|Series<boolean>):boolean[]
+function _trans(index:Index,idx?:ns|locParamArr):undefined|numx|boolean[]
 function _trans(index:Index, idx?:nsx | Series<number|string> | boolean[] | Series<boolean> | Index)
             : undefined | numx | boolean[]{
     // translate labelled index to numeric index
@@ -159,6 +160,26 @@ const duplicated = (vals:any[],keep:'first'|'last'|false='first',keyFunc:(x:any)
     })
     return arr
 }
+function _rename(index:Index,labelMap:{[key:ns]:ns},inplace:true):void
+function _rename(index:Index,labelMap:{[key:ns]:ns},inplace:false):Index
+function _rename(index:Index,labelMap:{[key:ns]:ns},inplace:boolean):void|Index
+function _rename(index:Index,labelMap:{[key:ns]:ns},inplace:boolean=false):void|Index{
+    if(inplace){
+        for(const [i,key] of index.values.entries()){
+            if(key in labelMap)
+                index.values[i] = labelMap[key]
+        }
+    }else{
+        const arr:ns[] = []
+        for(const key of index.values){
+            if(key in labelMap)
+                arr.push(labelMap[key])
+            else
+                arr.push(key)
+        }
+        return new Index(arr,index.name)
+    }
+}
 
 
 // function drop_duplicates_by_index<T>(
@@ -180,4 +201,4 @@ const duplicated = (vals:any[],keep:'first'|'last'|false='first',keyFunc:(x:any)
 // }
 
 export {vec_loc,vec_loc2,vec_set,cp,_str,_trans,
-    setIndex,duplicated}
+    setIndex,duplicated,_rename}

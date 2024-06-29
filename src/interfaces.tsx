@@ -1,7 +1,7 @@
 import Series from './Series'
 import Index from './Index'
 
-
+type ns = number|string
 type ns_arr =  (number | string)[]
 type numx = number | number[]
 type nsx = number | string | ns_arr
@@ -90,11 +90,13 @@ interface DropDuplicatesOptions{
     axis?: 0|1
 }
 
-export {ns_arr,numx,nsx,locParamArr,locParam,
+type IndexType = 'index' | 'columns'
+
+export {ns,ns_arr,numx,nsx,locParamArr,locParam,
     Obj,GP,SeriesInitOptions,
     DataFrameInitOptions,
     DataFrameArrInitOptions,
     SortOptions,PushOptions,MergeOptions,
     SeriesRankOptions,DataFrameRankOptions,
     IndexRaw, SeriesRaw, DataFrameRaw,
-    DropDuplicatesOptions}
+    DropDuplicatesOptions,IndexType}

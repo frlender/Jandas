@@ -505,3 +505,22 @@ test('drop_duplicates',()=>{
     )
 })
 
+test('rename',()=>{
+    let s1 = new Index(['a','b','b'])
+    let s2 = new Series([1,1,3],{index:s1})
+
+    s2.rename({a:'c'},true)
+    expect(s2.index.values[0]).toEqual('c')
+
+    s2.rename({b:'k'},true)
+    expect(s2.index.values).toEqual(['c','k','k'])
+
+    let s3 = s2.rename({k:'b'}) as Series<number|string>
+    expect(s2.index.values).toEqual(['c','k','k'])
+    expect(s3.index.values).toEqual(['c','b','b'])
+
+    s2.rename({c:5},true)
+    expect(s2.index.values).toEqual([5,'k','k'])
+
+})
+

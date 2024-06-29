@@ -475,6 +475,50 @@ test('push',()=>{
     expect(df.loc()).toEqual(
         new DataFrame([[1, 2], [3, 4], [7, 8]],{index:['a', 5, 'z'],columns:['b', 'c']})
     )
+
+    df = new DataFrame([[1, 2], [3, 4]],
+        {index:['a', 5],
+        columns:['b', 'c']})
+    
+    let ss = new Series([7,8],
+        {name:'z',index:['b','c']})
+    df.push(ss,{axis:0})
+    expect(df.values).toEqual([[1,2],[3,4],[7,8]])
+    expect(df.index.values).toEqual(['a',5,'z'])
+
+    df = df.drop('z',0)
+    ss = new Series([7,8,9],
+        {name:'z',index:['c','b','d']})
+    df.push(ss,{axis:0})
+    expect(df.values).toEqual([[1,2],[3,4],[8,7]])
+    expect(df.index.values).toEqual(['a',5,'z'])
+    
+    df = df.drop('z',0)
+    ss = new Series([7,8,9],
+        {name:'z',index:['c','b','b']})
+    expect(()=>df.push(ss,{axis:0})).toThrow('unique')
+
+    // df = df.drop('z',0)
+    ss = new Series([7,8,9],
+        {name:'z',index:['a','b','b']})
+    expect(()=>df.push(ss,{axis:0})).toThrow('not in')
+
+
+    df = new DataFrame([[1, 2], [3, 4]],
+        {index:['a', 5],
+        columns:['b', 'b']})
+    ss = new Series([7,8],
+        {name:'z',index:['b','b']})
+    df.push(ss,{axis:0})
+    expect(df.values).toEqual([[1,2],[3,4],[7,8]])
+    expect(df.index.values).toEqual(['a',5,'z'])
+
+    df = df.drop('z',0)
+    ss = new Series([7,8],
+        {name:'z',index:['b','c']})
+    expect(()=>df.push(ss,{axis:0})).toThrow('unique')
+
+
 })
 
 test('drop',()=>{
@@ -882,4 +926,25 @@ test('drop_duplicates',()=>{
             {index:['a', 'd','b', 'b'],
             columns:['5', 5,'d']}).transpose(true).transpose(true)
         )
+})
+
+test('rename',()=>{
+    let df = new DataFrame([[1,2],[3,4]],{index:['a',5],columns:['b','c']})
+    let df2 = df.rename({})
+    expect(df2).toEqual(df)
+
+    df2.rename({},true)
+    expect(df2).toEqual(df)
+
+    df.rename({index:{a:3}},true)
+    expect(df.index.values).toEqual([3,5])
+
+    df.rename({index:{3:'a'},columns:{b:5}},true)
+    expect(df.index.values).toEqual(['a',5])
+    expect(df.columns.values).toEqual([5,'c'])
+
+    df2 = df.rename({index:{a:'k'}})
+    expect(df2.index.values).toEqual(['k',5])
+    expect(df.index.values).toEqual(['a',5])
+
 })
