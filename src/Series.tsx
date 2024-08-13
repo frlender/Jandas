@@ -289,6 +289,9 @@ class Series<T>{
         return new Series(vals,
             {index:this.index,name:this.name})
     }
+    reduce(func:(a:T[])=>T|undefined){
+        return func(this.values)
+    }
     min(){
         return stat.min(this.values as number[])
     }
@@ -315,6 +318,9 @@ class Series<T>{
     }
     var(){
         return stat.sampleVariance(this.values as number[])
+    }
+    prod(){
+        return stat.product(this.values as number[])
     }
 
     to_raw(copy:boolean=true){

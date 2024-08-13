@@ -1,5 +1,6 @@
 import Index from './Index'
 import * as _ from 'lodash'
+import {ns} from './interfaces'
 
 
 const isNum = (x:any) => _.isNumber(x)
@@ -13,7 +14,7 @@ const isStrArr = (x:any) => isArr(x)
     && x.length > 0 && isStr(x[0])
 
 
-const check = {
+const check:{[key:ns]:any} = {
     index:{
         set(k:any,len:number,v:any){
             const vstr = 'the values property of index'

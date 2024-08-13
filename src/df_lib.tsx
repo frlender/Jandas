@@ -3,7 +3,7 @@ import DataFrame from "./DataFrame"
 import * as _ from 'lodash'
 import {range} from './util'
 
-import {Obj,GP} from './interfaces'
+import {ns_arr,Obj,GP} from './interfaces'
 
 class GroupByThen<T>{
     gp:GP
@@ -15,18 +15,37 @@ class GroupByThen<T>{
         this.df = df
     }
 
+    _prepare(key:string,val:number[]){
+        const karr = JSON.parse(key) as T[]
+        const k = karr.length === 1 ? karr[0] : karr
+        const sub = this.axis === 1 ? 
+            this.df.iloc(val) : this.df.iloc(null,val)
+        return {sub:sub as DataFrame<T>,k:k}
+    }
+
     then(func:(group:DataFrame<T>,key:T | T[],
         i:number)=>void){
         let i = 0
         _.forOwn(this.gp,(val,key)=>{
-            const karr = JSON.parse(key)
-            const k = karr.length === 1 ? karr[0] : karr
-            const sub = this.axis === 1 ? 
-                this.df.iloc(val) : this.df.iloc(null,val)
-            func(sub as DataFrame<T>,k,i)
+            const {sub,k} = this._prepare(key,val)
+            func(sub,k,i)
             i += 1
         })
     }
+
+    [Symbol.iterator]() {
+        const self = this
+        function* iter(){
+            let i = 0
+            for(const [key,val] of Object.entries(self.gp)){
+                const {sub,k} = self._prepare(key,val)
+                yield {group:sub as DataFrame<T>,
+                    key:k,i:i,gp:sub as DataFrame<T>}
+                i += 1
+            }
+        }
+        return iter()
+     }
 }
 
 function _sortIndices<S>(arr:S[]|S[][],ascending:boolean){

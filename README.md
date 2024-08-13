@@ -141,13 +141,14 @@ Jandas implements `.to_dict()` to convert a dataframe into an array of objects. 
 
 
 ### Iteration
-Jandas implements `.iterrows()` and `.itercols` to iter over the rows and columns of a DataFrame.
+Jandas implements `.iterrows()` and `.itercols()` to iter over the rows and columns of a DataFrame. They can be iterated in two ways using either the `for...of` expression or a function. The `for...of` expression enables the use of the `break` keyword.
 ```TypeScript
 const df = new DataFrame([[1,2],
                           [3,4],
                           [5,6]],
            {index:['a','b','b'],columns:['d',5]})
 
+// functional iteration:
 df.iterrows((row,key,i)=>{
   console.log(row.values,key)
   // output:  [1,2],'a'
@@ -155,19 +156,41 @@ df.iterrows((row,key,i)=>{
   //          [5,6],'b'
 })
 
+// for...of iteration:
+for(const {row,key,i} of df.iterrows()){
+    console.log(row.values,key,i)
+    break
+}
+
 df.itercols((col,key,i)=>{
   console.log(col.values,key)
   // output:  [1,3,5],'d'
   //          [2,4,6], 5
 })
+
+// for...of iteration
+for(const {col,key,i} of df.itercols()){}
 ```
-It implements `.groupby()` to group a DataFrame by values in rows or columns designated by input labels. The method return a `GroupByThen` object that has a `then` method to iterate over the groups.
+It implements `.groupby()` to group a DataFrame by values in rows or columns designated by input labels. The method return a `GroupByThen` object that contains information about the groups. It can be iterated in two ways using either the `for...of` expression or the `then` method.
 ```TypeScript
 let df = new DataFrame([[3,2,3],
                         [3,8,9],
                         [5,6,7]],
     {index:['a','b','b'],columns:['5',5,'e']})
 
+// for...of iteration:
+for(const {group,k,i} of df.groupby()){
+    // group: new DataFrame([[3,2,3]],
+    //     {index:['a'],columns:['5',5,'e']})
+    // k: 'a'
+    // i: 0
+    break
+}
+// gp: alias for group
+for(const {gp,k} of df.groupby()){}
+
+
+// functional iteration:
 df.groupby().then((gp,k,i)=>{
     if(i===1){
         // gp: new DataFrame([[3,8,9],

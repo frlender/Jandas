@@ -20,6 +20,7 @@ import Series from './Series'
 import * as stat from 'simple-statistics'
 import * as _ from 'lodash'
 import ranks = require('@stdlib/stats-ranks')
+import { index } from 'd3-array'
 
 
 class DataFrame<T>{
@@ -712,20 +713,74 @@ class DataFrame<T>{
         return this.loc(row_index,col_index) as DataFrame<T>
     }
 
-    iterrows(func:(row:Series<T>,key:number|string|ns_arr,
+    _iter(indexType:'index'):Generator<{
+            row: Series<T>;
+            key: string | number;
+            i: number;
+        }>
+    _iter(indexType:'columns'):Generator<{
+            col: Series<T>;
+            key: string | number;
+            i: number;
+        }>
+    _iter(indexType:'index'|'columns',func:(row:Series<T>,key:number|string|ns_arr,
+        i:number)=>void):void
+    _iter(indexType:'index'|'columns',func?:(row:Series<T>,key:number|string|ns_arr,
         i:number)=>void){
-            this.index.values.forEach((k,i)=>{
-                const row = this.iloc(i) as Series<T>
+        const accessor = (i:number) => indexType === 'index'?
+            this.iloc(i) as Series<T> :
+            this.iloc(null,i) as Series<T>
+        
+        if(_.isUndefined(func)){
+            const self = this
+            function* iter(){
+                let i=0
+                const itemFunc = indexType === 'index' ?
+                    (row:Series<T>,k:number|string,i:number) => ({row:row,key:k,i:i}) :
+                    (row:Series<T>,k:number|string,i:number) => ({col:row,key:k,i:i})
+
+                for(const k of self[indexType].values){
+                    const row = accessor(i)
+                    yield itemFunc(row,k,i)
+                    i += 1
+                }
+            }
+            return iter()
+        }else
+            this[indexType].values.forEach((k,i)=>{
+                const row = accessor(i)
                 func(row,k,i)
             })
     }
 
-    itercols(func:(col:Series<T>,key:number|string|ns_arr,
+    iterrows():Generator<{
+        row: Series<T>;
+        key: string | number;
+        i: number;
+    }>
+    iterrows(func:(row:Series<T>,key:number|string|ns_arr,
+        i:number)=>void):void
+    iterrows(func?:(row:Series<T>,key:number|string|ns_arr,
         i:number)=>void){
-            this.columns.values.forEach((k,i)=>{
-                const row = this.iloc(null,i) as Series<T>
-                func(row,k,i)
-            })
+        if(_.isUndefined(func))
+            return this._iter('index')
+        else
+            return this._iter('index',func)
+    }
+
+    itercols():Generator<{
+        col: Series<T>;
+        key: string | number;
+        i: number;
+    }>
+    itercols(func:(row:Series<T>,key:number|string|ns_arr,
+        i:number)=>void):void
+    itercols(func?:(col:Series<T>,key:number|string|ns_arr,
+        i:number)=>void){
+        if(_.isUndefined(func))
+            return this._iter('columns')
+        else
+            return this._iter('columns',func)
     }
 
 
@@ -771,33 +826,33 @@ class DataFrame<T>{
         return then
     }
 
-    _sort_values(labels:nsx|null,ascending=true,axis:0|1=1){
-        if(axis === 1){
-            if(_.isNull(labels)){
-                const idx = _sortIndices(this.index.values,
-                    ascending)
-                return this.iloc(idx)
-            }else{
-                //TODO: any
-                const sub = this.loc(null,labels as any) as DataFrame<T>
-                const idx = _sortIndices(sub.values,
-                    ascending)
-                return this.iloc(idx)
-            }
-        }else{
-            if(_.isNull(labels)){
-                const idx = _sortIndices(this.columns.values,
-                    ascending)
-                return this.iloc(null,idx)
-            }else{
-                //TODO: any
-                const sub = this.loc(labels as any) as DataFrame<T>
-                const idx = _sortIndices(sub.tr,
-                    ascending)
-                return this.iloc(null,idx)
-            }
-        }
-    }
+    // _sort_values(labels:nsx|null,ascending=true,axis:0|1=1){
+    //     if(axis === 1){
+    //         if(_.isNull(labels)){
+    //             const idx = _sortIndices(this.index.values,
+    //                 ascending)
+    //             return this.iloc(idx)
+    //         }else{
+    //             //TODO: any
+    //             const sub = this.loc(null,labels as any) as DataFrame<T>
+    //             const idx = _sortIndices(sub.values,
+    //                 ascending)
+    //             return this.iloc(idx)
+    //         }
+    //     }else{
+    //         if(_.isNull(labels)){
+    //             const idx = _sortIndices(this.columns.values,
+    //                 ascending)
+    //             return this.iloc(null,idx)
+    //         }else{
+    //             //TODO: any
+    //             const sub = this.loc(labels as any) as DataFrame<T>
+    //             const idx = _sortIndices(sub.tr,
+    //                 ascending)
+    //             return this.iloc(null,idx)
+    //         }
+    //     }
+    // }
 
     // sort_values(labels:nsx|null,ascending=true,axis:0|1=1){
     sort_values(labels:nsx|null,options?:SortOptions){
@@ -943,14 +998,18 @@ class DataFrame<T>{
                 columns:this.index.to_raw(copy)
             }
     }
-    _reduce_num(func:(a:number[])=>number|undefined,axis:0|1){
+
+    reduce(func:(a:T[])=>T|undefined,axis:0|1){
         if(axis===1){
-            const vals = this.values.map(row=>func(row as number[])) as number[]
+            const vals = this.values.map(row=>func(row))
             return new Series(vals,this.index)
         }else{
-            const vals = this.tr.map(col=>func(col as number[])) as number[]
+            const vals = this.tr.map(col=>func(col))
             return new Series(vals,this.columns)
         }
+    }
+    _reduce_num(func:(a:number[])=>number|undefined,axis:0|1){
+        return (this as DataFrame<number>).reduce(func,axis)
     }
     min(axis:0|1=0){
         return this._reduce_num(stat.min,axis)
@@ -976,7 +1035,25 @@ class DataFrame<T>{
     mode(axis:0|1=0){
         return this._reduce_num(stat.mode,axis)
     }
+    prod(axis:0|1=0){
+        return this._reduce_num(stat.product,axis)
+    }
 }
+
+// const stat_methods = ['mean','sum','median',
+//     ['std','sampleStandardDeviation'],
+//     ['var','sampleVariance'],
+//     'mode','min','max','prod'
+// ]
+
+// stat_methods.forEach(method=>{
+//     DataFrame.prototype
+//     // DataFrame<T>.prototype[method as string] = function(axis:0|1=0){
+//     //     return this._reduce_num(stat[method],axis)
+//     // }
+// })
+
+
 
 
 export default DataFrame

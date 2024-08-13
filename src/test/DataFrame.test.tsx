@@ -623,6 +623,14 @@ test('to_dict',()=>{
 test('groupby',()=>{
 
     let df = new DataFrame([[3, 2, 3], [3, 8, 9], [5, 6, 7]],{index:['a', 'b', 'b'],columns:['5', 5, 'e']})
+    for(const {group,gp,key,i} of df.groupby()){
+        // console.log(gp)
+        expect(gp.shape).toEqual([1,3])
+        expect(group.shape).toEqual([1,3])
+        expect(key).toEqual('a')
+        expect(i).toEqual(0)
+        break
+    }
     df.groupby().then((gp,k,i)=>{
         if(i===1){
             expect(gp).toEqual(new DataFrame([[3, 8, 9], [5, 6, 7]],{index:['b', 'b'],columns:['5', 5, 'e']}))
@@ -946,5 +954,29 @@ test('rename',()=>{
     df2 = df.rename({index:{a:'k'}})
     expect(df2.index.values).toEqual(['k',5])
     expect(df.index.values).toEqual(['a',5])
+
+})
+
+test('iterrows,itercols',function(){
+    let df = new DataFrame([[1,2],[3,4]],
+        {index:['a',5],columns:['b','c']})
+
+    for(const {row,key} of df.iterrows()){
+        expect(row.values).toEqual([1,2])
+        expect(key).toEqual('a')
+        break
+    }
+
+    for(const {col,key,i} of df.itercols()){
+        if(i==0){
+            expect(col.values).toEqual([1,3])
+            expect(key).toEqual('b')
+            expect(i).toEqual(0)
+        }else{
+            expect(col.values).toEqual([2,4])
+            expect(key).toEqual('c')
+        }
+        
+    }
 
 })
