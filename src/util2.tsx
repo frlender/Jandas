@@ -13,6 +13,8 @@ import * as _ from 'lodash'
 function concat<T>(ssArr:Series<T>[]):Series<T>
 function concat<T>(dfArr:DataFrame<T>[]):DataFrame<T>
 function concat<T>(ssArr:Series<T>[],axis:0|1):Series<T>|DataFrame<T>
+function concat<T>(ssArr:Series<T>[],axis:1):DataFrame<T>
+function concat<T>(ssArr:Series<T>[],axis:0):Series<T>
 function concat<T>(dfArr:DataFrame<T>[],axis:0|1):DataFrame<T>
 function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
     if(sdArr[0] instanceof Series){

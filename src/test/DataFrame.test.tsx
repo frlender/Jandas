@@ -622,9 +622,18 @@ test('to_dict',()=>{
 
 test('groupby',()=>{
 
-    let df = new DataFrame([[3, 2, 3], [3, 8, 9], [5, 6, 7]],{index:['a', 'b', 'b'],columns:['5', 5, 'e']})
+    let df = new DataFrame([[3, 2, 3], 
+                            [3, 8, 9], 
+                            [5, 6, 7]],
+            {index:['a', 'b', 'b'],
+            columns:['5', 5, 'e']})
+    const df2 = df.groupby().mean()
+    // console.log(df2)
+    expect(df2.values).toEqual([[3,2,3],
+                                [4,7,8]])
+    expect(df2.index.values).toEqual(['a','b'])
+
     for(const {group,gp,key,i} of df.groupby()){
-        // console.log(gp)
         expect(gp.shape).toEqual([1,3])
         expect(group.shape).toEqual([1,3])
         expect(key).toEqual('a')
@@ -643,7 +652,7 @@ test('groupby',()=>{
             expect(k).toEqual(3)
         }
     })
-    df.groupby('a',0).then((gp,k,i)=>{
+    df.groupby('a',1).then((gp,k,i)=>{
         if(i===0){
             expect(gp.loc()).toEqual(new DataFrame([[3, 3], [3, 9], [5, 7]],{index:['a', 'b', 'b'],columns:['5', 'e']}))
             expect(k).toEqual(3)
@@ -654,7 +663,18 @@ test('groupby',()=>{
         }
     })
 
-    df = new DataFrame([[3, 8, 3], [3, 8, 9], [3, 6, 7], [9, 8, 7]],{index:['a', 'b', 'b', 'c'],columns:['5', 5, 'e']})
+    df = new DataFrame([[3, 8, 3], 
+                        [3, 8, 9], 
+                        [3, 6, 7], 
+                        [9, 8, 7]],
+            {index:['a', 'b', 'b', 'c'],
+            columns:['5', 5, 'e']})
+
+    const df3 = df.groupby(['5',5]).mean()
+    expect(df3.values).toEqual([[6],[7],[7]])
+    expect(df3.index.values).toEqual(
+        [ '[3,8]', '[3,6]', '[9,8]' ])
+
 
     df.groupby(['5',5]).then((gp,k,i)=>{
         if(i===0){
@@ -663,7 +683,7 @@ test('groupby',()=>{
         }
     })
 
-    df.groupby('b',0).then((gp,k,i)=>{
+    df.groupby('b',1).then((gp,k,i)=>{
         if(i===1){
             expect(gp.loc()).toEqual(new DataFrame([[8], [8], [6], [8]],{index:['a', 'b', 'b', 'c'],columns:[5]}))
             expect(k).toEqual([8,6])

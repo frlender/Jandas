@@ -20,7 +20,6 @@ import Series from './Series'
 import * as stat from 'simple-statistics'
 import * as _ from 'lodash'
 import ranks = require('@stdlib/stats-ranks')
-import { index } from 'd3-array'
 
 
 class DataFrame<T>{
@@ -784,23 +783,20 @@ class DataFrame<T>{
     }
 
 
-    groupby():GroupByThen<T>
-    groupby(labels:nsx|null):GroupByThen<T>
-    groupby(labels:nsx|null,axis:0|1):GroupByThen<T>
-    groupby(first?:any, second?:0|1):GroupByThen<T>{
-        if(_.isUndefined(first) && _.isUndefined(second)){
-            return this._groupby(null,1)
-        }else if(_.isUndefined(second)){
-            return this._groupby(first,1)
-        }else{
-            return this._groupby(first,second)
-        }
+    // groupby():GroupByThen<T>
+    // groupby(labels:nsx|null):GroupByThen<T>
+    // groupby(labels:nsx|null,axis:0|1):GroupByThen<T>
+    groupby(labels?:nsx|null, axis:0|1=0):GroupByThen<T>{
+        if(_.isUndefined(labels)){
+            return this._groupby(null)
+        }else
+            return this._groupby(labels,axis)
     }
 
-    _groupby(labels:nsx|null,axis:0|1=1){
-        const index = axis === 1 ? this.columns : this.index
-        const iter = axis === 1 ? this.iterrows : this.itercols
-        const _index = axis === 1 ? this.index : this.columns
+    _groupby(labels:nsx|null,axis:0|1=0){
+        const index = axis === 0 ? this.columns : this.index
+        const iter = axis === 0 ? this.iterrows : this.itercols
+        const _index = axis === 0 ? this.index : this.columns
 
         const res: GP = {}
         if(_.isNull(labels)){   
@@ -813,16 +809,16 @@ class DataFrame<T>{
             })
         }else{
             labels = (isArr(labels) ? labels : [labels] as ns_arr) as ns_arr
-            const idx = index.trans(labels) as number[]                
             iter.call(this,(ss,k,i)=>{
-                const karr = ss.iloc(idx).values
+                const karr = ss.loc(labels as ns_arr).values
                 const key = JSON.stringify(karr)
                 if(!(key in res))
                     res[key] = []
                 res[key].push(i)
             })
         }
-        const then = new GroupByThen<T>(res,axis,this)
+
+        const then = new GroupByThen<T>(res,axis,this,labels,index)
         return then
     }
 
@@ -999,16 +995,16 @@ class DataFrame<T>{
             }
     }
 
-    reduce(func:(a:T[])=>T|undefined,axis:0|1){
+    reduce(func:(a:T[])=>T,axis:0|1){
         if(axis===1){
             const vals = this.values.map(row=>func(row))
-            return new Series(vals,this.index)
+            return new Series(vals,{index:this.index})
         }else{
             const vals = this.tr.map(col=>func(col))
-            return new Series(vals,this.columns)
+            return new Series(vals,{index:this.columns})
         }
     }
-    _reduce_num(func:(a:number[])=>number|undefined,axis:0|1){
+    _reduce_num(func:(a:number[])=>number,axis:0|1){
         return (this as DataFrame<number>).reduce(func,axis)
     }
     min(axis:0|1=0){

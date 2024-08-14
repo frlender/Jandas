@@ -2,23 +2,45 @@
 import DataFrame from "./DataFrame"
 import * as _ from 'lodash'
 import {range} from './util'
+import {concat} from './util2'
 
 import {ns_arr,Obj,GP} from './interfaces'
+
+import * as stat from 'simple-statistics'
+import Series from './Series'
+import Index from './Index'
 
 class GroupByThen<T>{
     gp:GP
     axis:0|1
     df:DataFrame<T>
-    constructor(gp:GP,axis:0|1,df:DataFrame<T>){
+    labels: ns_arr|null
+    index: Index
+    constructor(gp:GP,axis:0|1,df:DataFrame<T>,
+        labels:ns_arr|null,index:Index
+    ){
         this.gp = gp
         this.axis = axis
         this.df = df
+        this.labels = labels
+        this.index = index
     }
 
-    _prepare(key:string,val:number[]){
+    private _get_keep_labels(){
+        return _.difference(this.index.values,this.labels as ns_arr)
+    }
+    // _get_remain_df(){
+    //     const df = this.df
+    //     this.rf = _.isNull(this.labels) ? df :
+    //         (this.axis === 0 ? 
+    //             df.loc(null,_.difference(this.index.values,this.labels)) :
+    //             df.loc(_.difference(this.index.values,this.labels)))
+    // }
+
+    private _prepare(key:string,val:number[]){
         const karr = JSON.parse(key) as T[]
         const k = karr.length === 1 ? karr[0] : karr
-        const sub = this.axis === 1 ? 
+        const sub = this.axis === 0 ? 
             this.df.iloc(val) : this.df.iloc(null,val)
         return {sub:sub as DataFrame<T>,k:k}
     }
@@ -46,6 +68,60 @@ class GroupByThen<T>{
         }
         return iter()
      }
+
+     reduce(func:(a:T[])=>T){
+        const keep_labels = _.isNull(this.labels) ?
+            null : this._get_keep_labels()
+        const get_keep = _.isNull(keep_labels) ?
+            (x:Series<T>)=>x : 
+            (x:Series<T>)=>x.loc(keep_labels)
+        const arr = []
+        for(const {gp,key} of this){
+            let ss = gp.reduce(func,this.axis)
+            // console.log(gp,key,keep_labels,ss)
+            if(_.isString(key) || _.isNumber(key))
+                ss.name = key
+            else
+                ss.name = JSON.stringify(key)
+            ss = get_keep(ss)
+            arr.push(ss)
+        }
+        const res = concat(arr,1)
+        return this.axis === 0 ? res.transpose() : res
+     }
+
+    private  _reduce_num(func:(a:number[])=>number){
+        return this.reduce(func as any) as any as Series<number>
+     }
+
+    min(){
+        return this._reduce_num(stat.min)
+    }
+    max(){
+        return this._reduce_num(stat.max)
+    }
+    sum(){
+        return this._reduce_num(stat.sum)
+    }
+    mean(){
+        return this._reduce_num(stat.mean)
+    }
+    median(){
+        return this._reduce_num(stat.median)
+    }
+    std(){
+        return this._reduce_num(stat.sampleStandardDeviation)
+    }
+    var(){
+        return this._reduce_num(stat.sampleVariance)
+    }
+    mode(){
+        return this._reduce_num(stat.mode)
+    }
+    prod(){
+        return this._reduce_num(stat.product)
+    }
+
 }
 
 function _sortIndices<S>(arr:S[]|S[][],ascending:boolean){

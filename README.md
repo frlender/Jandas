@@ -171,7 +171,7 @@ df.itercols((col,key,i)=>{
 // for...of iteration
 for(const {col,key,i} of df.itercols()){}
 ```
-It implements `.groupby()` to group a DataFrame by values in rows or columns designated by input labels. The method return a `GroupByThen` object that contains information about the groups. It can be iterated in two ways using either the `for...of` expression or the `then` method.
+It implements `.groupby()` to group a DataFrame by values in rows or columns designated by input labels. The method return a `GroupByThen` object that contains information about the groups. It can be iterated using either the `for...of` expression or the `then` method. Common statistics methods like `.mean()` and `.sum()` were implemented for the `GroupByThen` class for computation within each group.
 ```TypeScript
 let df = new DataFrame([[3,2,3],
                         [3,8,9],
@@ -189,7 +189,6 @@ for(const {group,k,i} of df.groupby()){
 // gp: alias for group
 for(const {gp,k} of df.groupby()){}
 
-
 // functional iteration:
 df.groupby().then((gp,k,i)=>{
     if(i===1){
@@ -199,13 +198,16 @@ df.groupby().then((gp,k,i)=>{
         // k: 'b'
     }
 })
-df.groupby('a',0).then((gp,k,i)=>{
+df.groupby('a',1).then((gp,k,i)=>{
     if(i===1){
         // gp: new DataFrame([[2],[8],[6]],
         //            {index:['a','b','b'],columns:[5]})
         // k: 2
     }
 })
+
+df.groupby().mean().values
+// [[3,2,3],[4,7,8]]
 
 df = new DataFrame([[3,8,3],
                     [3,8,9],
