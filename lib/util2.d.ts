@@ -5,6 +5,8 @@ import { IndexRaw, SeriesRaw, DataFrameRaw } from './interfaces';
 declare function concat<T>(ssArr: Series<T>[]): Series<T>;
 declare function concat<T>(dfArr: DataFrame<T>[]): DataFrame<T>;
 declare function concat<T>(ssArr: Series<T>[], axis: 0 | 1): Series<T> | DataFrame<T>;
+declare function concat<T>(ssArr: Series<T>[], axis: 1): DataFrame<T>;
+declare function concat<T>(ssArr: Series<T>[], axis: 0): Series<T>;
 declare function concat<T>(dfArr: DataFrame<T>[], axis: 0 | 1): DataFrame<T>;
 declare function from_raw<T>(data: IndexRaw): Index;
 declare function from_raw<T>(data: SeriesRaw<T>): Series<T>;

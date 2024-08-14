@@ -54,6 +54,7 @@ declare class Series<T> {
     op(opStr: string, ss: Series<T> | T[]): Series<T>;
     unique(): T[];
     rank(options?: SeriesRankOptions): Series<number>;
+    reduce(func: (a: T[]) => T | undefined): T | undefined;
     min(): number;
     max(): number;
     sum(): number;
@@ -62,6 +63,7 @@ declare class Series<T> {
     median(): number;
     std(): number;
     var(): number;
+    prod(): number;
     to_raw(copy?: boolean): {
         values: T[];
         name: string | number;

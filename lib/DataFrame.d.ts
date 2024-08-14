@@ -87,20 +87,39 @@ declare class DataFrame<T> {
     query(row_expr: null | string, col_expr: null | string): DataFrame<T>;
     q(col_expr: string): DataFrame<T>;
     q(row_expr: null | string, col_expr: null | string): DataFrame<T>;
+    _iter(indexType: 'index'): Generator<{
+        row: Series<T>;
+        key: string | number;
+        i: number;
+    }>;
+    _iter(indexType: 'columns'): Generator<{
+        col: Series<T>;
+        key: string | number;
+        i: number;
+    }>;
+    _iter(indexType: 'index' | 'columns', func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
+    iterrows(): Generator<{
+        row: Series<T>;
+        key: string | number;
+        i: number;
+    }>;
     iterrows(func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
-    itercols(func: (col: Series<T>, key: number | string | ns_arr, i: number) => void): void;
-    groupby(): GroupByThen<T>;
-    groupby(labels: nsx | null): GroupByThen<T>;
-    groupby(labels: nsx | null, axis: 0 | 1): GroupByThen<T>;
+    itercols(): Generator<{
+        col: Series<T>;
+        key: string | number;
+        i: number;
+    }>;
+    itercols(func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
+    groupby(labels?: nsx | null, axis?: 0 | 1): GroupByThen<T>;
     _groupby(labels: nsx | null, axis?: 0 | 1): GroupByThen<T>;
-    _sort_values(labels: nsx | null, ascending?: boolean, axis?: 0 | 1): DataFrame<T>;
     sort_values(labels: nsx | null, options?: SortOptions): DataFrame<T>;
     op(opStr: string): DataFrame<T>;
     op(opStr: string, df: DataFrame<T> | T[][]): DataFrame<T>;
     merge(df: DataFrame<T>, options?: MergeOptions): DataFrame<T>;
     rank(options?: DataFrameRankOptions): DataFrame<number>;
     to_raw(copy?: boolean): DataFrameRaw<T>;
-    _reduce_num(func: (a: number[]) => number | undefined, axis: 0 | 1): Series<number>;
+    reduce(func: (a: T[]) => T, axis: 0 | 1): Series<T>;
+    _reduce_num(func: (a: number[]) => number, axis: 0 | 1): Series<number>;
     min(axis?: 0 | 1): Series<number>;
     max(axis?: 0 | 1): Series<number>;
     sum(axis?: 0 | 1): Series<number>;
@@ -109,5 +128,6 @@ declare class DataFrame<T> {
     std(axis?: 0 | 1): Series<number>;
     var(axis?: 0 | 1): Series<number>;
     mode(axis?: 0 | 1): Series<number>;
+    prod(axis?: 0 | 1): Series<number>;
 }
 export default DataFrame;
