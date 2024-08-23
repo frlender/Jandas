@@ -14,6 +14,7 @@
   "devDependencies": {
     "@types/jest": "29.5.0",
     "@types/lodash": "^4.14.191",
+    "@stdlib/types": "^0.4.1",
     "@jest/globals": "29.5.0",
     "esbuild": "0.17.5",
     "jest": "29.5.0",
@@ -36,7 +37,7 @@
     "dist/**/*"
   ],
   "dependencies": {
-    "@stdlib/stats-ranks": "^0.1.0",
+    "@stdlib/stats-ranks": "^0.2.2",
     "lodash": "^4.17.21",
     "simple-statistics": "^7.8.3"
   }
