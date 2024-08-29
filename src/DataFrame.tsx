@@ -888,19 +888,38 @@ class DataFrame<T>{
         }
     }
 
-    op(opStr:string): DataFrame<T>
-    op(opStr:string,df:DataFrame<T>|T[][]): DataFrame<T>
-    op(opStr:string,second?:DataFrame<T>|T[][]){
+    op<K>(opStr:string|((x:T)=>K)): DataFrame<K>
+    op<K,Z>(opStr:string|((x:T,y:Z)=>K),df:DataFrame<Z>|Z[][]): DataFrame<K>
+    op<K,Z>(opStr:string|((x:T)=>K)|((x:T,y:Z)=>K),second?:DataFrame<Z>|Z[][]){
         if(_.isUndefined(second)){
-            const vals = this.values.map(vec=>vec.map(x=>eval(opStr))) as T[][]
+            let vals:K[][]
+            if(_.isString(opStr))
+                vals = this.values.map(vec=>vec.map(x=>eval(opStr)))
+            else
+                vals = this.values.map(
+                    vec=>vec.map(x=>(opStr as (x:T)=>K)(x)))
             return new DataFrame(vals,{index:this.index.cp(),
                 columns:this.columns.cp()})
-        }else if(second instanceof DataFrame){
+        }else if(second instanceof DataFrame && 
+            this.index.is_unique() &&
+            second.index.is_unique()){
             check.op.index(this.index,second.index)
-            const vals:T[][] = []
+            const vals:K[][] = []
             this.index.values.forEach((idx)=>{
                 const sx = this.loc(idx) as Series<T>
-                const sy = second.loc(idx) as Series<T>
+                const sy = (second as DataFrame<Z>).loc(idx) as Series<Z>
+                const sz = sx.op(opStr,sy)
+                vals.push(sz.values)
+            })
+            return new DataFrame(vals,{index:this.index,
+                columns:this.columns})
+        }else if(second instanceof DataFrame){
+            check.op.index(this.index,second.index)
+            check.op.indexSame(this.index,second.index)
+            const vals:K[][] = []
+            this.index.values.forEach((e,idx)=>{
+                const sx = this.iloc(idx) as Series<T>
+                const sy = (second as DataFrame<Z>).iloc(idx) as Series<Z>
                 const sz = sx.op(opStr,sy)
                 vals.push(sz.values)
             })
@@ -909,13 +928,14 @@ class DataFrame<T>{
         }else{
             check.op.values(this.index,second)
             check.op.values(this.columns,second[0])
-            const vals:T[][] = []
+            const vals:K[][] = []
             this.values.forEach((vec,i)=>{
-                const vec2 = second[i]
-                const vecNew:T[] = []
+                const vec2 = (second as Z[][])[i]
+                const vecNew:K[] = []
                 vec.forEach((x,j)=>{
                     const y = vec2[j]
-                    vecNew.push(eval(opStr))
+                    vecNew.push(_.isString(opStr) ? 
+                        eval(opStr) : opStr(x,y))
                 })
                 vals.push(vecNew)
             })

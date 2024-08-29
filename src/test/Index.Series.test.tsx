@@ -412,13 +412,19 @@ test('op',()=>{
     let s1 = new Series([1,2,3],{index:['a','b','c']})
     let s2 = new Series([1,2,3],{index:['a','c','b']})
 
+    expect(s1.op<boolean>('x>1').values).toEqual(
+        [false,true,true]
+    )
+    expect(s1.op(x=>x>1).values).toEqual(
+        [false,true,true]
+    )
     expect(s1.op('x*x').values).toEqual(
         [1,4,9]
     )
     expect(s1.op('x**x').values).toEqual(
         [1,4,27]
     )
-    expect(s1.op('x+y',s2).values).toEqual(
+    expect(s1.op<number,number>('x+y',s2).values).toEqual(
         [2,5,5]
     )
     expect(s1.op('x+y',s2.values).values).toEqual(
@@ -427,18 +433,25 @@ test('op',()=>{
     expect(s1.op('x+y*y',s2).values).toEqual(
         [2,11,7]
     )
+    expect(s1.op((x,y)=>x+y*y,s2).values).toEqual(
+        [2,11,7]
+    )
     s1 = new Series([1,2,3],{index:['a','b','b']})
     s2 = new Series([1,2,3],{index:['b','b','a']})
     expect(s1.op('x+x').values).toEqual([2,4,6])
-    expect(()=>s1.op('x+y',s2)).toThrow('unique')
-    
+    expect(()=>s1.op('x+y',s2)).toThrow('same')
+
+    s2 = new Series([1,2,3],{index:['a','b','b']})
+    expect(s1.op('x+y',s2).values).toEqual([2,4,6])
+
+
     s2 = new Series([1,2],{index:['b','b']})
     expect(()=>s1.op('x+y',s2)).toThrow('lengths')
     expect(()=>s1.op('x+y',s2.values)).toThrow('length')
     
     s1 = new Series([1,2,3],{index:['a','b','c']})
     s2 = new Series([1,2,3],{index:['d','b','a']})
-    expect(()=>s1.op('x+y',s2)).toThrow('match')
+    expect(()=>s1.op('x+y',s2)).toThrow('exist')
 
 })
 

@@ -125,11 +125,16 @@ const check:{[key:ns]:any} = {
         index(idx1:Index,idx2:Index){
             if(idx1.shape !== idx2.shape)
             throw("The lengths of the two series' indices are not equal!")
-            if(!idx1.is_unique() || !idx2.is_unique())
-            throw("One of the series' index is not unique. Currently, Jandas only support element-wise operations on two series with unique indices.")
-            const cmm = _.intersection(idx1.values,idx2.values)
-            if(cmm.length !== idx1.shape || cmm.length !== idx2.shape )
-            throw("The values in the two series' indices are not a exact match.")
+            // if(!idx1.is_unique() || !idx2.is_unique())
+            // throw("One of the series' index is not unique. Currently, Jandas only support element-wise operations on two series with unique indices.")
+            // const cmm = _.intersection(idx1.values,idx2.values)
+            // if(cmm.length !== idx1.shape || cmm.length !== idx2.shape )
+            //     throw("The values in the two series' indices are not a exact match.")
+        },
+        indexSame(idx1:Index,idx2:Index){
+            if(JSON.stringify(idx1.values)!==
+            JSON.stringify(idx2.values))
+                throw("If there are duplicate values in an index, the two series' indices must be exactly the same." )
         },
         values(idx:Index,values:any[]){
             if(idx.shape !== values.length)

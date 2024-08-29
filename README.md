@@ -225,13 +225,16 @@ df.groupby(['5',5]).then((gp,k,i)=>{
 })
 ```
 ### Element-wise Operation
-Jandas implement `.op()` to perform element-wise operations on a Series or a DataFrame. Its first argument is a JavaScript string that defines the operation. Its second argument is optional and is another Series or DataFrame with the same shape and index (and column) as its caller. If the second argument is an array, it only needs to have the same shape.
+Jandas implement `.op()` to perform element-wise operations on a Series or a DataFrame. Its first argument is a function or an string expression that defines the operation. Its second argument is optional and is another Series or DataFrame with the same shape and index (and column) as its caller. If the caller's and the second argument's indices are unique, the order of values in the indices can be different. The same applies to the caller's and the second argument's columns. If the second argument is an array, it only needs to have the same shape. The `.op()` method allows setting type parameters to help specify the argument and the output types.
 ```TypeScript
 let s1 = new Series([1,2,3],{index:['a','b','c']})
 let s2 = new Series([1,2,3],{index:['a','c','b']})
 s1.op('x*x').values // [1,4,9]
 s1.op('x+y',s2).values // [2,5,5]
 s1.op('x+y',s2.values).values // [2,4,6]
+s1.op('x>2').values // [false,false,true], type unknown[]
+s1.op<boolean>('x>2').values // [false,false,true], type boolean[]
+s1.op(x=>x>2).values // [false,false,true], type boolean[]
 
 let df = new DataFrame([[1,2],
                         [3,4]],
@@ -241,7 +244,7 @@ let df2 = new DataFrame([[1,2],
                 {index:[5,'a'],columns:['b','c']})
 df.op('x*x').values // [[1,4],[9,16]]
 df.op('x+y',df2).values //[[4,6],[4,6]]
-df.op('x+y',df2.values).values // [[2,4],[6,8]]
+df.op((x,y)=>x+y,df2.values).values // [[2,4],[6,8]]
 ```
 ### Raw copy
 An Index, Series or DataFrame object created by Jandas cannot be cloned using the `structuredClone` function or saved in the local storage as it has proxy methods. A `to_raw` method was implemented for each class to create a raw copy that can be cloned or saved. A `from_raw` utility function is provided to reconstruct the original object from a raw copy.

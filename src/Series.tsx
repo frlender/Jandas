@@ -252,28 +252,39 @@ class Series<T>{
         return ss
     }
 
-    op(opStr:string): Series<T>
-    op(opStr:string,ss:Series<T>|T[]): Series<T>
-    op(opStr:string,ss?:Series<T>|T[]){
+    op<K>(opStr:string|((x:T)=>K)): Series<K>
+    op<K,Z>(opStr:string|((x:T,y:Z)=>K),ss:Series<Z>|Z[]): Series<K>
+    op<K,Z>(opStr:string|((x:T)=>K)|((x:T,y:Z)=>K),ss?:Series<Z>|Z[]){
         if(_.isUndefined(ss)){
-            const vals = this.values.map(x=>eval(opStr)) as T[]
+            let vals:K[]
+            if(_.isString(opStr))
+                vals = this.values.map(x=>eval(opStr))
+            else
+                vals = this.values.map(x=>(opStr as (x:T)=>K)(x))
             return new Series(vals,{index:this.index,name:this.name})
-        }else if(ss instanceof Series){
+        }else if((ss instanceof Series) && 
+            this.index.is_unique() &&
+            ss.index.is_unique()){
             check.op.index(this.index,ss.index)
-            const vals:T[] = []
+            const vals:K[] = []
             this.index.values.forEach((idx)=>{
-                const x = this.loc(idx)
-                const y = ss.loc(idx)
-                const val = eval(opStr)
+                const x = this.loc(idx) as T
+                const y = (ss as Series<Z>).loc(idx) as Z
+                const val = _.isString(opStr) ? eval(opStr) : opStr(x,y)
                 vals.push(val)
             })
             return new Series(vals,this.index)
         }else{
+            if(ss instanceof Series){
+                check.op.index(this.index,ss.index)
+                check.op.indexSame(this.index,ss.index)
+                ss = ss.values
+            }
             check.op.values(this.index,ss)
-            const vals:T[] = []
+            const vals:K[] = []
             this.values.forEach((x,i)=>{
-                const y = ss[i]
-                const val = eval(opStr)
+                const y = (ss as Z[])[i]
+                const val = _.isString(opStr) ? eval(opStr) : opStr(x,y)
                 vals.push(val)
             })
             return new Series(vals,this.index)

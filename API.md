@@ -243,10 +243,10 @@ Sort the DataFrame according to values in the rows (`axis=0`) or columns (`axis=
 \
 **DataFrame.op**
 ```TypeScript
-op(opStr:string): DataFrame<T>
-op(opStr:string,df:DataFrame<T>|T[][]): DataFrame<T>
+op<K>(opStr:string|((x:T)=>K)): DataFrame<K>
+op<K,Z>(opStr:string|((x:T,y:Z)=>K),df:DataFrame<Z>|Z[][]): DataFrame<K>
 ```
-Element-wise operation on a single dataframe or on two dataframes. If defined, `df` represents the second dataframe. It could be a dataframe or an array of array. If it is a dataframe, its index and column must contain the same elements as the first dataframe and both dataframes' indices and columns must be unique.  If it is an array of array, it must have the same shape as the first dataframe. `opStr` is a JavaScript string that defines the operation on a single element or a set of two elements of the dataframes. For operations on one dataframe, use `x` in `opStr` to represent the element in the dataframe. For operations on two dataframes, use `x` and `y` to represent the element in the first and second dataframes. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
+Element-wise operation on a single dataframe or on two dataframes. If defined, `df` represents the second dataframe. It could be a dataframe or an array of array. If it is a dataframe, it must satisfies either of two rules. First, if both dataframes' indices are unique, their indices must contain the same values but the order of the values can be different. Second, if either of the two dataframes' index is not unique, their indices' values must be exactly the same. The same rules applies to their columns. `opStr` can be a function or an string expression. A valid string expression should define the operation on a single element or a set of two elements of the dataframes. For operations on one dataframe, use `x` in `opStr` to represent the element in the dataframe. For operations on two dataframes, use `x` and `y` to represent the element in the first and second dataframes. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
 
 \
 **DataFrame.merge**
@@ -408,10 +408,10 @@ Sort the Series in the `ascending` order. If values are numeric, they will be so
 \
 **Series.op**
 ```TypeScript
-op(opStr:string): Series<T>
-op(opStr:string,ss:Series<T>|T[]): Series<T>
+op<K>(opStr:string|((x:T)=>K)): Series<K>
+op<K,Z>(opStr:string|((x:T,y:Z)=>K),ss:Series<Z>|Z[]): Series<K>
 ```
-Element-wise operation on a single series or on two series. If defined, `ss` represents the second series. It could be a series or an array. If it is a series, its index must contain the same elements as the first series and both series' indices must be unique.  If it is an array, it must have the same shape as the first series. `opStr` is a JavaScript string that defines the operation on a single element or a set of two elements of the series. For operations on one series, use `x` in `opStr` to represent the element in the series. For operations on two series, use `x` and `y` to represent the element in the first and second series. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
+Element-wise operation on a single series or on two series. If defined, `ss` represents the second series. It could be a series or an array. If it is a series, it must satisfies either of two rules. First, if both series' indices are unique, their indices must contain the same values but the order of the values can be different.  Second, if either of the series' indices is not unique, their indices' values must be exactly the same. `opStr` can be a function or an string expression. A valid string expression should define the operation on a single element or a set of two elements of the series. For operations on one series, use `x` in `opStr` to represent an element in the series. For operations on two series, use `x` and `y` to represent the elements in the first and second series. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
 
 \
 **Series.unique**

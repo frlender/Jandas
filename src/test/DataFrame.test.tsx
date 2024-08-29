@@ -763,21 +763,35 @@ test('op',()=>{
     let df2 = new DataFrame([[1, 2], [3, 4]],{index:[5, 'a'],columns:['b', 'c']})
 
     expect(df.op('x*x').values).toEqual([[1,4],[9,16]])
+    expect(df.op(x=>x*x).values).toEqual([[1,4],[9,16]])
     expect(df.op('x+y',df2).values).toEqual(
         [[4,6],[4,6]])
     expect(df.op('x+y',df2.values).values).toEqual(
         [[2,4],[6,8]]
     )
 
+    df2 = new DataFrame([[1, 2], [3, 4]],{index:[5, 'a'],columns:['c', 'b']})
+    expect(df.op('x+y',df2).values).toEqual(
+        [[5,5],[5,5]])
+        
     df2 = new DataFrame([[1, 2], [3, 4], [5, 7]],{index:[5, 'a', 'b'],columns:['b', 'c']})
     expect(()=>df.op('x+y',df2)).toThrow('equal')
     expect(()=>df.op('x+y',df2.values)).toThrow('equal')
 
     df2 = new DataFrame([[1, 2], [3, 4]],{index:['a', 'a'],columns:['b', 'c']})
-    expect(()=>df.op('x+y',df2)).toThrow('unique')
+    expect(()=>df.op('x+y',df2)).toThrow('same')
 
+    df = new DataFrame([[1, 2], [3, 4]],{index:['a', 'a'],columns:['b', 'c']})
+    df2 = new DataFrame([[1, 2], [3, 4]],{index:['a', 'a'],columns:['b', 'c']})
+    expect(df.op('x+y',df2).values).toEqual([[2,4],[6,8]])
+
+    df2 = new DataFrame([[2, 1], [3, 4]],{index:['a', 'a'],columns:['b', 'c']})
+    expect(df.op((x,y)=>x<y,df2).values).toEqual([[true,false],[false,false]])
+
+    
+    df = new DataFrame([[1, 2], [3, 4]],{index:['a', 5],columns:['b', 'c']})
     df2 = new DataFrame([[1, 2], [3, 4]],{index:['a', 'b'],columns:['b', 'c']})
-    expect(()=>df.op('x+y',df2)).toThrow('match')
+    expect(()=>df.op('x+y',df2)).toThrow('exist')
 
     df2 = new DataFrame([[1, 2, 3], [3, 4, 5]],{index:[5, 'a'],columns:['a', 'b', 'c']})
     expect(()=>df.op('x+y',df2.values)).toThrow('equal')
