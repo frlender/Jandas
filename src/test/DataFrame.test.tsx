@@ -1,6 +1,7 @@
 import { expect, test, describe} from '@jest/globals';
 import {DataFrame,Index,Series} from '../J'
 import { from_raw } from '../util2';
+import * as _ from 'lodash'
 
 
 test('constructor',()=>{
@@ -737,6 +738,19 @@ test('value_counts',()=>{
         .value_counts()
     expect(ss.values).toEqual([2,1,1])
 
+})
+
+test('reduce',()=>{
+    let df = new DataFrame([[1,2],[3,4]])
+    expect(df.op<number>('x>2').reduce(_.sum)).toEqual(
+        new Series([1,1])
+    )
+    expect(df.op<number>('x>2').reduce(_.sum,1)).toEqual(
+        new Series([0,2])
+    )
+    expect(df.op<number>('x>2').reduce(_.sum,1).reduce(_.sum)).toEqual(
+        2
+    )
 })
 
 test('stats',()=>{

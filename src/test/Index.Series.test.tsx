@@ -1,6 +1,7 @@
 import { expect, test, describe} from '@jest/globals';
 import {Series,Index} from '../J'
 import { from_raw } from '../util2';
+import * as _ from 'lodash'
 
 const ss = new Series([1,2,3,4,5],{index:['a','b','c','d','e']})
 const sn = new Series([1,2,3,4,5],{index:['a','b','b','d','e'],name:'k'})
@@ -388,6 +389,16 @@ test('q',()=>{
 
 })
 
+// import * as stat from 'simple-statistics'
+
+test('reduce',()=>{
+    let ss = new Series([1,2,3],{index:['a','b','b']})
+    expect(ss.reduce(x=>x.length)).toEqual(3)
+    let ss2 = new Series([true,false,true])
+    expect(ss2.reduce(_.sum)).toEqual(2)
+    // expect().toEqual(2)
+})
+
 test('stats',()=>{
     let ss = new Series([1,2,3],{index:['a','b','b']})
     expect(ss.min()).toEqual(1)
@@ -536,4 +547,5 @@ test('rename',()=>{
     expect(s2.index.values).toEqual([5,'k','k'])
 
 })
+
 

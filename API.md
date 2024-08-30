@@ -221,6 +221,14 @@ GroupbyThen.then(func:(group:DataFrame<T>,key:T | T[], i:number)=>void): void
 Group the dataframe by values in rows or columns designated by labels. When no `labels` is provided or `labels` is equal to `null`, it groups the dataframe by the row or column index. When no `axis` is provided, the `axis` defaults to 0 and the method groups rows by designed columns labels. if `axis=1`, the method groups columns by designed index labels. It returns a `GroupByThen` object that has a `then` method. The method accepts a function as argument where the `group`, `key` and `i` are group, grouping key and numric index in each iteration. The object can also be iterated directly using the `for...of` expression. Check [Getting Started](https://github.com/frlender/Jandas#iteration) for examples.
 
 \
+**DataFrame.reduce**
+```TypeScript
+reduce<K>(func:(a:T[])=>K,axis:0|1=0)
+```
+Apply a function to the dataframe that reduces each row (`axis=1`) or each column (`axis=0`) into a scalar and collect the scalars into a new series.
+
+
+\
 **DataFrame.min, DataFrame.max, DataFrame.sum, DataFrame.mean, DataFrame.mode, DataFrame.median, DataFrame.std, DataFrame.var**
 ```TypeScript
 min(axis:0|1=0): Series<number>
@@ -389,6 +397,11 @@ q(expr:string): Series<T>
 ```
 Return a new dataframe based on the query expression `expr`. The syntax of `expr` is plain JavaScript except that it uses `x` to refer a value in the series. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples. These functions are intended to use for Series with numeric values only.
 
+**DataFrame.reduce**
+```TypeScript
+reduce<K>(func:(a:T[])=>K,axis:0|1=0)
+```
+Apply a function to the series that reduces it into a scalar.
 
 \
 **Series.min, Series.max, Series.sum, Series.mean, Series.mode, Series.median, Series.std, Series.var**

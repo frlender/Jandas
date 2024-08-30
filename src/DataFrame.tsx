@@ -1015,7 +1015,7 @@ class DataFrame<T>{
             }
     }
 
-    reduce(func:(a:T[])=>T,axis:0|1){
+    reduce<K>(func:(a:T[])=>K,axis:0|1=0){
         if(axis===1){
             const vals = this.values.map(row=>func(row))
             return new Series(vals,{index:this.index})
@@ -1024,8 +1024,8 @@ class DataFrame<T>{
             return new Series(vals,{index:this.columns})
         }
     }
-    _reduce_num(func:(a:number[])=>number,axis:0|1){
-        return (this as DataFrame<number>).reduce(func,axis)
+    _reduce_num(func:(a:any)=>number,axis:0|1){
+        return this.reduce(func,axis)
     }
     min(axis:0|1=0){
         return this._reduce_num(stat.min,axis)

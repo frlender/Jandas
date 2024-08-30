@@ -300,7 +300,7 @@ class Series<T>{
         return new Series(vals,
             {index:this.index,name:this.name})
     }
-    reduce(func:(a:T[])=>T|undefined){
+    reduce<K>(func:(a:T[])=>K){
         return func(this.values)
     }
     min(){
