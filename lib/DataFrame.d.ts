@@ -113,13 +113,13 @@ declare class DataFrame<T> {
     groupby(labels?: nsx | null, axis?: 0 | 1): GroupByThen<T>;
     _groupby(labels: nsx | null, axis?: 0 | 1): GroupByThen<T>;
     sort_values(labels: nsx | null, options?: SortOptions): DataFrame<T>;
-    op(opStr: string): DataFrame<T>;
-    op(opStr: string, df: DataFrame<T> | T[][]): DataFrame<T>;
+    op<K>(opStr: string | ((x: T) => K)): DataFrame<K>;
+    op<K, Z>(opStr: string | ((x: T, y: Z) => K), df: DataFrame<Z> | Z[][]): DataFrame<K>;
     merge(df: DataFrame<T>, options?: MergeOptions): DataFrame<T>;
     rank(options?: DataFrameRankOptions): DataFrame<number>;
     to_raw(copy?: boolean): DataFrameRaw<T>;
-    reduce(func: (a: T[]) => T, axis: 0 | 1): Series<T>;
-    _reduce_num(func: (a: number[]) => number, axis: 0 | 1): Series<number>;
+    reduce<K>(func: (a: T[]) => K, axis?: 0 | 1): Series<K>;
+    _reduce_num(func: (a: any) => number, axis: 0 | 1): Series<number>;
     min(axis?: 0 | 1): Series<number>;
     max(axis?: 0 | 1): Series<number>;
     sum(axis?: 0 | 1): Series<number>;

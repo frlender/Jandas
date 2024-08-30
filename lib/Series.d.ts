@@ -50,11 +50,11 @@ declare class Series<T> {
     q(expr: string): Series<T>;
     sort_values(ascending?: boolean): Series<T>;
     value_counts(): Series<number>;
-    op(opStr: string): Series<T>;
-    op(opStr: string, ss: Series<T> | T[]): Series<T>;
+    op<K>(opStr: string | ((x: T) => K)): Series<K>;
+    op<K, Z>(opStr: string | ((x: T, y: Z) => K), ss: Series<Z> | Z[]): Series<K>;
     unique(): T[];
     rank(options?: SeriesRankOptions): Series<number>;
-    reduce(func: (a: T[]) => T | undefined): T | undefined;
+    reduce<K>(func: (a: T[]) => K): K;
     min(): number;
     max(): number;
     sum(): number;
