@@ -223,7 +223,7 @@ Group the dataframe by values in rows or columns designated by labels. When no `
 \
 **DataFrame.reduce**
 ```TypeScript
-reduce<K>(func:(a:T[])=>K,axis:0|1=0)
+reduce<K>(func:(a:T[])=>K,axis:0|1=0): Series<K>
 ```
 Apply a function to the dataframe that reduces each row (`axis=1`) or each column (`axis=0`) into a scalar and collect the scalars into a new series.
 
@@ -399,7 +399,7 @@ Return a new dataframe based on the query expression `expr`. The syntax of `expr
 
 **Series.reduce**
 ```TypeScript
-reduce<K>(func:(a:T[])=>K,axis:0|1=0)
+reduce<K>(func:(a:T[])=>K,axis:0|1=0): K
 ```
 Apply a function to the series that reduces it into a scalar.
 
