@@ -397,7 +397,7 @@ q(expr:string): Series<T>
 ```
 Return a new dataframe based on the query expression `expr`. The syntax of `expr` is plain JavaScript except that it uses `x` to refer a value in the series. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples. These functions are intended to use for Series with numeric values only.
 
-**DataFrame.reduce**
+**Series.reduce**
 ```TypeScript
 reduce<K>(func:(a:T[])=>K,axis:0|1=0)
 ```
