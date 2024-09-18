@@ -225,7 +225,7 @@ df.groupby(['5',5]).then((gp,k,i)=>{
 })
 ```
 ### Element-wise Operation
-Jandas implement `.op()` to perform element-wise operations on a Series or a DataFrame. Its first argument is a function or an string expression that defines the operation. Its second argument is optional and is another Series or DataFrame with the same shape and index (and column) as its caller. If the caller's and the second argument's indices are unique, the order of the values in the indices can be different. The same applies to the caller's and the second argument's columns. If the second argument is an array, it only needs to have the same shape. The `.op()` method allows setting type parameters to help specify the types of the output and the second argument and the output.
+Jandas implement `.op()` to perform element-wise operations on a Series or a DataFrame. Its first argument is a function or an string expression that defines the operation. Its second argument is optional and is another Series or DataFrame with the same shape and index (and column) as its caller. If the caller's and the second argument's indices are unique, the order of the values in the indices can be different. The same applies to the caller's and the second argument's columns. If the second argument is an array, it only needs to have the same shape. The `.op()` method allows setting type parameters to help specify the types of the output and the second argument.
 ```TypeScript
 let s1 = new Series([1,2,3],{index:['a','b','c']})
 let s2 = new Series([1,2,3],{index:['a','c','b']})

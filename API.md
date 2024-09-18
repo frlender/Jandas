@@ -234,7 +234,7 @@ Apply a function to the dataframe that reduces each row (`axis=1`) or each colum
 min(axis:0|1=0): Series<number>
 // other functions are similarly defined
 ```
-A collection of functions to compute statistics on the `axis` dimension. The default is to compute statistics for each row. They are implemented as wrappers around the corresponding functions in the [simple-statistics](https://github.com/simple-statistics/simple-statistics) package. The `std` and `var` functions are implemented using the `sampleStandardDeviation` and `sampleVariance` functions in the package.
+A collection of functions to compute statistics on the `axis` dimension. The default is to compute statistics along the row dimension. They are implemented as wrappers around the corresponding functions in the [simple-statistics](https://github.com/simple-statistics/simple-statistics) package. The `std` and `var` functions are implemented using the `sampleStandardDeviation` and `sampleVariance` functions in the package.
 These functions are intended to use for DataFrame with numeric values only.
 
 \
