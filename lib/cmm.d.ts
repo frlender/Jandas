@@ -21,4 +21,5 @@ declare function _rename(index: Index, labelMap: {
 declare function _rename(index: Index, labelMap: {
     [key: ns]: ns;
 }, inplace: boolean): void | Index;
-export { vec_loc, vec_loc2, vec_set, cp, _str, _trans, setIndex, duplicated, _rename };
+declare function addCtx(expr: string, __ctx__: any): string;
+export { vec_loc, vec_loc2, vec_set, cp, _str, _trans, setIndex, duplicated, _rename, addCtx };

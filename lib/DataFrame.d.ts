@@ -1,4 +1,4 @@
-import { ns, ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions, DataFrameRankOptions, DataFrameRaw, DropDuplicatesOptions } from './interfaces';
+import { ns, ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataFrameInitOptions, PushOptions, SortOptions, MergeOptions, DataFrameRankOptions, DataFrameRaw, DropDuplicatesOptions, QueryOptions } from './interfaces';
 import { GroupByThen } from './df_lib';
 import Index from './Index';
 import Series from './Series';
@@ -82,11 +82,13 @@ declare class DataFrame<T> {
     reset_columns(name?: string | number): DataFrame<T>;
     to_dict(axis?: 0 | 1): Obj<T>[];
     bool(expr: string, axis?: 0 | 1): boolean[];
-    b(expr: string, axis?: 0 | 1): boolean[];
+    b(expr: string, options?: QueryOptions): boolean[];
     query(col_expr: string): DataFrame<T>;
-    query(row_expr: null | string, col_expr: null | string): DataFrame<T>;
+    query(col_expr: null | string, row_expr_or_ctx: any): DataFrame<T>;
+    query(col_expr: null | string, row_expr: null | string, ctx: any): DataFrame<T>;
     q(col_expr: string): DataFrame<T>;
-    q(row_expr: null | string, col_expr: null | string): DataFrame<T>;
+    q(col_expr: null | string, row_expr_or_ctx: any): DataFrame<T>;
+    q(col_expr: null | string, row_expr: null | string, ctx: any): DataFrame<T>;
     _iter(indexType: 'index'): Generator<{
         row: Series<T>;
         key: string | number;

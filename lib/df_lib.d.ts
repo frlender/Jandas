@@ -31,4 +31,5 @@ declare class GroupByThen<T> {
     prod(): Series<number>;
 }
 declare function _sortIndices<S>(arr: S[] | S[][], ascending: boolean): number[];
-export { Obj, GP, GroupByThen, _sortIndices };
+declare function findUnquotedAt(str: string): number[];
+export { Obj, GP, GroupByThen, _sortIndices, findUnquotedAt };

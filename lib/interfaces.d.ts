@@ -70,4 +70,8 @@ interface DropDuplicatesOptions {
     axis?: 0 | 1;
 }
 type IndexType = 'index' | 'columns';
-export { ns, ns_arr, numx, nsx, locParamArr, locParam, Obj, GP, SeriesInitOptions, DataFrameInitOptions, DataFrameArrInitOptions, SortOptions, PushOptions, MergeOptions, SeriesRankOptions, DataFrameRankOptions, IndexRaw, SeriesRaw, DataFrameRaw, DropDuplicatesOptions, IndexType };
+interface QueryOptions {
+    axis?: 0 | 1;
+    ctx?: any;
+}
+export { ns, ns_arr, numx, nsx, locParamArr, locParam, Obj, GP, SeriesInitOptions, DataFrameInitOptions, DataFrameArrInitOptions, SortOptions, PushOptions, MergeOptions, SeriesRankOptions, DataFrameRankOptions, IndexRaw, SeriesRaw, DataFrameRaw, DropDuplicatesOptions, IndexType, QueryOptions };

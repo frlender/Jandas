@@ -45,9 +45,9 @@ declare class Series<T> {
     drop(labels: nsx): Series<T>;
     drop_duplicates(keep?: 'first' | 'last' | false): Series<T>;
     bool(expr: string): boolean[];
-    b(expr: string): boolean[];
-    query(expr: string): Series<T>;
-    q(expr: string): Series<T>;
+    b(expr: string, __ctx__?: any): boolean[];
+    query(expr: string, ctx?: any): Series<T>;
+    q(expr: string, ctx?: any): Series<T>;
     sort_values(ascending?: boolean): Series<T>;
     value_counts(): Series<number>;
     op<K>(opStr: string | ((x: T) => K)): Series<K>;
