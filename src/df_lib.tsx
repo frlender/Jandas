@@ -166,4 +166,27 @@ function _sortIndices<S>(arr:S[]|S[][],ascending:boolean){
     }
 }
 
-export {Obj,GP,GroupByThen,_sortIndices}
+function findUnquotedAt(str:string) {
+    let inQuotes = false;
+    let quoteType = null;
+    const positions = [];
+
+    for (let i = 0; i < str.length; i++) {
+        const char = str[i];
+
+        if (char === '"' || char === "'") {
+            if (!inQuotes) {
+                inQuotes = true;
+                quoteType = char;
+            } else if (char === quoteType) {
+                inQuotes = false;
+            }
+        } else if (char === '@' &&!inQuotes) {
+            positions.push(i);
+        }
+    }
+
+    return positions;
+}
+
+export {Obj,GP,GroupByThen,_sortIndices, findUnquotedAt}

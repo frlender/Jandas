@@ -3,7 +3,6 @@
 Jandas is designed to have very similar indexing experience as  Pandas. It implements DataFrame, Series and Index classes in TypeScript and supports position- and label-based indexing. Unlike Pandas where some operations are asymemtrical between row and column, Jandas tries to make all operations symmetrical along the two axes. It is comprehensively tested with code coverage >90%.
 
 ## Main Features
-
 -   Row and column indexing are guaranteed the same speed.
 -   Support DataFrame with zero rows/columns in the shape of (0,n) or (n,0).
 -   Support index with duplicated values.
@@ -106,7 +105,7 @@ const df = new DataFrame([[1,2,3],
                           [5,6,7]],
         {index:['a','b','b'],columns:['5',5,'e']})
 df.b('[ "5" ]>3') // output: [false,false,true]
-df.b('["a"]<=2',0) // [true,true,false]
+df.b('["a"]<=2',{axis:0}) // [true,true,false]
 
 df.q('["5"]>3') //output: new DataFrame([[5,6,7]],
                 //     {index:['b'],columns:['5',5,'e']})
@@ -115,10 +114,11 @@ df.q('["5"]>3') //output: new DataFrame([[5,6,7]],
 df.q('[5]>3') //output: new DataFrame([[3,8,9],[5,6,7]],
               //        {index:['b','b'],columns:['5',5,'e']})
 
-df.q('[ "a"]>1 && ["a"]<3',null)
+const context_value = 3
+df.q(null,'[ "a"]>1 && ["a"]<@',context_value)
 // output: new DataFrame([[2],[8],[6]],{index:['a','b','b'],columns:[5]})
 
-df.q('[ "a" ]>1','[ 5 ]>3') //output: new DataFrame([[8,9],[6,7]],
+df.q('[ 5 ]>@b','[ "a" ]>@a',{a:1,b:3}) //output: new DataFrame([[8,9],[6,7]],
                         //       {index:['b','b'],columns:[5,'e']})
 
 const dx = new DataFrame<number|string>(
@@ -135,6 +135,9 @@ dx.q('["a","c"].includes([5]) && ["e"]>7')
 dx.q('["c",].includes([5])')
 //output: new DataFrame<number|string>([[5,'c',7]],
 // {index:['b'],columns:['5',5,'e']})
+
+// or use the context value (recommended):
+dx.q('@.includes([5])',['c']) // the same output
 ```
 
 Jandas implements `.to_dict()` to convert a dataframe into an array of objects. It is similar to `.to_dict('records')` in Pandas. It also implements `.reset_index()` and `.reset_columns()` to reset index along the row and column axes.

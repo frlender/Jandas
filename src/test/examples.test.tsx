@@ -91,7 +91,7 @@ expect(ss.q('x>=1 && x<3').values).toEqual([1,2]) // [1,2]
 const df = new DataFrame([[1,2,3],[3,8,9],[5,6,7]],
         {index:['a','b','b'],columns:['5',5,'e']})
 expect(df.b('[ "5" ]>3')).toEqual([false,false,true])// output: [false,false,true]
-expect(df.b('["a"]<=2',0)).toEqual([true,true,false]) // [true,true,false]
+expect(df.b('["a"]<=2',{axis:0})).toEqual([true,true,false]) // [true,true,false]
 
 expect(df.q('["5"]>3')).toEqual(
     new DataFrame([[5,6,7]],
@@ -106,12 +106,12 @@ expect(df.q('[5]>3')).toEqual(
 ) //output: new DataFrame([[3,8,9],[5,6,7]],
               //        ['b','b'],['5',5,'e'])
 
-expect(df.q('[ "a"]>1 && ["a"]<3',null).loc()).toEqual(
+expect(df.q(null,'[ "a"]>1 && ["a"]<@',3).loc()).toEqual(
     new DataFrame([[2],[8],[6]],{index:['a','b','b'],columns:[5]})
 )
 // output: new DataFrame([[2],[8],[6]],['a','b','b'],[5])
 
-expect(df.q('[ "a" ]>1','[ 5 ]>3')).toEqual(
+expect(df.q('[ 5 ]>@b','[ "a" ]>@a',{a:1,b:3})).toEqual(
     new DataFrame([[8,9],[6,7]],
         {index:['b','b'],columns:[5,'e']})
 ) //output: new DataFrame([[8,9],[6,7]],
@@ -129,6 +129,11 @@ expect(dx.q('["c",].includes([5])')).toEqual(
 )
 //output: new DataFrame<number|string>([[3,'a',9]],
 //        ['b'],['5',5,'e'])
+
+expect(dx.q('@.includes([5])',['c'])).toEqual(
+    new DataFrame<number|string>([[5,'c',7]],
+    {index:['b'],columns:['5',5,'e']})
+)
 })
 
 test('iteration',()=>{

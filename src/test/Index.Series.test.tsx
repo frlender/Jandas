@@ -370,6 +370,8 @@ test('b',()=>{
     expect(ss.b('x>1 && x<3')).toEqual([false,true,false])
     expect(ss.b('x>=1 && x<3')).toEqual([true,true,false])
 
+    expect(ss.b('x>=@a && x<@b',{a:1,b:3})).toEqual([true,true,false])
+    expect(ss.b('@ === undefined')).toEqual([true,true,true])
 
     
     let sx = new Series(['a','b','b'],{index:['a','b','b']})
@@ -386,6 +388,7 @@ test('q',()=>{
     let sx = new Series(['a','b','b'],{index:['a','b','b']})
     expect(sx.q('x==="b"')).toEqual(new Series(['b','b'],{index:['b','b']}))
     expect(sx.query('x==="b"')).toEqual(new Series(['b','b'],{index:['b','b']}))
+    expect(sx.query('x===@','b')).toEqual(new Series(['b','b'],{index:['b','b']}))
 
 })
 

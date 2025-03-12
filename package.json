@@ -1,10 +1,11 @@
 {
   "name": "jandas",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "A very much Pandas-like JavaScript library for data science",
   "main": "lib/J.js",
   "scripts": {
     "test": "jest",
+    "test2": "jest --testPathPattern=temp.test.tsx",
     "build": "tsc",
     "prepare": "npm run build && ./node_modules/.bin/esbuild lib/J.js --minify --keep-names --bundle --global-name=jandas --platform=browser --outfile=dist/jandas.min.js",
     "prepublishOnly": "npm test"

@@ -3,7 +3,8 @@ import {isNum, isArr,isVal,isNumArr,isStrArr,
 
 import {vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex,
-    duplicated,_rename} from './cmm'
+    duplicated,_rename,
+    addCtx} from './cmm'
 
 
 import {ns,ns_arr,numx,nsx,locParamArr,SeriesInitOptions,
@@ -215,15 +216,17 @@ class Series<T>{
     bool(expr:string){
         return this.b(expr)
     }
-    b(expr:string){
-        return this.values.map(x=>eval(expr)) as boolean[]
+    b(expr:string,__ctx__?:any){
+        console.log(__ctx__)
+        const newExpr = addCtx(expr,__ctx__)
+        return this.values.map(x=>eval(newExpr)) as boolean[]
     }
 
-    query(expr:string){
-        return this.q(expr)
+    query(expr:string,ctx?:any){
+        return this.q(expr,ctx)
     }
-    q(expr:string){
-        const bidx = this.b(expr)
+    q(expr:string,ctx?:any){
+        const bidx = this.b(expr,ctx)
         return this.loc(bidx) as Series<T>
     }
 

@@ -92,6 +92,11 @@ interface DropDuplicatesOptions{
 
 type IndexType = 'index' | 'columns'
 
+interface QueryOptions{
+    axis?: 0|1
+    ctx?: any
+}
+
 export {ns,ns_arr,numx,nsx,locParamArr,locParam,
     Obj,GP,SeriesInitOptions,
     DataFrameInitOptions,
@@ -99,4 +104,4 @@ export {ns,ns_arr,numx,nsx,locParamArr,locParam,
     SortOptions,PushOptions,MergeOptions,
     SeriesRankOptions,DataFrameRankOptions,
     IndexRaw, SeriesRaw, DataFrameRaw,
-    DropDuplicatesOptions,IndexType}
+    DropDuplicatesOptions,IndexType,QueryOptions}

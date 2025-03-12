@@ -572,7 +572,11 @@ describe('reset_index_columns',()=>{
 })
 
 test('b',()=>{
-    let df = new DataFrame([[1, 2, 3], [3, 8, 9], [5, 6, 7]],{index:['a', 'b', 'b'],columns:['5', 5, 'e']})
+    let df = new DataFrame([[1, 2, 3], 
+                            [3, 8, 9], 
+                            [5, 6, 7]],
+{index:['a', 'b', 'b'],columns:['5', 5, 'e']})
+
     let bidx = df.b('["5"]>3')
     expect(bidx).toEqual([false,false,true])
     bidx = df.b('[ "5" ]>3')
@@ -581,8 +585,18 @@ test('b',()=>{
     let val = 3
     bidx = df.b(`[5]>${val}`)
     expect(bidx).toEqual([false,true,true])
+
+    bidx = df.b('["5"]>@',{ctx:val})
+    expect(bidx).toEqual([false,false,true])
+
+    bidx = df.b('["5"]>@val',{ctx:{val:3}})
+    expect(bidx).toEqual([false,false,true])
+
+    bidx = df.b('[5]>@val && [5]<@val2',{ctx:{val:3,val2:8}})
+    expect(bidx).toEqual([false,false,true])
+    
     // for duplicate index, use the last one as in pandas query function
-    bidx = df.b('["b"]>3',0)
+    bidx = df.b('["b"]>3',{axis:0})
     expect(bidx).toEqual([true,true,true])
     // df._b('`a` > 5 && `b` === "a"')
     bidx = df.b('["5"]>3 && ["e"]<8')
@@ -590,14 +604,28 @@ test('b',()=>{
 })
 
 test('q',()=>{
-    let df = new DataFrame([[1, 2, 3], [3, 8, 9], [5, 6, 7]],{index:['a', 'b', 'b'],columns:['5', 5, 'e']})
+    let df = new DataFrame([[1, 2, 3], 
+                            [3, 8, 9], 
+                            [5, 6, 7]],
+    {index:['a', 'b', 'b'],columns:['5', 5, 'e']})
+
     let df2 = df.q('["5"]>3')
     expect(df2).toEqual(new DataFrame([[5, 6, 7]],{index:['b'],columns:['5', 5, 'e']}))
-    df2 = df.q('["a"]>1 && ["a"]<3',null)
-    expect(df2.loc()).toEqual(new DataFrame([[2], [8], [6]],{index:['a', 'b', 'b'],columns:[5]}))
-    df2 = df.q(null,'["5"]>3')
+
+    let val = 3
+    df2 = df.q('["5"]>@',val)
     expect(df2).toEqual(new DataFrame([[5, 6, 7]],{index:['b'],columns:['5', 5, 'e']}))
-    df2 = df.q('["a"]>1','[5]>3')
+
+    df2 = df.q('["5"]>@val',{val:val})
+    expect(df2).toEqual(new DataFrame([[5, 6, 7]],{index:['b'],columns:['5', 5, 'e']}))
+
+    df2 = df.q('["5"]>@val','["a"]>@val2',{val:val,val2:1})
+    expect(df2).toEqual(new DataFrame([[6, 7]],{index:['b'],columns:[ 5, 'e']}))
+
+
+    df2 = df.q(null,'["a"]>1 && ["a"]<3')
+    expect(df2.loc()).toEqual(new DataFrame([[2], [8], [6]],{index:['a', 'b', 'b'],columns:[5]}))
+    df2 = df.q('[5]>3','["a"]>1')
     expect(df2).toEqual(new DataFrame([[8, 9], [6, 7]],{index:['b', 'b'],columns:[5, 'e']}))
     let dx = new DataFrame<number|string>([[1, 2, 3], ['e', 'a', 'c'], [5, 6, 7]],{index:['a', 'b', 'b'],columns:['5', 5, 'e']})
     let dx2 = dx.q('["a","c"].includes([5]) && ["e"]<7')

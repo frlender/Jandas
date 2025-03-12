@@ -174,25 +174,31 @@ Alias for `DataFrame.b`.
 \
 **DataFrame.b**
 ```TypeScript
-b(expr:string,axis:0|1=1): boolean[]
+BOptions = {
+    axis?: 0|1 // defaults to 1
+    ctx?: any
+}
+b(expr:string,options?:BOptions): boolean[]
 ```
-Return an boolean array based on the evaluation of expression `expr`. `axis` determines the dimension on which to evaluate the expression. The syntax of `expr` is plain JavaScript except that it uses `[label]` to refer a row or column. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+Return an boolean array based on the evaluation of expression `expr`. `axis` determines the dimension on which to evaluate the expression. `ctx` holds the context values to be evaluated in the expression. The syntax of `expr` is plain JavaScript except that it uses `[label]` to refer a row or column and `@` to refer to the `ctx` value(s). If `ctx` is an object, use `@key` to refer to the value of a key in the expression. Use `[value,]` to reprsent an array with a single value in the expression. Without the comma at the end, `[value]` will be treated as a label selection with the label being `value`. Of note, if no context value is passed to the method, `@` will be `undefined` in the expression. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
 **DataFrame.query**
 ```TypeScript
-query(col_expr:string): DataFrame<T>
-query(row_expr:null|string,col_expr:null|string): DataFrame<T>
+query(col_expr:string):DataFrame<T>
+query(col_expr:null|string, row_expr_or_ctx:any):DataFrame<T>
+query(col_expr:null|string, row_expr:null|string, ctx:any):DataFrame<T>
 ```
 Alias for `DataFrame.q`.
 
 \
 **DataFrame.q**
 ```TypeScript
-q(col_expr:string): DataFrame<T>
-q(row_expr:null|string,col_expr:null|string): DataFrame<T>
+q(col_expr:string):DataFrame<T>
+q(col_expr:null|string, row_expr_or_ctx:any):DataFrame<T>
+q(col_expr:null|string, row_expr:null|string, ctx:any):DataFrame<T>
 ```
-Return a new dataframe based on the query expressions `col_expr` and `row_expr`. `col_expr` is evaluated on the columns and `row_expr` on the rows. When there is one argument, it will be `col_expr`. When there are two arguments, the first will be `row_expr` and the second `col_expr`. `null` is used as a placeholder. The syntax of the expressions is plain JavaScript except that it uses `[label]` to refer a row or column. Use `[value,]` to reprsent an array with a single value in the expression. Without the comma at the end, `[value]` will be treated as a label selection with the label being `value`. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+Return a new dataframe based on the query expressions `col_expr` and `row_expr`. `col_expr` is evaluated on the columns and `row_expr` on the rows. When there is one argument, it will be `col_expr`. When there are two arguments, the second will be `row_expr`. `null` is used as a placeholder. `ctx` holds the context values to be evaluated in the expression(s). The syntax of the expressions is plain JavaScript except that it uses `[label]` to refer a row or column and `@` to refer to the `ctx` value(s). If `ctx` is an object, use `@key` to refer to the value of a key in the expression. Use `[value,]` to reprsent an array with a single value in the expression. Without the comma at the end, `[value]` will be treated as a label selection with the label being `value`. Of note, if no context value is passed to the method, `@` will be `undefined` in the expression. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
 
 \
 **DataFrame.iterrows**
@@ -386,16 +392,23 @@ Drop duplicate values from the Series. `keep` determines which duplicates to kee
 \
 **Series.b**
 ```TypeScript
-b(expr:string): boolean[]
+b(expr:string,ctx?:any): boolean[]
 ```
-Return an boolean array based on the evaluation of expression `expr`. The syntax of `expr` is plain JavaScript except that it uses `x` to refer a value in the series. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+Return an boolean array based on the evaluation of expression `expr`. `ctx` holds the context values to be evaluated in the expression. The syntax of `expr` is plain JavaScript except that it uses `x` to refer a value in the series and `@` to refer to the `ctx` value(s). If `ctx` is an object, use `@key` to refer to the value of a key in the expression. Of note, if no context value is passed to the method, `@` will be `undefined` in the expression. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples.
+
+\
+**Series.query**
+```TypeScript
+query(expr:string): Series<T>
+```
+Alias for `Series.q`.
 
 \
 **Series.q**
 ```TypeScript
 q(expr:string): Series<T>
 ```
-Return a new dataframe based on the query expression `expr`. The syntax of `expr` is plain JavaScript except that it uses `x` to refer a value in the series. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples. These functions are intended to use for Series with numeric values only.
+Return a new dataframe based on the query expression `expr`. The syntax of `expr` is plain JavaScript except that it uses `x` to refer a value in the series and `@` to refer to the `ctx` value(s). If `ctx` is an object, use `@key` to refer to the value of a key in the expression. Of note, if no context value is passed to the method, `@` will be `undefined` in the expression. Check [Getting Started](https://github.com/frlender/Jandas/blob/main/README.md#getting-started) for examples. These functions are intended to use for Series with numeric values only.
 
 **Series.reduce**
 ```TypeScript

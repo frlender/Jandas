@@ -8,6 +8,8 @@ import * as _ from 'lodash'
 import {ns,ns_arr,numx,nsx,locParam,locParamArr} from './interfaces'
 import  DataFrame  from './DataFrame'
 
+import { findUnquotedAt } from './df_lib'
+
 
 function cp<S>(arr:S[]){
     return arr.slice(0)
@@ -181,6 +183,25 @@ function _rename(index:Index,labelMap:{[key:ns]:ns},inplace:boolean=false):void|
     }
 }
 
+function addCtx(expr:string,__ctx__:any){
+    const atPosArr = findUnquotedAt(expr)
+    let newExpr = ''
+    let lastPos = 0
+    // let lastLen = 0
+    for(var match of expr.matchAll(/(@[a-zA-Z_$][a-zA-Z0-9_$]*)|(@)/g)){
+        const idx = match.index!
+        if(atPosArr.includes(idx)){
+            const addOn = match[0] === '@' ? 
+                `__ctx__` : 
+                `__ctx__["${match[0].slice(1)}"]`
+            newExpr += expr.slice(lastPos,idx) + addOn
+            lastPos = idx+match[0].length
+        }
+    }
+    newExpr += expr.slice(lastPos)
+    return newExpr
+}
+
 
 // function drop_duplicates_by_index<T>(
 //     x:Series<T>):Series<T>
@@ -201,4 +222,4 @@ function _rename(index:Index,labelMap:{[key:ns]:ns},inplace:boolean=false):void|
 // }
 
 export {vec_loc,vec_loc2,vec_set,cp,_str,_trans,
-    setIndex,duplicated,_rename}
+    setIndex,duplicated,_rename,addCtx}

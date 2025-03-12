@@ -1,16 +1,16 @@
 import {ns,ns_arr,numx,nsx,locParam,locParamArr,
     Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
 SortOptions,MergeOptions,DataFrameRankOptions,
-DataFrameRaw,DropDuplicatesOptions} from './interfaces'
+DataFrameRaw,DropDuplicatesOptions,QueryOptions} from './interfaces'
 
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
 
 import {vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex,
-    duplicated,_rename} from './cmm'
+    duplicated,_rename,addCtx} from './cmm'
 
-import {GroupByThen,_sortIndices} from './df_lib'
+import {GroupByThen,_sortIndices,findUnquotedAt} from './df_lib'
 import { concat } from './util2'
 
 
@@ -607,9 +607,13 @@ class DataFrame<T>{
     }
 
     bool(expr:string,axis:0|1=1){
-        return this.b(expr,axis)
+        return this.b(expr,{axis:axis})
     }
-    b(expr:string,axis:0|1=1){
+    // b(expr:string,axis:0|1=1){
+    b(expr:string,options?:QueryOptions){
+        if(_.isUndefined(options))
+            options = {}
+        let {ctx,axis} = _.defaults(options,{ctx:undefined,axis:1})
         // ["bc"] > 5 && [5] > 6
         const arr:number[] = []
         range(expr.length).forEach(i=>{
@@ -677,38 +681,68 @@ class DataFrame<T>{
             const rpl = `v[${num}]`
             expr = expr.replaceAll(pattern,rpl)
         })
-        const bidx = vals.map(v=>eval(expr)) as boolean[]
+
+        const __ctx__ = options.ctx
+        const newExpr = addCtx(expr,__ctx__)
+        
+        // console.log(expr)
+        // console.log(newExpr)
+        const bidx = vals.map(v=>eval(newExpr)) as boolean[]
         return bidx
 
     }
 
     query(col_expr:string):DataFrame<T>
-    query(row_expr:null|string,col_expr:null|string):DataFrame<T>
-    query(first:null|string,second?:null|string):DataFrame<T>{
-        return _.isUndefined(second) ? 
-            this.q(first as string) : 
-            this.q(first,second) 
+    query(col_expr:null|string, row_expr_or_ctx:any):DataFrame<T>
+    query(col_expr:null|string, row_expr:null|string, ctx:any):DataFrame<T>
+    query(first:null|string,second?:any, third?:any):DataFrame<T>{
+        return this.q(first,second,third)
     }
     
     q(col_expr:string):DataFrame<T>
-    q(row_expr:null|string,col_expr:null|string):DataFrame<T>
-    q(first:null|string,second?:null|string):DataFrame<T>{
+    q(col_expr:null|string, row_expr_or_ctx:any):DataFrame<T>
+    q(col_expr:null|string, row_expr:null|string, ctx:any):DataFrame<T>
+    q(first:null|string,second?:any, third?:any):DataFrame<T>{
         let row_index:null|boolean[] = null
         let col_index:null|boolean[] = null
-        switch(true){
-            case first !== null && _.isUndefined(second):
-                row_index = this.b(first as string,1)
-                break
-            case first !== null && second === null:
-                col_index = this.b(first as string,0)
-                break
-            case first === null:
-                row_index = this.b(second as string,1)
-                break
-            default:
-                row_index = this.b(second as string,1)
-                col_index = this.b(first as string,0)
+        if(_.isUndefined(second))
+            row_index = this.b(first as string,{axis:1})
+        else if(_.isUndefined(third)){
+            if(!_.isString(second) && second !== null)
+                row_index = this.b(first as string,{axis:1,ctx:second})
+            else{
+                const atPosArr = _.isString(first) ? 
+                        findUnquotedAt(first) :
+                        undefined
+                if(atPosArr && atPosArr.length > 0)
+                    row_index = this.b(first as string,{axis:1,ctx:second})
+                else{
+                    col_index = second === null ? null :
+                        this.b(second as string,{axis:0})
+                    row_index = first === null ? null :
+                        this.b(first as string,{axis:1})
+                }
+            }
+        }else{
+            col_index = second === null ? null :
+                this.b(second as string,{axis:0,ctx:third})
+            row_index = first === null ? null :
+                this.b(first as string,{axis:1,ctx:third})
         }
+        // switch(true){
+        //     case _.isUndefined(second):
+        //         row_index = this.b(first as string,{axis:1})
+        //         break
+        //     case first !== null && second === null:
+        //         col_index = this.b(first as string,0)
+        //         break
+        //     case first === null:
+        //         row_index = this.b(second as string,1)
+        //         break
+        //     default:
+        //         row_index = this.b(second as string,1)
+        //         col_index = this.b(first as string,0)
+        // }
         return this.loc(row_index,col_index) as DataFrame<T>
     }
 
