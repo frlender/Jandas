@@ -187,15 +187,16 @@ let df = new DataFrame([[3,2,3],
     {index:['a','b','b'],columns:['5',5,'e']})
 
 // for...of iteration:
-for(const {group,k,i} of df.groupby()){
+for(const [group,k,i] of df.groupby()){
     // group: new DataFrame([[3,2,3]],
     //     {index:['a'],columns:['5',5,'e']})
     // k: 'a'
     // i: 0
     break
 }
-// gp: alias for group
-for(const {gp,k} of df.groupby()){}
+
+// expose only gp and k
+for(const [gp,k] of df.groupby()){}
 
 // functional iteration:
 df.groupby().then((gp,k,i)=>{
