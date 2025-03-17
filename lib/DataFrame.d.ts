@@ -89,28 +89,23 @@ declare class DataFrame<T> {
     q(col_expr: string): DataFrame<T>;
     q(col_expr: null | string, row_expr_or_ctx: any): DataFrame<T>;
     q(col_expr: null | string, row_expr: null | string, ctx: any): DataFrame<T>;
-    _iter(indexType: 'index'): Generator<{
-        row: Series<T>;
-        key: string | number;
-        i: number;
-    }>;
-    _iter(indexType: 'columns'): Generator<{
-        col: Series<T>;
-        key: string | number;
-        i: number;
-    }>;
+    _iter(indexType: 'index' | 'columns'): Generator<[
+        ss: Series<T>,
+        key: string | number,
+        i: number
+    ]>;
     _iter(indexType: 'index' | 'columns', func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
-    iterrows(): Generator<{
-        row: Series<T>;
-        key: string | number;
-        i: number;
-    }>;
+    iterrows(): Generator<[
+        row: Series<T>,
+        key: string | number,
+        i: number
+    ]>;
     iterrows(func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
-    itercols(): Generator<{
-        col: Series<T>;
-        key: string | number;
-        i: number;
-    }>;
+    itercols(): Generator<[
+        col: Series<T>,
+        key: string | number,
+        i: number
+    ]>;
     itercols(func: (row: Series<T>, key: number | string | ns_arr, i: number) => void): void;
     groupby(labels?: nsx | null, axis?: 0 | 1): GroupByThen<T>;
     _groupby(labels: nsx | null, axis?: 0 | 1): GroupByThen<T>;
