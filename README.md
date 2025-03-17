@@ -164,7 +164,7 @@ for(const [row,key,i] of df.iterrows()){
     console.log(row.values,key,i)
     break
 }
-// expose only the row
+// expose only row
 for(const [row] of df.iterrows()){
     console.log(row)
     break
