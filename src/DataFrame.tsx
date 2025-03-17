@@ -609,11 +609,11 @@ class DataFrame<T>{
     bool(expr:string,axis:0|1=1){
         return this.b(expr,{axis:axis})
     }
-    // b(expr:string,axis:0|1=1){
+
     b(expr:string,options?:QueryOptions){
         if(_.isUndefined(options))
             options = {}
-        let {ctx,axis} = _.defaults(options,{ctx:undefined,axis:1})
+        let {ctx=undefined,axis=1} = options
         // ["bc"] > 5 && [5] > 6
         const arr:number[] = []
         range(expr.length).forEach(i=>{
@@ -746,16 +746,11 @@ class DataFrame<T>{
         return this.loc(row_index,col_index) as DataFrame<T>
     }
 
-    _iter(indexType:'index'):Generator<{
-            row: Series<T>;
-            key: string | number;
-            i: number;
-        }>
-    _iter(indexType:'columns'):Generator<{
-            col: Series<T>;
-            key: string | number;
-            i: number;
-        }>
+    _iter(indexType:'index'|'columns'):Generator<[
+            ss: Series<T>,
+            key: string | number,
+            i: number,
+    ]>
     _iter(indexType:'index'|'columns',func:(row:Series<T>,key:number|string|ns_arr,
         i:number)=>void):void
     _iter(indexType:'index'|'columns',func?:(row:Series<T>,key:number|string|ns_arr,
@@ -774,7 +769,7 @@ class DataFrame<T>{
 
                 for(const k of self[indexType].values){
                     const row = accessor(i)
-                    yield itemFunc(row,k,i)
+                    yield [row,k,i]
                     i += 1
                 }
             }
@@ -786,11 +781,11 @@ class DataFrame<T>{
             })
     }
 
-    iterrows():Generator<{
-        row: Series<T>;
-        key: string | number;
-        i: number;
-    }>
+    iterrows():Generator<[
+        row: Series<T>,
+        key: string | number,
+        i: number
+    ]>
     iterrows(func:(row:Series<T>,key:number|string|ns_arr,
         i:number)=>void):void
     iterrows(func?:(row:Series<T>,key:number|string|ns_arr,
@@ -801,11 +796,11 @@ class DataFrame<T>{
             return this._iter('index',func)
     }
 
-    itercols():Generator<{
-        col: Series<T>;
-        key: string | number;
-        i: number;
-    }>
+    itercols():Generator<[
+        col: Series<T>,
+        key: string | number,
+        i: number
+    ]>
     itercols(func:(row:Series<T>,key:number|string|ns_arr,
         i:number)=>void):void
     itercols(func?:(col:Series<T>,key:number|string|ns_arr,

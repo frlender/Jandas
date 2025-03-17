@@ -153,5 +153,10 @@ test('iteration',()=>{
             expect(col.values).toEqual([2,4,6])
         }
     })
+
+    for(const [row] of df.iterrows()){
+        expect(row.values).toEqual([1,2])
+        break
+    }
       
 })

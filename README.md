@@ -6,9 +6,9 @@ Jandas is designed to have very similar indexing experience as  Pandas. It imple
 -   Row and column indexing are guaranteed the same speed.
 -   Support DataFrame with zero rows/columns in the shape of (0,n) or (n,0).
 -   Support index with duplicated values.
--   Avoid using objects as arguments.
--   Query functions with a better syntax than Pandas.
 -   Negative number and range indexing.
+-   Query functions with a better syntax than Pandas.
+-   Avoid using objects as arguments when possible.
 -   Comprehensive overloads on indexing ensuring proper return types in TypeScript.
  
 
@@ -28,7 +28,7 @@ Include the library in a script tag:
 ```html
 <script src="/path/to/jandas.min.js"></script>
 ```
-The above statement insert an object named `jandas` in the global namespace. Users can access Jandas classes and functions through the properties of the object. The minified version can be found at `dist/jandas.min.js`.
+The above statement inserts an object named `jandas` in the global namespace. Users can access Jandas classes and functions through the properties of the object. The minified version can be found at `dist/jandas.min.js`.
 
 A CodePen **Playground** is provided here:
 
@@ -160,8 +160,13 @@ df.iterrows((row,key,i)=>{
 })
 
 // for...of iteration:
-for(const {row,key,i} of df.iterrows()){
+for(const [row,key,i] of df.iterrows()){
     console.log(row.values,key,i)
+    break
+}
+// expose only the row
+for(const [row] of df.iterrows()){
+    console.log(row)
     break
 }
 
@@ -172,7 +177,7 @@ df.itercols((col,key,i)=>{
 })
 
 // for...of iteration
-for(const {col,key,i} of df.itercols()){}
+for(const [col,key,i] of df.itercols()){}
 ```
 It implements `.groupby()` to group a DataFrame by values in rows or columns designated by input labels. The method return a `GroupByThen` object that contains information about the groups. It can be iterated using either the `for...of` expression or the `then` method. Common statistics methods like `.mean()` and `.sum()` were implemented for the `GroupByThen` class for computation within each group.
 ```TypeScript

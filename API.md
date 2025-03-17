@@ -203,16 +203,26 @@ Return a new dataframe based on the query expressions `col_expr` and `row_expr`.
 \
 **DataFrame.iterrows**
 ```TypeScript
+iterrows():Generator<[
+        row: Series<T>,
+        key: string | number,
+        i: number
+    ]>
 iterrows(func:(row:Series<T>,key:number|string|ns_arr,i:number)=>void): void
 ```
-Iterate over the rows of the dataframe. Similar to the `forEach` function, it accepts a function as argument where the `row`, `key` and `i` are the row, label and position in each iteration. Check [Getting Started](https://github.com/frlender/Jandas#iteration) for examples.
+Iterate over the rows of the dataframe. Similar to the `forEach` function, it accepts a function as argument where the `row`, `key` and `i` are the row, label and position in each iteration. It also supports the `for...of` expression where the `break` keyword can be used to stop the iteration. Check [Getting Started](https://github.com/frlender/Jandas#iteration) for examples.
 
 \
 **DataFrame.itercols**
 ```TypeScript
+itercols():Generator<[
+        col: Series<T>,
+        key: string | number,
+        i: number
+    ]>
 itercols(func:(col:Series<T>,key:number|string|ns_arr,i:number)=>void): void
 ```
-Iterate over the columns of the dataframe. Similar to the `forEach` function, it accepts a function as argument where the `col`, `key` and `i` are the column, label and position in each iteration. Check [Getting Started](https://github.com/frlender/Jandas#iteration) for examples.
+Iterate over the columns of the dataframe. Similar to the `forEach` function, it accepts a function as argument where the `col`, `key` and `i` are the column, label and position in each iteration.  It also supports the `for...of` expression where the `break` keyword can be used to stop the iteration. Check [Getting Started](https://github.com/frlender/Jandas#iteration) for examples.
 
 \
 **DataFrame.groupby**
@@ -224,7 +234,7 @@ groupby(labels:nsx|null,axis:0|1):GroupByThen<T>
 
 GroupbyThen.then(func:(group:DataFrame<T>,key:T | T[], i:number)=>void): void
 ```
-Group the dataframe by values in rows or columns designated by labels. When no `labels` is provided or `labels` is equal to `null`, it groups the dataframe by the row or column index. When no `axis` is provided, the `axis` defaults to 0 and the method groups rows by designed columns labels. if `axis=1`, the method groups columns by designed index labels. It returns a `GroupByThen` object that has a `then` method. The method accepts a function as argument where the `group`, `key` and `i` are group, grouping key and numric index in each iteration. The object can also be iterated directly using the `for...of` expression. Check [Getting Started](https://github.com/frlender/Jandas#iteration) for examples.
+Group the dataframe by values in rows or columns designated by labels. When no `labels` is provided or `labels` is equal to `null`, it groups the dataframe by the row or column index. When no `axis` is provided, the `axis` defaults to 0 and the method groups rows by designed columns labels. if `axis=1`, the method groups columns by designed index labels. It returns a `GroupByThen` object that has a `then` method. The method accepts a function as argument where the `group`, `key` and `i` are group, grouping key and numric index in each iteration. The object can also be iterated directly using the `for...of` expression where the `break` keyword can be used. Check [Getting Started](https://github.com/frlender/Jandas#iteration) for examples.
 
 \
 **DataFrame.reduce**

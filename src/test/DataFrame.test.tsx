@@ -662,9 +662,9 @@ test('groupby',()=>{
                                 [4,7,8]])
     expect(df2.index.values).toEqual(['a','b'])
 
-    for(const {group,gp,key,i} of df.groupby()){
+    for(const [gp,key,i] of df.groupby()){
         expect(gp.shape).toEqual([1,3])
-        expect(group.shape).toEqual([1,3])
+        // expect(group.shape).toEqual([1,3])
         expect(key).toEqual('a')
         expect(i).toEqual(0)
         break
@@ -1037,13 +1037,13 @@ test('iterrows,itercols',function(){
     let df = new DataFrame([[1,2],[3,4]],
         {index:['a',5],columns:['b','c']})
 
-    for(const {row,key} of df.iterrows()){
+    for(const [row,key] of df.iterrows()){
         expect(row.values).toEqual([1,2])
         expect(key).toEqual('a')
         break
     }
 
-    for(const {col,key,i} of df.itercols()){
+    for(const [col,key,i] of df.itercols()){
         if(i==0){
             expect(col.values).toEqual([1,3])
             expect(key).toEqual('b')

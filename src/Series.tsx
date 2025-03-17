@@ -217,7 +217,7 @@ class Series<T>{
         return this.b(expr)
     }
     b(expr:string,__ctx__?:any){
-        console.log(__ctx__)
+        // console.log(__ctx__)
         const newExpr = addCtx(expr,__ctx__)
         return this.values.map(x=>eval(newExpr)) as boolean[]
     }

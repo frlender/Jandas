@@ -10,7 +10,7 @@ import * as stat from 'simple-statistics'
 import Series from './Series'
 import Index from './Index'
 
-class GroupByThen<T>{
+class GroupByThen<T> implements Iterable<[DataFrame<T>,T|T[],number]>{
     gp:GP
     axis:0|1
     df:DataFrame<T>
@@ -57,12 +57,11 @@ class GroupByThen<T>{
 
     [Symbol.iterator]() {
         const self = this
-        function* iter(){
+        function* iter():Generator<[DataFrame<T>,T|T[],number]>{
             let i = 0
             for(const [key,val] of Object.entries(self.gp)){
                 const {sub,k} = self._prepare(key,val)
-                yield {group:sub as DataFrame<T>,
-                    key:k,i:i,gp:sub as DataFrame<T>}
+                yield [sub as DataFrame<T>, k, i]
                 i += 1
             }
         }
@@ -76,7 +75,7 @@ class GroupByThen<T>{
             (x:Series<T>)=>x : 
             (x:Series<T>)=>x.loc(keep_labels)
         const arr = []
-        for(const {gp,key} of this){
+        for(const [gp,key] of this){
             let ss = gp.reduce(func,this.axis)
             // console.log(gp,key,keep_labels,ss)
             if(_.isString(key) || _.isNumber(key))
