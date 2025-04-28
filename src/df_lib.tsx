@@ -123,8 +123,9 @@ class GroupByThen<T> implements Iterable<[DataFrame<T>,T|T[],number]>{
 
 }
 
-function _sortIndices<S>(arr:S[]|S[][],ascending:boolean){
-    const _cmp = (a:S,b:S)=>{
+function _sortIndices<S>(arr:S[]|S[][],multiple:boolean,ascending:boolean|boolean[]){
+    // const flag = ascending ? 1:-1
+    const _cmp = (a:S,b:S,flag:1|-1)=>{
         // const a = arr[aidx]
         // const b = arr[bidx]
         if(a===b){
@@ -142,14 +143,15 @@ function _sortIndices<S>(arr:S[]|S[][],ascending:boolean){
         }
     }
     const idx = range(arr.length)
-    const flag = ascending ? 1:-1
-    if(_.isArray(arr[0])){
+    if(multiple){
         const cmp = (a1:number,a2:number)=>{
             const ax = arr[a1] as S[]
             const bx = arr[a2] as S[]
             let res:number=0;
             for(let i=0; i<ax.length; i++){
-                res = _cmp(ax[i],bx[i])
+                const ascending_i = _.isArray(ascending) ? ascending[i] : ascending
+                const flag = ascending_i ? 1:-1
+                res = _cmp(ax[i],bx[i],flag)
                 if(res !== 0){
                     break
                 }
@@ -159,7 +161,9 @@ function _sortIndices<S>(arr:S[]|S[][],ascending:boolean){
         return idx.sort(cmp)
     }else{
         const cmp = (a1:number,a2:number)=>{
-            return _cmp(arr[a1] as S,arr[a2] as S)
+            ascending = _.isArray(ascending) ? ascending[0] : ascending
+            const flag = ascending ? 1:-1
+            return _cmp(arr[a1] as S,arr[a2] as S,flag)
         }
         return idx.sort(cmp)
     }

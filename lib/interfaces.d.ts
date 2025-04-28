@@ -27,7 +27,7 @@ interface PushOptions {
     axis?: 0 | 1;
 }
 interface SortOptions {
-    ascending?: boolean;
+    ascending?: boolean | boolean[];
     axis?: 0 | 1;
 }
 interface MergeOptions {

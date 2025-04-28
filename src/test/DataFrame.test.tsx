@@ -721,7 +721,12 @@ test('groupby',()=>{
 })
 
 test('sort values',()=>{
-    let df = new DataFrame([[3, 8, 3], [3, 8, 9], [3, 6, 7], [9, 8, 7]],{index:['a', 'b', 'b', 'c'],columns:['5', 5, 'e']})
+    let df = new DataFrame([[3, 8, 3], 
+                            [3, 8, 9], 
+                            [3, 6, 7],
+                            [9, 8, 7]],
+    {index:['a', 'b', 'b', 'c'],
+     columns:['5', 5, 'e']})
     
     let df2 = df.sort_values('e')
     expect(df2.values).toEqual(
@@ -730,6 +735,15 @@ test('sort values',()=>{
         [9,8,7],
         [3,8,9]]
     )
+    df2 = df.sort_values([5,'e'],{ascending:[true,false]})
+    expect(df2.values).toEqual(
+        [ [3,6,7],
+        [3,8,9],
+        [9,8,7],
+        [3,8,3]
+        ]
+    )
+
     df2 = df.sort_values([5,'e'])
     expect(df2.values).toEqual(
         [ [3,6,7],

@@ -25,6 +25,6 @@ declare class GroupByThen<T> implements Iterable<[DataFrame<T>, T | T[], number]
     mode(): Series<number>;
     prod(): Series<number>;
 }
-declare function _sortIndices<S>(arr: S[] | S[][], ascending: boolean): number[];
+declare function _sortIndices<S>(arr: S[] | S[][], multiple: boolean, ascending: boolean | boolean[]): number[];
 declare function findUnquotedAt(str: string): number[];
 export { Obj, GP, GroupByThen, _sortIndices, findUnquotedAt };

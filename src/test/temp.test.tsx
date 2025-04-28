@@ -3,6 +3,8 @@ import {DataFrame,Index,Series} from '../J'
 import { from_raw } from '../util2';
 import * as _ from 'lodash'
 
+// test('a',()=>{})
+
 test('b',()=>{
     let ss = new Series([1,2,3],{index:['a','b','b']})
     expect(ss.b('x>1')).toEqual([false,true,true])

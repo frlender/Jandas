@@ -22,6 +22,7 @@ import * as _ from 'lodash'
 import ranks = require('@stdlib/stats-ranks')
 
 
+
 class DataFrame<T>{
     values: T[][]
     // tr: T[][] // transposed values
@@ -897,20 +898,20 @@ class DataFrame<T>{
             ((sub:DataFrame<T>)=>sub.tr)
 
         if(_.isNull(labels)){
-            const idx = _sortIndices(index.values,
+            const idx = _sortIndices(index.values, false,
                 ascending)
             return iloc(idx) as DataFrame<T>
         }else{
             const sub = loc(labels)
             if(sub instanceof Series){
                 const sub2 = sub as Series<T>
-                const idx = _sortIndices(sub2.values,
+                const idx = _sortIndices(sub2.values, false,
                     ascending)
                 return iloc(idx) as DataFrame<T>
 
             }else{
                 const sub2 = sub as DataFrame<T>
-                const idx = _sortIndices(subFun(sub2),
+                const idx = _sortIndices(subFun(sub2), true,
                     ascending)
                 return iloc(idx) as DataFrame<T>
             }

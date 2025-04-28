@@ -257,12 +257,12 @@ These functions are intended to use for DataFrame with numeric values only.
 **DataFrame.sort_values**
 ```TypeScript
 interface SortOptions{
-    ascending?: boolean // defaults to true
-    axis?: 0|1 // defaults to 1
+    ascending?: boolean | boolean[] // defaults to true
+    axis?: 0 | 1 // defaults to 1
 }
 sort_values(labels:nsx|null,options?:SortOptions): DataFrame<T>
 ```
-Sort the DataFrame according to values in the rows (`axis=0`) or columns (`axis=1`) designed by `labels` in the `ascending` order. If `labels` is `null`, then sort the DataFrame by the values in index. If `labels` is an array, the sorting will compare values successively according to the order designed by `labels` to determine relative large or small. That is to say, `labels[1]` will only be considered if the values of `labels[0]` are equal. If values are numeric, they will be sorted by their numeric values. Otherwise, they will be sorted according to the rule in [Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort).
+Sort the DataFrame according to values in the rows (`axis=0`) or columns (`axis=1`) designated by `labels` in the `ascending` order. If `labels` is `null`, then sort the DataFrame by the values in index. If `labels` is an array, the sorting will compare values successively according to the order specified by `labels` to determine relative large or small. That is to say, `labels[1]` will only be considered if the values of `labels[0]` are equal. When `labels` is an array, `ascending` can be either a boolean value or an array. If `ascending` is a boolean value, it will be applied to all labels. If `ascending` is an array, it must have the same length as `labels` and determines the order of sorting for each label. If the values selected by `labels` are numeric, they will be sorted by their numeric values. Otherwise, they will be sorted according to the rule in [Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort). 
 
 \
 **DataFrame.op**

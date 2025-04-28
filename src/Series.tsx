@@ -231,7 +231,7 @@ class Series<T>{
     }
 
     sort_values(ascending=true){
-        const idx = _sortIndices<T>(this.values,ascending)
+        const idx = _sortIndices<T>(this.values,false,ascending)
         return this.iloc(idx)
     }
 
