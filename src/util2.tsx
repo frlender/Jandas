@@ -2,7 +2,7 @@ import Series from './Series'
 import DataFrame from './DataFrame'
 import Index from './Index'
 import { ns_arr, IndexRaw, SeriesRaw, DataFrameRaw } from './interfaces'
-import {check} from './util'
+import {check,range} from './util'
 import * as _ from 'lodash'
 // import {cp} from './cmm'
 
@@ -135,4 +135,14 @@ function from_raw<T>(data:IndexRaw|SeriesRaw<T>|DataFrameRaw<T>){
     }
 }
 
-export {concat,from_raw}
+function full<T>(shape:number,fill_value:T):T[]
+function full<T>(shape:number[],fill_value:T):T[][]
+function full<T>(shape:number|number[],fill_value:T):T[]|T[][]{
+    // similar to numpy.full
+    if(_.isArray(shape)){
+        return new Array(shape[0]).fill(new Array(shape[1]).fill(fill_value)) as T[][]
+    }else
+        return new Array(shape).fill(fill_value) as T[]
+}
+
+export {concat,from_raw,full}

@@ -1,7 +1,8 @@
 import {ns,ns_arr,numx,nsx,locParam,locParamArr,
     Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
 SortOptions,MergeOptions,DataFrameRankOptions,
-DataFrameRaw,DropDuplicatesOptions,QueryOptions} from './interfaces'
+DataFrameRaw,DropDuplicatesOptions,QueryOptions,
+DiffOptions} from './interfaces'
 
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
@@ -11,7 +12,7 @@ import {vec_loc,vec_loc2,
     duplicated,_rename,addCtx} from './cmm'
 
 import {GroupByThen,_sortIndices,findUnquotedAt} from './df_lib'
-import { concat } from './util2'
+import { concat,full } from './util2'
 
 
 import Index from './Index'
@@ -1007,26 +1008,67 @@ class DataFrame<T>{
             }
         }
     }
-    rank(options?:DataFrameRankOptions){
+    rank(this:DataFrame<number>,options?:DataFrameRankOptions){
         if(_.isUndefined(options))
             options = {}
         options = _.defaults(options,{axis:0})
         if(options.axis === 0){
             const rankMat = this.tr.map(vec=>
-                ranks(vec as number[],options))
+                ranks(vec,options))
             const df = new DataFrame(rankMat,{index:this.columns.cp(),
                 columns:this.index.cp()})
             df.transpose(true)
             return df
         }else{
             const rankMat = this.values.map(vec=>
-                ranks(vec as number[],options))
+                ranks(vec,options))
             const df = new DataFrame(rankMat,{index:this.index.cp(),
                 columns:this.columns.cp()})
             return df
         }
     }
 
+    change(this:DataFrame<number>,op_str:string,options?:DiffOptions):DataFrame<number>{
+        if(_.isUndefined(options))
+            options = {}
+        options = _.defaults(options,{periods:1,axis:0})
+
+        if(options.axis === 1){
+            const diff = this.transpose().change(op_str,{periods:options.periods})
+            return diff.transpose(true)
+        }
+           
+        if(!Number.isInteger(options.periods))
+            throw new Error('periods must be an integer')
+        if(options.periods! >= 1){
+            const later = this.iloc(`${options.periods}:`)
+            const earlier = this.iloc(`:-${options.periods}`)
+            const diff = later.op<number,number>(op_str,earlier.values)
+            const head = new DataFrame<number>(full([options.periods!,this.shape[1]],NaN),
+                {index:this.index.values.slice(0,options.periods),
+                columns:this.columns.cp()})
+            return concat([head,diff],0)
+        }else if(options.periods! <= -1){
+            const earlier = this.iloc(`:${options.periods}`)
+            const later = this.iloc(`${-options.periods!}:`)
+            const diff = earlier.op<number,number>(op_str,later.values)
+            const tail = new DataFrame<number>(full([-options.periods!,this.shape[1]],NaN),
+                {index:this.index.values.slice(this.shape[0]+options.periods!),
+                columns:this.columns.cp()})
+            return concat([diff,tail],0)
+        }else
+            return new DataFrame<number>(full(this.shape,0),
+                {index:this.index.cp(),columns:this.columns.cp()})
+        
+    }
+
+    diff(this:DataFrame<number>,options?:DiffOptions):DataFrame<number>{
+        return this.change('x-y',options)
+    }
+
+    pct_change(this:DataFrame<number>,options?:DiffOptions):DataFrame<number>{
+        return this.change('(x-y)/y',options)
+    }
     // drop_duplicates_by_index(){
     //     return drop_duplicates_by_index(this)
     // }
@@ -1054,34 +1096,34 @@ class DataFrame<T>{
             return new Series(vals,{index:this.columns})
         }
     }
-    _reduce_num(func:(a:any)=>number,axis:0|1){
+    _reduce_num(this:DataFrame<number>,func:(a:number[])=>number,axis:0|1){
         return this.reduce(func,axis)
     }
-    min(axis:0|1=0){
+    min(this:DataFrame<number>,axis:0|1=0){
         return this._reduce_num(stat.min,axis)
     }
-    max(axis:0|1=0){
+    max(this:DataFrame<number>,axis:0|1=0){
         return this._reduce_num(stat.max,axis)
     }
-    sum(axis:0|1=0){
+    sum(this:DataFrame<number>,axis:0|1=0){
         return this._reduce_num(stat.sum,axis)
     }
-    mean(axis:0|1=0){
+    mean(this:DataFrame<number>,axis:0|1=0){
         return this._reduce_num(stat.mean,axis)
     }
-    median(axis:0|1=0){
+    median(this:DataFrame<number>,axis:0|1=0){  
         return this._reduce_num(stat.median,axis)
     }
-    std(axis:0|1=0){
+    std(this:DataFrame<number>,axis:0|1=0){
         return this._reduce_num(stat.sampleStandardDeviation,axis)
     }
-    var(axis:0|1=0){
+    var(this:DataFrame<number>,axis:0|1=0){
         return this._reduce_num(stat.sampleVariance,axis)
     }
-    mode(axis:0|1=0){
+    mode(this:DataFrame<number>,axis:0|1=0){
         return this._reduce_num(stat.mode,axis)
     }
-    prod(axis:0|1=0){
+    prod(this:DataFrame<number>,axis:0|1=0){
         return this._reduce_num(stat.product,axis)
     }
 }

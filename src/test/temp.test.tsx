@@ -1,9 +1,10 @@
 import { expect, test, describe} from '@jest/globals';
 import {DataFrame,Index,Series} from '../J'
-import { from_raw } from '../util2';
+import { from_raw, full } from '../util2';
+import {range} from '../util'
 import * as _ from 'lodash'
 
-// test('a',()=>{})
+test('a',()=>{})
 
 test('b',()=>{
     let ss = new Series([1,2,3],{index:['a','b','b']})
@@ -20,3 +21,5 @@ test('b',()=>{
     expect(sx.b('x==="b" || x ==="a"')).toEqual([true,true,true])
 
 })
+
+

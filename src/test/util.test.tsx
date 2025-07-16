@@ -1,6 +1,6 @@
 import { expect, test, describe} from '@jest/globals';
 import {range,_trans_rg} from '../util'
-import {concat} from '../util2'
+import {concat,full} from '../util2'
 import Series from '../Series'
 import DataFrame from '../DataFrame';
 
@@ -28,6 +28,14 @@ test('range',()=>{
     expect(range(1,5,2)).toEqual([1,3])
     expect(range(1,5,-2)).toEqual([])
 
+})
+
+test('full',()=>{
+    expect(full([2,3],0)).toEqual([
+        [0,0,0],
+        [0,0,0]
+    ])
+    expect(full(2,1)).toEqual([1,1])
 })
 
 describe('concat',()=>{

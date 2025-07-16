@@ -1,6 +1,7 @@
 import { expect, test, describe} from '@jest/globals';
 import {Series,Index} from '../J'
 import { from_raw } from '../util2';
+import {range} from '../util'
 import * as _ from 'lodash'
 
 const ss = new Series([1,2,3,4,5],{index:['a','b','c','d','e']})
@@ -552,3 +553,30 @@ test('rename',()=>{
 })
 
 
+test('ss.pct_change',()=>{
+    const ss = new Series([90,91,85])
+    let res = ss.pct_change()
+    let ref = [NaN,0.011111,-0.065934]
+    for(const i of range(ss.shape))
+        if(_.isNaN(res.values[i]))
+                expect(_.isNaN(ref[i])).toBe(true)
+            else
+                expect(res.values[i]).toBeCloseTo(ref[i],5)
+    
+    res = ss.pct_change(-2)
+    ref = [0.058824,NaN,NaN]
+    for(const i of range(ss.shape))
+        if(_.isNaN(res.values[i]))
+                expect(_.isNaN(ref[i])).toBe(true)
+            else
+                expect(res.values[i]).toBeCloseTo(ref[i],5)
+})
+
+
+test('ss.diff',()=>{
+    const ss = new Series([90,91,85])
+    let res = ss.diff(-1)
+    expect(res.values).toEqual([-1,6,NaN])
+
+    expect(res.index.values).toEqual(ss.index.values)
+})

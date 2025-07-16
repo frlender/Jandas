@@ -247,11 +247,11 @@ Apply a function to the dataframe that reduces each row (`axis=1`) or each colum
 \
 **DataFrame.min, DataFrame.max, DataFrame.sum, DataFrame.mean, DataFrame.mode, DataFrame.median, DataFrame.std, DataFrame.var**
 ```TypeScript
-min(axis:0|1=0): Series<number>
+min(this:DataFrame<number>,axis:0|1=0): Series<number>
 // other functions are similarly defined
 ```
 A collection of functions to compute statistics on the `axis` dimension. The default is to compute statistics along the row dimension. They are implemented as wrappers around the corresponding functions in the [simple-statistics](https://github.com/simple-statistics/simple-statistics) package. The `std` and `var` functions are implemented using the `sampleStandardDeviation` and `sampleVariance` functions in the package.
-These functions are intended to use for DataFrame with numeric values only.
+These methods only work for dataframes with numeric values.
 
 \
 **DataFrame.sort_values**
@@ -293,9 +293,44 @@ interface DataFrameRankOptions{
     encoding?: (string|number|null|undefined)[]
     axis?: 0|1
 }
-rank(options?:DataFrameRankOptions): DataFrame<number>
+rank(this:DataFrame<number>,options?:DataFrameRankOptions): DataFrame<number>
 ```
-Return ranks along `axis` (defaults to 0).  The `method` parameter determines how the ranks are calculated. It defaults to `'average'`. The underlying ranking function is implemented by the `ranks` function in the [@stdlib/stats-ranks](https://github.com/stdlib-js/stats-ranks) package. Please check its homepage for parameter usage.
+Return ranks along `axis` (defaults to 0).  The `method` parameter determines how the ranks are calculated. It defaults to `'average'`. The underlying ranking function is implemented by the `ranks` function in the [@stdlib/stats-ranks](https://github.com/stdlib-js/stats-ranks) package. Please check its homepage for parameter usage. The method only works for dataframes with numeric values.
+
+\
+**DataFrame.diff**
+```TypeScript
+interface DiffOptions{
+   periods?: number
+   axis?: 0|1
+}
+diff(this:DataFrame<number>,options?:DiffOptions):DataFrame<T>
+```
+First discrete difference of element. Calculates the difference of a DataFrame element compared with another element in the DataFrame (default is element in previous row `periods=1` and `axis=0`). Similar to [Pandas.DataFrame.diff](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.diff.html). The method only works for dataframes with numeric values.
+
+
+\
+**DataFrame.pct_change**
+```TypeScript
+interface DiffOptions{
+   periods?: number
+   axis?: 0|1
+}
+pct_change(this:DataFrame<number>,options?:DiffOptions):DataFrame<T>
+```
+Fractional change between the current and a prior element. Computes the fractional change from the immediately previous row by default (`periods=1` and `axis=0`). This is useful in comparing the fraction of change in a time series of elements. Similar to [Pandas.DataFrame.pct_change](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.pct_change.html). The method only works for dataframes with numeric values.
+
+
+\
+**DataFrame.change**
+```TypeScript
+interface DiffOptions{
+   periods?: number
+   axis?: 0|1
+}
+change(this:DataFrame<number>,op:string,options?:DiffOptions):DataFrame<T>
+```
+Calculates a user-defined change of a DataFrame element compared with another element in the DataFrame. The `op` argument is an operation string that is the same format as required by the `DataFrame.op method`. The `diff` and `pct_change` methods are implemented by this method with `op` being `'x-y'` and `'(x-y)/y'`, respectively. Computes the user-defined change from the immediately previous row by default (`periods=1` and `axis=0`). The method only works for dataframes with numeric values.
 
 
 \
@@ -429,10 +464,10 @@ Apply a function to the series that reduces it into a scalar.
 \
 **Series.min, Series.max, Series.sum, Series.mean, Series.mode, Series.median, Series.std, Series.var**
 ```TypeScript
-min(): number|undefined
+min(this:Series<number>): number|undefined
 // other functions are similarly defined
 ```
-A collection of functions to compute statistics on the Series. They are implemented as wrappers around the corresponding functions in the [simple-statistics](https://github.com/simple-statistics/simple-statistics) package. The `std` and `var` functions are implemented using the `sampleStandardDeviation` and `sampleVariance` functions in the package. These functions are intended to use for Series with numeric values only.
+A collection of functions to compute statistics on the Series. They are implemented as wrappers around the corresponding functions in the [simple-statistics](https://github.com/simple-statistics/simple-statistics) package. The `std` and `var` functions are implemented using the `sampleStandardDeviation` and `sampleVariance` functions in the package. These functions are intended to use for Series with numeric values only. These methods only work for Series with numeric values.
 
 \
 **Series.sort_values**
@@ -469,9 +504,33 @@ interface SeriesRankOptions{
     missing?: 'last' | 'first' | 'remove'
     encoding?: (string|number|null|undefined)[]
 }
-rank(options?:SeriesRankOptions): Series<number>
+rank(this:Series<number>,options?:SeriesRankOptions): Series<number>
 ```
-Return the ranks of the values in the Series. The `method` parameter determines how the ranks are calculated. It defaults to `'average'`. The underlying ranking function is implemented by the `ranks` function in the [@stdlib/stats-ranks](https://github.com/stdlib-js/stats-ranks) package. Please check its homepage for parameter usage.
+Return the ranks of the values in the Series. The `method` parameter determines how the ranks are calculated. It defaults to `'average'`. The underlying ranking function is implemented by the `ranks` function in the [@stdlib/stats-ranks](https://github.com/stdlib-js/stats-ranks) package. Please check its homepage for parameter usage. The method only works for Series with numeric values.
+
+\
+**Series.diff**
+```TypeScript
+diff(this:Series<number>,periods:number=1):Series<T>
+```
+First discrete difference of element. Calculates the difference of a Series element compared with another element in the Series (default is the previous `periods=1`). Similar to [Pandas.Series.diff](https://pandas.pydata.org/docs/reference/api/pandas.Series.diff.html). The method only works for Series with numeric values.
+
+
+\
+**Series.pct_change**
+```TypeScript
+pct_change(this:Series<number>,periods:number=1):Series<T>
+```
+Fractional change between the current and a prior element. Computes the fractional change from the immediately previous element by default (`periods=1`). This is useful in comparing the fraction of change in a time series of elements. Similar to [Pandas.Series.pct_change](https://pandas.pydata.org/docs/reference/api/pandas.Series.pct_change.html). The method only works for Series with numeric values.
+
+
+\
+**DataFrame.change**
+```TypeScript
+change(this:Series<number>,op:string,periods:number=1):Series<T>
+```
+Calculates a user-defined change of a Series element compared with another element in the Series. The `op` argument is an operation string that is the same format as required by the `Series.op method`. The `diff` and `pct_change` methods are implemented by this method with `op` being `'x-y'` and `'(x-y)/y'`, respectively. Computes the user-defined change from the immediately previous element by default (`periods=1`). The method only works for Series with numeric values.
+
 
 \
 **Series.p**
@@ -593,3 +652,10 @@ function from_raw<T>(data:SeriesRaw<T>):Series<T>
 function from_raw<T>(data:DataFrameRaw<T>):DataFrame<T>
 ```
 Create an index, a series or a dataframe from its raw copy. See the `to_raw` method for detailed usage.
+
+**full**
+```TypeScript
+function full<T>(shape:number,fill_value:T):T[]
+function full<T>(shape:number[],fill_value:T):T[][]
+```
+Return an array of a given `shape` filled with `fill_value`. Similar to `numpy.full`.

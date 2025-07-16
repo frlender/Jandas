@@ -97,6 +97,11 @@ interface QueryOptions{
     ctx?: any
 }
 
+interface DiffOptions{
+    periods?: number
+    axis?: 0|1
+}
+
 export {ns,ns_arr,numx,nsx,locParamArr,locParam,
     Obj,GP,SeriesInitOptions,
     DataFrameInitOptions,
@@ -104,4 +109,5 @@ export {ns,ns_arr,numx,nsx,locParamArr,locParam,
     SortOptions,PushOptions,MergeOptions,
     SeriesRankOptions,DataFrameRankOptions,
     IndexRaw, SeriesRaw, DataFrameRaw,
-    DropDuplicatesOptions,IndexType,QueryOptions}
+    DropDuplicatesOptions,IndexType,QueryOptions,
+    DiffOptions}

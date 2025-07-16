@@ -1,6 +1,7 @@
 import { expect, test, describe} from '@jest/globals';
 import {DataFrame,Index,Series} from '../J'
-import { from_raw } from '../util2';
+import { from_raw, full } from '../util2';
+import {range} from '../util'
 import * as _ from 'lodash'
 
 
@@ -811,6 +812,7 @@ test('stats',()=>{
 
     expect(df.sum(1).values).toEqual([3,7])
     expect(df.sum(0).values).toEqual([4,6])
+
 })
 
 
@@ -1068,5 +1070,114 @@ test('iterrows,itercols',function(){
         }
         
     }
+
+})
+
+
+test('diff',()=>{
+    const df = new DataFrame(
+       [[ 1,  1,  1],
+        [ 2,  1,  4],
+        [ 3,  2,  9],
+        [ 4,  3, 16],
+        [ 5,  5, 25],
+        [ 6,  8, 36]]
+    )
+
+    expect(df.diff().values).toEqual(
+        [[NaN, NaN, NaN],
+        [1, 0, 3],
+        [1, 1, 5],
+        [1, 1, 7],
+        [1, 2, 9],
+        [1, 3, 11]]
+    )
+    expect(df.index.values).toEqual(df.diff().index.values)
+    expect(df.columns.values).toEqual(df.diff().columns.values)
+
+    expect(df.iloc(':5').diff({periods:2}).values).toEqual(
+        [[NaN, NaN, NaN],
+        [NaN, NaN, NaN],
+        [2.0, 1.0, 8.0],
+        [2.0, 2.0, 12.0],
+        [2.0, 3.0, 16.0]]   )
+
+    let res = df.iloc(':5').diff({periods:-2})
+    expect(res.values).toEqual(
+        [[-2.0, -1.0, -8.0],
+        [-2.0, -2.0, -12.0],
+        [-2.0, -3.0, -16.0],
+        [NaN, NaN, NaN],
+        [NaN, NaN, NaN]]
+    )
+
+    expect(df.index.values.slice(0,5)).toEqual(res.index.values)
+    expect(df.columns.values).toEqual(res.columns.values)
+
+    expect(df.diff({periods:0}).values).toEqual(full(df.shape,0))
+
+    df.transpose(true)
+    expect(df.diff({periods:2,axis:1}).values).toEqual(
+        [[NaN, NaN, 2.0, 2.0, 2.0, 2.0],
+        [NaN, NaN, 1.0, 2.0, 3.0, 5.0],
+        [NaN, NaN, 8.0, 12.0, 16.0, 20.0]]
+    )
+
+    res = df.diff({periods:-1,axis:1})
+    expect(res.values).toEqual(
+        [[-1.0, -1.0, -1.0, -1.0, -1.0, NaN],
+        [0.0, -1.0, -1.0, -2.0, -3.0, NaN],
+        [-3.0, -5.0, -7.0, -9.0, -11.0, NaN]]
+    )
+
+    expect(df.index.values).toEqual(res.index.values)
+    expect(df.columns.values).toEqual(res.columns.values)
+
+})  
+
+
+test('pct_change',()=>{
+    const df = new DataFrame([[4.0405, 1.7246, 804.74], 
+        [4.0963, 1.7482, 810.01], 
+        [4.3149, 1.8519, 860.13]],
+        {index:['1980-01-01', '1980-02-01', '1980-03-01'],
+        columns:['FR', 'GR', 'IT']})
+    
+    let res = df.pct_change()
+    let ref = [[NaN, NaN, NaN],
+        [0.013810172008414945, 0.013684332598863591, 0.00654869895866983],
+        [0.05336523203866883, 0.05931815581741229, 0.06187577931136645]]
+
+    for(const i of range(res.shape[0]))
+        for(const j of range(res.shape[1]))
+            if(_.isNaN(res.values[i][j]))
+                expect(_.isNaN(ref[i][j])).toBe(true)
+            else
+                expect(res.values[i][j]).toBeCloseTo(ref[i][j],5)
+
+        
+    expect(res.index.values).toEqual(df.index.values)
+    expect(res.columns.values).toEqual(df.columns.values)
+
+    const df2 = new DataFrame([[1769950, 1500923, 1371819], 
+        [30586265, 40912316, 41403351]],
+        {index:['GOOG', 'APPL'],
+         columns:['2016','2015','2014']
+        }
+    )
+
+    res = df2.pct_change({periods:-1,axis:1})
+    ref = [[0.17924104034650679, 0.09411154095401808, NaN],
+        [-0.2523946823249996, -0.011859788836898755, NaN]]
+    
+    for(const i of range(res.shape[0]))
+        for(const j of range(res.shape[1]))
+            if(_.isNaN(res.values[i][j]))
+                expect(_.isNaN(ref[i][j])).toBe(true)
+            else
+                expect(res.values[i][j]).toBeCloseTo(ref[i][j],5)
+    
+    expect(res.index.values).toEqual(df2.index.values)
+    expect(res.columns.values).toEqual(df2.columns.values)
 
 })

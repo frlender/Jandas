@@ -296,45 +296,62 @@ class Series<T>{
     unique(){
         return _.uniq(this.values)
     }
-    rank(options?:SeriesRankOptions){
+    rank(this:Series<number>,options?:SeriesRankOptions){
         if(_.isUndefined(options))
             options = {}
-        const vals = ranks(this.values as number[],options)
+        const vals = ranks(this.values,options)
         return new Series(vals,
             {index:this.index,name:this.name})
     }
+
+    change(this:Series<number>,op_str:string,periods:number=1){
+        const df = new DataFrame(this.values.map(x=>[x]),{
+            index:this.index.cp(),
+        })
+        const cf = df.change(op_str,{periods:periods})
+        return cf.iloc(null,0)
+    }
+
+    diff(this:Series<number>,periods:number=1){
+        return this.change('x-y',periods)
+    }
+
+    pct_change(this:Series<number>,periods:number=1){
+        return this.change('(x-y)/y',periods)
+    }
+
     reduce<K>(func:(a:T[])=>K){
         return func(this.values)
     }
-    min(){
-        return stat.min(this.values as number[])
+    min(this:Series<number>){
+        return stat.min(this.values)
     }
-    max(){
-        return stat.max(this.values as number[])
+    max(this:Series<number>){
+        return stat.max(this.values)
     }
-    sum(){
-        return stat.sum(this.values as number[])
+    sum(this:Series<number>){
+        return stat.sum(this.values)
     }
-    mean(){
-        return stat.mean(this.values as number[])
+    mean(this:Series<number>){
+        return stat.mean(this.values)
     }
-    mode(){
-        return stat.mode(this.values as number[])
+    mode(this:Series<number>){
+        return stat.mode(this.values)
     }
-    median(){
-        return stat.median(this.values as number[])
+    median(this:Series<number>){
+        return stat.median(this.values)
     }
     // cumsum(){
     //     return d3.cumsum(this.values as number[])
     // }
-    std(){
-        return stat.sampleStandardDeviation(this.values as number[])
+    std(this:Series<number>){
+        return stat.sampleStandardDeviation(this.values)
     }
-    var(){
-        return stat.sampleVariance(this.values as number[])
+    var(this:Series<number>){
+        return stat.sampleVariance(this.values)
     }
-    prod(){
-        return stat.product(this.values as number[])
+    prod(this:Series<number>){
+        return stat.product(this.values)
     }
 
     to_raw(copy:boolean=true){
