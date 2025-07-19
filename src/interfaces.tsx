@@ -102,6 +102,17 @@ interface DiffOptions{
     axis?: 0|1
 }
 
+interface RollingOptions{
+    min_periods?: number;
+    center?: boolean;
+    closed?: 'left' | 'right' | 'both' | 'neither';
+    step?: number;
+}
+
+interface DataFrameRollingOptions extends RollingOptions{
+    axis?: 0|1
+}
+
 export {ns,ns_arr,numx,nsx,locParamArr,locParam,
     Obj,GP,SeriesInitOptions,
     DataFrameInitOptions,
@@ -110,4 +121,4 @@ export {ns,ns_arr,numx,nsx,locParamArr,locParam,
     SeriesRankOptions,DataFrameRankOptions,
     IndexRaw, SeriesRaw, DataFrameRaw,
     DropDuplicatesOptions,IndexType,QueryOptions,
-    DiffOptions}
+    DiffOptions,RollingOptions,DataFrameRollingOptions}

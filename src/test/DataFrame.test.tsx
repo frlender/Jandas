@@ -1181,3 +1181,76 @@ test('pct_change',()=>{
     expect(res.columns.values).toEqual(df2.columns.values)
 
 })
+
+test('rolling',()=>{
+
+    let s = new Series([1,2,3,4,5,6],{index:['a','b','c','d','e','f'],name:'s'})
+    let rs = s.rolling(3,{closed:'right',center:true,min_periods:3,step:2}).sum()
+    let ref = new Series([NaN,9,15],{index:['a','c','e'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    rs = s.rolling(3,{closed:'right',center:true,min_periods:3,step:1}).sum()
+    ref = new Series([NaN,6,9,12,15,NaN],{index:['a','b','c','d','e','f'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    rs = s.rolling(3,{closed:'right',min_periods:3,step:1}).sum()
+    ref = new Series([NaN,NaN,6,9,12,15],{index:['a','b','c','d','e','f'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    rs = s.rolling(3,{closed:'right',min_periods:2,step:3}).sum()
+    ref = new Series([NaN,9],{index:['a','d'],name:'s'})
+    expect(rs).toEqual(ref)
+
+
+    rs = s.rolling(3,{closed:'left',min_periods:3,step:2}).sum()
+    ref = new Series([NaN,NaN,9],{index:['a','c','e'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    rs = s.rolling(3,{closed:'left',min_periods:3,step:2}).sum()
+    ref = new Series([NaN,NaN,9],{index:['a','c','e'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    rs = s.rolling(3,{closed:'both',min_periods:3,step:2}).sum()
+    ref = new Series([NaN,6,14],{index:['a','c','e'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    rs = s.rolling(3,{closed:'neither',min_periods:3,step:2}).sum()
+    ref = new Series([NaN,NaN,NaN],{index:['a','c','e'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    rs = s.rolling(3,{closed:'neither',min_periods:1,step:2}).sum()
+    ref = new Series([NaN,3,7],{index:['a','c','e'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    rs = s.rolling(2,{closed:'neither',min_periods:1,step:2}).sum()
+    ref = new Series([NaN,2,4],{index:['a','c','e'],name:'s'})
+    expect(rs).toEqual(ref)
+    
+    s = new Series([1,NaN,3,4,NaN,6],{index:['a','b','c','d','e','f'],name:'s'})
+    rs = s.rolling(2,{closed:'neither',min_periods:1,step:1}).sum()
+    ref = new Series([NaN,1,NaN,3,4,NaN],{index:['a','b','c','d','e','f'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    let df = new DataFrame([[1,1],[2,2],[3,NaN],[4,NaN],[5,5],[6,6]],{index:['a','b','c','d','e','f']})
+    let rf = df.rolling(2,{closed:'right',min_periods:2,step:1}).sum()
+    let refx = new DataFrame([[NaN,NaN],[3,3],[5,NaN],[7,NaN],[9,NaN],[11,11]],
+        {index:['a','b','c','d','e','f']})
+    expect(rf).toEqual(refx)
+
+    df = new DataFrame([[1,1],[2,2],[3,NaN],[4,NaN],[5,5],[6,6]],{index:['a','b','c','d','e','f']})
+    rf = df.rolling(2,{closed:'right',center:true,min_periods:2,step:2}).sum()
+    refx = new DataFrame([[NaN,NaN],[5,NaN],[9,NaN]],
+        {index:['a','c','e']})
+    expect(rf).toEqual(refx)
+
+    rf = df.transpose().rolling(2,{closed:'right',center:true,min_periods:2,step:2,axis:1}).sum()
+    refx = new DataFrame([[NaN,NaN],[5,NaN],[9,NaN]],
+        {index:['a','c','e']})
+    expect(rf).toEqual(refx.transpose())
+    
+    s = new Series([1,2,3,4,5,6],{index:['a','b','c','d','e','f'],name:'s'})
+    rs = s.rolling(3,{closed:'right',center:true,min_periods:2,step:1}).apply('mean')
+    ref = new Series([1.5,2,3,4,5,5.5],{index:['a','b','c','d','e','f'],name:'s'})
+    expect(rs).toEqual(ref)
+})
+

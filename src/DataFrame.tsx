@@ -2,7 +2,8 @@ import {ns,ns_arr,numx,nsx,locParam,locParamArr,
     Obj,GP, DataFrameArrInitOptions,DataFrameInitOptions,PushOptions,
 SortOptions,MergeOptions,DataFrameRankOptions,
 DataFrameRaw,DropDuplicatesOptions,QueryOptions,
-DiffOptions} from './interfaces'
+DiffOptions,
+RollingOptions,DataFrameRollingOptions} from './interfaces'
 
 import {isNum, isArr,isVal,isNumArr,isStrArr,
     _trans_iloc, check, isStr, range} from './util'
@@ -11,7 +12,7 @@ import {vec_loc,vec_loc2,
     vec_set,cp,_str,_trans,setIndex,
     duplicated,_rename,addCtx} from './cmm'
 
-import {GroupByThen,_sortIndices,findUnquotedAt} from './df_lib'
+import {GroupByThen,_sortIndices,findUnquotedAt,Rolling} from './df_lib'
 import { concat,full } from './util2'
 
 
@@ -141,7 +142,7 @@ class DataFrame<T>{
 
     _p(){
         let lines : string[] = []
-        const corner = `${this.index.name}\\${this.columns.name}`
+        const corner = `${this.index.name}|${this.columns.name}`
         lines.push(corner+'\t'+this.columns.values.map(x=>x.toString()).join('\t'))
         // lines.push('\t'+this.columns.values.map(_=>'-').join('-'))
         const content = this.values.map((row,i)=>{
@@ -436,9 +437,8 @@ class DataFrame<T>{
     }
 
     // push(val:T[],name:number|string='',axis:0|1=1){
-    _push(val:T[],options: PushOptions){
+    _push(val:T[],{name='',axis=1}: PushOptions={}){
 
-        let {axis,name} = _.defaults(options,{name:'',axis:1})
         if(axis===0){
             check.iset.rpl.num(val,this.shape[1])
             this.values.push(val)
@@ -479,9 +479,7 @@ class DataFrame<T>{
             }
         }
     }
-    push(val:T[]|Series<T>,options?: PushOptions){
-        if(_.isUndefined(options))
-            options = {}
+    push(val:T[]|Series<T>,options: PushOptions={}){
 
         if(val instanceof Series){
             _.defaults(options,{name:val.name,axis:1})
@@ -501,10 +499,8 @@ class DataFrame<T>{
 
 
     // insert(idx:number,val:T[],name:number|string='',axis:0|1=1){
-    insert(idx:number,val:T[],options:PushOptions){
-        if(_.isUndefined(options))
-            options = {}
-        let {axis,name} = _.defaults(options,{name:'',axis:1})
+    insert(idx:number,val:T[],{name='',axis=1}:PushOptions={}){
+        
         if(axis===0){
             idx = idx < 0 ? this.shape[0]+idx : idx
             this._insert(idx,this.index,
@@ -534,10 +530,8 @@ class DataFrame<T>{
         }
     }
 
-    drop_duplicates(labels:nsx,options?:DropDuplicatesOptions){
-        if(_.isUndefined(options))
-            options = {}
-        let {keep,axis} = _.defaults(options,{keep:'first',axis:1})
+    drop_duplicates(labels:nsx,{keep='first',axis=1}:DropDuplicatesOptions={}){
+        
         if(axis === 1){
             const sub = this.loc(null,labels) as Series<T>|DataFrame<T>
             const idx = duplicated(sub.values,keep)
@@ -882,11 +876,8 @@ class DataFrame<T>{
     // }
 
     // sort_values(labels:nsx|null,ascending=true,axis:0|1=1){
-    sort_values(labels:nsx|null,options?:SortOptions){
-        if(_.isUndefined(options))
-            options = {}
-        let {ascending, axis} = _.defaults(options,
-                {ascending:true,axis:1})
+    sort_values(labels:nsx|null, {ascending=true,axis=1}:SortOptions={}){
+        
         const index = axis === 1?this.index:this.columns
         const iloc = axis === 1? 
             ((idx:number[])=>this.iloc(idx)):
@@ -975,11 +966,7 @@ class DataFrame<T>{
         }
     }
 
-    merge(df:DataFrame<T>,options?:MergeOptions):DataFrame<T>{
-        if(_.isUndefined(options))
-            options = {}
-        let {on, axis} = _.defaults(options,
-                {on:undefined,axis:1})
+    merge(df:DataFrame<T>,{on=undefined,axis=1}:MergeOptions={}):DataFrame<T>{
         let leftDf: DataFrame<T>;
         if(!_.isUndefined(on)){
             if(axis === 1){
@@ -1008,9 +995,7 @@ class DataFrame<T>{
             }
         }
     }
-    rank(this:DataFrame<number>,options?:DataFrameRankOptions){
-        if(_.isUndefined(options))
-            options = {}
+    rank(this:DataFrame<number>,options:DataFrameRankOptions={}){
         options = _.defaults(options,{axis:0})
         if(options.axis === 0){
             const rankMat = this.tr.map(vec=>
@@ -1028,32 +1013,30 @@ class DataFrame<T>{
         }
     }
 
-    change(this:DataFrame<number>,op_str:string,options?:DiffOptions):DataFrame<number>{
-        if(_.isUndefined(options))
-            options = {}
-        options = _.defaults(options,{periods:1,axis:0})
+    change(this:DataFrame<number>,op_str:string,
+        {periods=1,axis=0}:DiffOptions={}):DataFrame<number>{
 
-        if(options.axis === 1){
-            const diff = this.transpose().change(op_str,{periods:options.periods})
+        if(axis === 1){
+            const diff = this.transpose().change(op_str,{periods:periods})
             return diff.transpose(true)
         }
            
-        if(!Number.isInteger(options.periods))
+        if(!Number.isInteger(periods))
             throw new Error('periods must be an integer')
-        if(options.periods! >= 1){
-            const later = this.iloc(`${options.periods}:`)
-            const earlier = this.iloc(`:-${options.periods}`)
+        if(periods >= 1){
+            const later = this.iloc(`${periods}:`)
+            const earlier = this.iloc(`:-${periods}`)
             const diff = later.op<number,number>(op_str,earlier.values)
-            const head = new DataFrame<number>(full([options.periods!,this.shape[1]],NaN),
-                {index:this.index.values.slice(0,options.periods),
+            const head = new DataFrame<number>(full([periods,this.shape[1]],NaN),
+                {index:this.index.values.slice(0,periods),
                 columns:this.columns.cp()})
             return concat([head,diff],0)
-        }else if(options.periods! <= -1){
-            const earlier = this.iloc(`:${options.periods}`)
-            const later = this.iloc(`${-options.periods!}:`)
+        }else if(periods <= -1){
+            const earlier = this.iloc(`:${periods}`)
+            const later = this.iloc(`${-periods}:`)
             const diff = earlier.op<number,number>(op_str,later.values)
-            const tail = new DataFrame<number>(full([-options.periods!,this.shape[1]],NaN),
-                {index:this.index.values.slice(this.shape[0]+options.periods!),
+            const tail = new DataFrame<number>(full([-periods,this.shape[1]],NaN),
+                {index:this.index.values.slice(this.shape[0]+periods),
                 columns:this.columns.cp()})
             return concat([diff,tail],0)
         }else
@@ -1062,13 +1045,24 @@ class DataFrame<T>{
         
     }
 
-    diff(this:DataFrame<number>,options?:DiffOptions):DataFrame<number>{
-        return this.change('x-y',options)
+    diff(this:DataFrame<number>,{periods=1,axis=0}:DiffOptions={}):DataFrame<number>{
+        return this.change('x-y',{periods,axis})
     }
 
-    pct_change(this:DataFrame<number>,options?:DiffOptions):DataFrame<number>{
-        return this.change('(x-y)/y',options)
+    pct_change(this:DataFrame<number>,{periods=1,axis=0}:DiffOptions={}):DataFrame<number>{
+        return this.change('(x-y)/y',{periods,axis})
     }
+
+    rolling(this:DataFrame<number>,window:number,
+        {min_periods=undefined,center=false,
+            closed='right',step=1,axis=0}:DataFrameRollingOptions={}){
+        if(axis === 0)
+            return new Rolling(this,window,min_periods,center,closed,step,axis)
+        else
+            return new Rolling(this.transpose(),window,min_periods,center,closed,step,axis)
+    }
+
+
     // drop_duplicates_by_index(){
     //     return drop_duplicates_by_index(this)
     // }

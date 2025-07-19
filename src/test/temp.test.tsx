@@ -21,5 +21,3 @@ test('b',()=>{
     expect(sx.b('x==="b" || x ==="a"')).toEqual([true,true,true])
 
 })
-
-

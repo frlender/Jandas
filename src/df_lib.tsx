@@ -2,7 +2,7 @@
 import DataFrame from "./DataFrame"
 import * as _ from 'lodash'
 import {range} from './util'
-import {concat} from './util2'
+import {concat,full} from './util2'
 
 import {ns_arr,Obj,GP} from './interfaces'
 
@@ -192,4 +192,113 @@ function findUnquotedAt(str:string) {
     return positions;
 }
 
-export {Obj,GP,GroupByThen,_sortIndices, findUnquotedAt}
+ // rolling_series.ts
+
+ const get_center_idx = (i:number,window:number)=>Math.floor(i+1-window/2)
+
+ const get_i_from_center_idx = (center_idx:number, window:number) => {
+  return Math.ceil(center_idx + window/2 - 1);
+};
+
+class Rolling {
+  wins: (DataFrame<number>|typeof NaN)[]
+  labels: (string|number)[]
+  constructor(
+    private df: DataFrame<number>,
+    private window: number,
+    private min_periods: number = window,
+    private center: boolean = false,
+    private closed: 'left' | 'right' | 'both' | 'neither' = 'right',
+    private step: number = 1,
+    private axis: 0|1 = 0
+  ) {
+        const wins = []
+        const labels = []
+
+        // i is right edge of window
+        for(let i= center ? get_i_from_center_idx(0,window) : 0; 
+            center ? get_center_idx(i,window)<df.shape[0] : i<df.shape[0]; 
+            i+=step){
+            if(center && get_center_idx(i,window)<0)
+                continue
+            const win_idx = center ? get_center_idx(i,window) : i
+            labels.push(df.index.values[win_idx])
+            
+            const indices = []
+            for(let j=window; j>=0; j--){
+                const idx = i-j
+                if(idx>=0 && idx<df.shape[0]){
+                    if(j === window && (closed === 'left' || closed === 'both'))
+                        indices.push(idx)
+                    if(j === 0 && (closed === 'right' || closed === 'both'))
+                        indices.push(idx)
+                    if(j > 0 && j < window)
+                        indices.push(idx)
+                }
+            }
+
+            // console.log(indices)
+
+            if(indices.length < min_periods)
+                wins.push(NaN)
+            else
+                wins.push(df.iloc(indices))
+
+        }
+        // console.log(wins)
+        this.wins = wins
+        this.labels = labels
+
+    }
+
+    apply(fn2:((vals:number[])=>number)|string){
+        //fn: (win: DataFrame<number>|typeof NaN) => number[]
+        const fn = (win: DataFrame<number>|typeof NaN) => {
+            if(_.isNumber(win))
+                return full(this.df.shape[1],NaN)
+            else
+                return range(this.df.shape[1]).map(i=>{
+                    const ss = win.iloc(null,i).query('!_.isNaN(x)')
+                    if(ss.shape < this.min_periods)
+                        return NaN
+                    else
+                        return _.isString(fn2) ? (ss[fn2 as keyof Series<number>] as any)() as number : fn2(ss.values)
+    
+                })
+        }
+
+        const res = this.wins.map(win => fn(win))
+        const ff = new DataFrame(res,{index:this.labels,columns:this.df.columns})
+        return this.axis === 0 ? ff:ff.transpose()
+    }
+
+    sum(){
+        return this.apply('sum')
+    }
+}
+
+class SeriesRolling{
+  roll: Rolling
+  constructor(
+    private df: DataFrame<number>,
+    private window: number,
+    private min_periods: number = window,
+    private center: boolean = false,
+    private closed: 'left' | 'right' | 'both' | 'neither' = 'right',
+    private step: number = 1
+  ) {
+    this.roll = new Rolling(df,window,min_periods,center,closed,step)
+  }
+
+  apply(fn2:((vals:number[])=>number)|string){
+    return this.roll.apply(fn2).iloc(null,0)
+  }
+
+  sum(){
+    return this.apply('sum')
+  }
+}
+
+
+
+export {Obj,GP,GroupByThen,_sortIndices, findUnquotedAt,Rolling,SeriesRolling}

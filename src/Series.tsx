@@ -8,7 +8,7 @@ import {vec_loc,vec_loc2,
 
 
 import {ns,ns_arr,numx,nsx,locParamArr,SeriesInitOptions,
- SeriesRankOptions} from './interfaces'
+ SeriesRankOptions,RollingOptions} from './interfaces'
 
 import { _sortIndices } from './df_lib'
 import Index from './Index'
@@ -17,6 +17,7 @@ import DataFrame from './DataFrame'
 import * as stat from 'simple-statistics'
 import * as _ from 'lodash'
 import ranks = require('@stdlib/stats-ranks')
+import { SeriesRolling } from './df_lib'
 
 class Series<T>{
     values: T[]
@@ -296,9 +297,8 @@ class Series<T>{
     unique(){
         return _.uniq(this.values)
     }
-    rank(this:Series<number>,options?:SeriesRankOptions){
-        if(_.isUndefined(options))
-            options = {}
+    rank(this:Series<number>,options:SeriesRankOptions={}){
+        
         const vals = ranks(this.values,options)
         return new Series(vals,
             {index:this.index,name:this.name})
@@ -306,7 +306,7 @@ class Series<T>{
 
     change(this:Series<number>,op_str:string,periods:number=1){
         const df = new DataFrame(this.values.map(x=>[x]),{
-            index:this.index.cp(),
+            index:this.index.cp(),columns:[this.name]
         })
         const cf = df.change(op_str,{periods:periods})
         return cf.iloc(null,0)
@@ -318,6 +318,16 @@ class Series<T>{
 
     pct_change(this:Series<number>,periods:number=1){
         return this.change('(x-y)/y',periods)
+    }
+
+    rolling(this:Series<number>,window:number,
+        {min_periods=undefined,center=false,
+            closed='right',step=1}:RollingOptions={}){
+         const df = new DataFrame(this.values.map(x=>[x]),{
+            index:this.index.cp(),columns:[this.name]
+        })
+        const roll =  new SeriesRolling(df,window,min_periods,center,closed,step)
+        return roll
     }
 
     reduce<K>(func:(a:T[])=>K){

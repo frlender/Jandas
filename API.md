@@ -102,7 +102,7 @@ interface PushOptions{
     name?: number|string
     axis?: 0|1
 }
-push(val:T[],options?: PushOptions): void
+push(val:T[],options: PushOptions={}): void
 ```
 Add an array `val` as a row or column to the end of the dataframe. `name` is the label for the array. `axis` determines the dimension to add the array. It is an **inplace** operation. 
 
@@ -113,7 +113,7 @@ interface PushOptions{
     name?: number|string
     axis?: 0|1
 }
-insert(idx:number,val:T[],options:PushOptions): void
+insert(idx:number,val:T[],{name='',axis=1}:PushOptions={}): void
 ```
 Insert an array `val` at designed position `idx` as a row or column in place. `idx` is position-based index. `name` is the label for the array. `axis` determines the dimension to insert the array. It is an **inplace** operation.
 
@@ -128,11 +128,11 @@ Drop rows or columns from the dataframe and returns a new dataframe. `labels` ca
 **DataFrame.drop_duplicates**
 ```TypeScript
 interface DropDuplicatesOptions{
-    keep?: 'first' | 'last' | false // defaults to 'first'
-    axis?: 0|1 // defaults to 1
+    keep?: 'first' | 'last' | false
+    axis?: 0|1
 }
 
-drop_duplicates(labels:nsx,options?:DropDuplicatesOptions): DataFrame<T>
+drop_duplicates(labels:nsx,{keep='first',axis=1}:DropDuplicatesOptions={}): DataFrame<T>
 ```
 Drop rows or columns from the dataframe based on duplicate values specified by column or row `labels`. `keep` determines which duplicates to keep. If `keep` is `false`, all duplicates are dropped. If `keep` is `'first'`, the first occurrence of each duplicate is kept. If `keep` is `'last'`, the last occurrence of each duplicate is kept. The default is `'first'`. `axis` determines the dimension to drop: `1` to drop rows and `0` to drop columns. 
 
@@ -257,10 +257,10 @@ These methods only work for dataframes with numeric values.
 **DataFrame.sort_values**
 ```TypeScript
 interface SortOptions{
-    ascending?: boolean | boolean[] // defaults to true
-    axis?: 0 | 1 // defaults to 1
+    ascending?: boolean | boolean[]
+    axis?: 0 | 1 
 }
-sort_values(labels:nsx|null,options?:SortOptions): DataFrame<T>
+sort_values(labels:nsx|null,{ascending=true,axis=1}:SortOptions={}): DataFrame<T>
 ```
 Sort the DataFrame according to values in the rows (`axis=0`) or columns (`axis=1`) designated by `labels` in the `ascending` order. If `labels` is `null`, then sort the DataFrame by the values in index. If `labels` is an array, the sorting will compare values successively according to the order specified by `labels` to determine relative large or small. That is to say, `labels[1]` will only be considered if the values of `labels[0]` are equal. When `labels` is an array, `ascending` can be either a boolean value or an array. If `ascending` is a boolean value, it will be applied to all labels. If `ascending` is an array, it must have the same length as `labels` and determines the order of sorting for each label. If the values selected by `labels` are numeric, they will be sorted by their numeric values. Otherwise, they will be sorted according to the rule in [Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort). 
 
@@ -276,10 +276,10 @@ Element-wise operation on a single dataframe or on two dataframes. If defined, `
 **DataFrame.merge**
 ```TypeScript
 interface MergeOptions{
-    on?: number|string|undefined // default: undefined
-    axis?: 0|1 // default: 1
+    on?: number|string|undefined
+    axis?: 0|1
 }
-merge(df:DataFrame<T>,options?:MergeOptions): DataFrame<T>
+merge(df:DataFrame<T>,{on,axis=1}:MergeOptions={}): DataFrame<T>
 ```
 Merge one dataframe to another on their index or a designated column or row. If `axis` equals to 1, it merges the two dataframes by index (if `on` is undefined) or a column designated by `on`. If `axis` equals to 0, it merges the two dataframes by columns (if `on` is undefined) or a row designated by `on`. Currently, the merge function only supports **inner** join of two dataframes and the values in the index, row or column that is merged on must be **unique**. It roughly equals to: 
 `pandas.DataFrame.merge(...,how='inner',validate='one_to_one')`. 
@@ -293,7 +293,7 @@ interface DataFrameRankOptions{
     encoding?: (string|number|null|undefined)[]
     axis?: 0|1
 }
-rank(this:DataFrame<number>,options?:DataFrameRankOptions): DataFrame<number>
+rank(this:DataFrame<number>,options:DataFrameRankOptions={}): DataFrame<number>
 ```
 Return ranks along `axis` (defaults to 0).  The `method` parameter determines how the ranks are calculated. It defaults to `'average'`. The underlying ranking function is implemented by the `ranks` function in the [@stdlib/stats-ranks](https://github.com/stdlib-js/stats-ranks) package. Please check its homepage for parameter usage. The method only works for dataframes with numeric values.
 
@@ -304,7 +304,7 @@ interface DiffOptions{
    periods?: number
    axis?: 0|1
 }
-diff(this:DataFrame<number>,options?:DiffOptions):DataFrame<T>
+diff(this:DataFrame<number>,{periods=1,axis=0}:DiffOptions={}):DataFrame<T>
 ```
 First discrete difference of element. Calculates the difference of a DataFrame element compared with another element in the DataFrame (default is element in previous row `periods=1` and `axis=0`). Similar to [Pandas.DataFrame.diff](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.diff.html). The method only works for dataframes with numeric values.
 
@@ -316,7 +316,7 @@ interface DiffOptions{
    periods?: number
    axis?: 0|1
 }
-pct_change(this:DataFrame<number>,options?:DiffOptions):DataFrame<T>
+pct_change(this:DataFrame<number>,{periods=1,axis=0}:DiffOptions={}):DataFrame<T>
 ```
 Fractional change between the current and a prior element. Computes the fractional change from the immediately previous row by default (`periods=1` and `axis=0`). This is useful in comparing the fraction of change in a time series of elements. Similar to [Pandas.DataFrame.pct_change](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.pct_change.html). The method only works for dataframes with numeric values.
 
@@ -328,9 +328,34 @@ interface DiffOptions{
    periods?: number
    axis?: 0|1
 }
-change(this:DataFrame<number>,op:string,options?:DiffOptions):DataFrame<T>
+change(this:DataFrame<number>,op:string,{periods=1,axis=0}:DiffOptions={}):DataFrame<T>
 ```
 Calculates a user-defined change of a DataFrame element compared with another element in the DataFrame. The `op` argument is an operation string that is the same format as required by the `DataFrame.op method`. The `diff` and `pct_change` methods are implemented by this method with `op` being `'x-y'` and `'(x-y)/y'`, respectively. Computes the user-defined change from the immediately previous row by default (`periods=1` and `axis=0`). The method only works for dataframes with numeric values.
+
+\
+**DataFrame.rolling**
+```TypeScript
+interface DataFrameRollingOptions{
+    min_periods?: number;
+    center?: boolean;
+    closed?: 'left' | 'right' | 'both' | 'neither';
+    step?: number;
+    axis?: 0|1
+}
+
+class Rolling{
+    ...
+    apply(fn:((vals:number[])=>number)|string): DataFrame<number>
+}
+
+rolling(this:DataFrame<number>,window:number,
+        {min_periods=undefined,center=false,
+        closed='right',step=1, axis=0}:DataFrameRollingOptions
+        ={}):Rolling
+```
+Provide rolling window calculations. The parameters work exactly the same as in [pandas.DataFrame.rolling](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rolling.html). The `Rolling` object only implements the `sum` method for now. But you can do other rolling calculations by calling the `apply` method. The `fn` argument of the `apply` method can be a string that is a valid method name of the `Series` class. The method must reduce a `Series` object into a scalar value like `mean`,`sum` and `max`. To calculate mean for each window, you can do `df.rolling(window).apply('mean')`. `win_type` is not currently supported.
+
+
 
 
 \
@@ -530,6 +555,28 @@ Fractional change between the current and a prior element. Computes the fraction
 change(this:Series<number>,op:string,periods:number=1):Series<T>
 ```
 Calculates a user-defined change of a Series element compared with another element in the Series. The `op` argument is an operation string that is the same format as required by the `Series.op method`. The `diff` and `pct_change` methods are implemented by this method with `op` being `'x-y'` and `'(x-y)/y'`, respectively. Computes the user-defined change from the immediately previous element by default (`periods=1`). The method only works for Series with numeric values.
+
+\
+**Series.rolling**
+```TypeScript
+interface RollingOptions{
+    min_periods?: number;
+    center?: boolean;
+    closed?: 'left' | 'right' | 'both' | 'neither';
+    step?: number;
+}
+
+class SeriesRolling{
+    ...
+    apply(fn:((vals:number[])=>number)|string): Series<number>
+}
+
+rolling(this:Series<number>,window:number,
+        {min_periods=undefined,center=false,
+        closed='right',step=1}:RollingOptions
+        ={}):SeriesRolling
+```
+Provide rolling window calculations. The parameters work exactly the same as in [pandas.Series.rolling](https://pandas.pydata.org/docs/reference/api/pandas.Series.rolling.html). The `SeriesRolling` object only implements the `sum` method for now. But you can do other rolling calculations by calling the `apply` method. The `fn` argument of the `apply` method can be a string that is a valid method name of the `Series` class. The method must reduce a `Series` object into a scalar value like `mean`,`sum` and `max`. To calculate mean for each window, you can do `ss.rolling(window).apply('mean')`. `win_type` is not currently supported.
 
 
 \
