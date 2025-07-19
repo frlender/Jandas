@@ -3,7 +3,6 @@ import {DataFrame,Index,Series} from '../J'
 import { from_raw, full } from '../util2';
 import {range} from '../util'
 import * as _ from 'lodash'
-import {sum} from 'simple-statistics'
 
 
 test('constructor',()=>{
@@ -1248,15 +1247,11 @@ test('rolling',()=>{
     refx = new DataFrame([[NaN,NaN],[5,NaN],[9,NaN]],
         {index:['a','c','e']})
     expect(rf).toEqual(refx.transpose())
-    
-    s = new Series([1,2,3,4,5,6],{index:['a','b','c','d','e','f'],name:'s'})
-    rs = s.rolling(3,{closed:'right',center:true,min_periods:2,step:1}).apply('mean')
-    ref = new Series([1.5,2,3,4,5,5.5],{index:['a','b','c','d','e','f'],name:'s'})
-    expect(rs).toEqual(ref)
-
-    s = new Series([1,2,NaN,4,5,6])
-    let r = s.rolling(3,{min_periods:2}).apply(sum,true)
-    ref = new Series([NaN,3,NaN,NaN,NaN,15])
-    expect(r).toEqual(ref)
+   
 })
 
+
+test('isna',()=>{
+    const ss = new DataFrame([[1,2,null,3,NaN,undefined,'',Infinity]])
+    expect(ss.isna().values).toEqual([[false,false,true,false,true,true,false,false]])
+})

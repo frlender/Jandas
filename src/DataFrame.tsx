@@ -1062,6 +1062,9 @@ class DataFrame<T>{
             return new Rolling(this.transpose(),window,min_periods,center,closed,step,axis)
     }
 
+    isna(){
+        return this.op<boolean>('_.isNil(x) || _.isNaN(x)')
+    }
 
     // drop_duplicates_by_index(){
     //     return drop_duplicates_by_index(this)

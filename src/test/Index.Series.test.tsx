@@ -3,6 +3,7 @@ import {Series,Index} from '../J'
 import { from_raw } from '../util2';
 import {range} from '../util'
 import * as _ from 'lodash'
+import {sum} from 'simple-statistics'
 
 const ss = new Series([1,2,3,4,5],{index:['a','b','c','d','e']})
 const sn = new Series([1,2,3,4,5],{index:['a','b','b','d','e'],name:'k'})
@@ -579,4 +580,21 @@ test('ss.diff',()=>{
     expect(res.values).toEqual([-1,6,NaN])
 
     expect(res.index.values).toEqual(ss.index.values)
+})
+
+test('rolling',()=>{
+    let s = new Series([1,2,3,4,5,6],{index:['a','b','c','d','e','f'],name:'s'})
+    let rs = s.rolling(3,{closed:'right',center:true,min_periods:2,step:1}).apply('mean')
+    let ref = new Series([1.5,2,3,4,5,5.5],{index:['a','b','c','d','e','f'],name:'s'})
+    expect(rs).toEqual(ref)
+
+    s = new Series([1,2,NaN,4,5,6])
+    let r = s.rolling(3,{min_periods:2}).apply(sum,true)
+    ref = new Series([NaN,3,NaN,NaN,NaN,15])
+    expect(r).toEqual(ref)
+})
+
+test('isna',()=>{
+    const ss = new Series([1,2,null,3,NaN,undefined,'',Infinity])
+    expect(ss.isna().values).toEqual([false,false,true,false,true,true,false,false])
 })

@@ -330,6 +330,10 @@ class Series<T>{
         return roll
     }
 
+    isna(){
+        return this.op<boolean>('_.isNil(x) || _.isNaN(x)')
+    }
+
     reduce<K>(func:(a:T[])=>K){
         return func(this.values)
     }
