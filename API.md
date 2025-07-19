@@ -273,6 +273,14 @@ op<K,Z>(opStr:string|((x:T,y:Z)=>K),df:DataFrame<Z>|Z[][]): DataFrame<K>
 Element-wise operation on a single dataframe or on two dataframes. If defined, `df` represents the second dataframe. It could be a dataframe or an array of array. If it is a dataframe, it must satisfies either of two rules. First, if both dataframes' indices are unique, their indices must contain the same values but the order of the values can be different. Second, if either of the two dataframes' index is not unique, their indices' values must be exactly the same. The same rules applies to their columns. `opStr` can be a function or an string expression. A valid string expression should define the operation on a single element or a set of two elements of the dataframes. For operations on one dataframe, use `x` in `opStr` to represent the element in the dataframe. For operations on two dataframes, use `x` and `y` to represent the element in the first and second dataframes. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
 
 \
+**DataFrame.isna**
+```TypeScript
+isna(): DataFrame<boolean>
+```
+Return a boolean dataframe indicating whether each element is `NaN`, `null` or `undefined`. `''` and `Infinity` are not considered as na values.
+
+
+\
 **DataFrame.merge**
 ```TypeScript
 interface MergeOptions{
@@ -354,8 +362,6 @@ rolling(this:DataFrame<number>,window:number,
         ={}):Rolling
 ```
 Provide rolling window calculations. The parameters work exactly the same as in [pandas.DataFrame.rolling](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rolling.html). The `Rolling` object only implements the `sum` method for now. But you can do other rolling calculations by calling the `apply` method. The `fn` argument of the `apply` method can be a string that is a valid method name of the `Series` class. The method must reduce a `Series` object into a scalar value like `mean`,`sum` and `max`. As an example, to calculate mean for each window, you can do `df.rolling(window).apply('mean')`. `win_type` is not currently supported. If `keepNaN` is `true`, the input to the `fn` function will include `NaN` values, which might be useful for weighted rolling calculations. If `fn` is a string, `keepNaN` will always be `false`.
-
-
 
 
 \
@@ -508,6 +514,13 @@ op<K>(opStr:string|((x:T)=>K)): Series<K>
 op<K,Z>(opStr:string|((x:T,y:Z)=>K),ss:Series<Z>|Z[]): Series<K>
 ```
 Element-wise operation on a single series or on two series. If defined, `ss` represents the second series. It could be a series or an array. If it is a series, it must satisfies either of two rules. First, if both series' indices are unique, their indices must contain the same values but the order of the values can be different.  Second, if either of the series' indices is not unique, their indices' values must be exactly the same. `opStr` can be a function or an string expression. A valid string expression should define the operation on a single element or a set of two elements of the series. For operations on one series, use `x` in `opStr` to represent an element in the series. For operations on two series, use `x` and `y` to represent the elements in the first and second series. Check [Getting Started](https://github.com/frlender/Jandas#element-wise-operation) for examples.
+
+\
+**DataFrame.isna**
+```TypeScript
+isna(): Series<boolean>
+```
+Return a boolean series indicating whether each element is `NaN`, `null` or `undefined`. `''` and `Infinity` are not considered as na values.
 
 \
 **Series.unique**
