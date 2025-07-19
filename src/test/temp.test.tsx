@@ -3,6 +3,7 @@ import {DataFrame,Index,Series} from '../J'
 import { from_raw, full } from '../util2';
 import {range} from '../util'
 import * as _ from 'lodash'
+import {sum} from 'simple-statistics'
 
 test('a',()=>{})
 
@@ -21,3 +22,5 @@ test('b',()=>{
     expect(sx.b('x==="b" || x ==="a"')).toEqual([true,true,true])
 
 })
+
+

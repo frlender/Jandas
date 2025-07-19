@@ -345,7 +345,7 @@ interface DataFrameRollingOptions{
 
 class Rolling{
     ...
-    apply(fn:((vals:number[])=>number)|string): DataFrame<number>
+    apply(fn:((vals:number[])=>number)|string,keepNaN=false): DataFrame<number>
 }
 
 rolling(this:DataFrame<number>,window:number,
@@ -353,7 +353,7 @@ rolling(this:DataFrame<number>,window:number,
         closed='right',step=1, axis=0}:DataFrameRollingOptions
         ={}):Rolling
 ```
-Provide rolling window calculations. The parameters work exactly the same as in [pandas.DataFrame.rolling](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rolling.html). The `Rolling` object only implements the `sum` method for now. But you can do other rolling calculations by calling the `apply` method. The `fn` argument of the `apply` method can be a string that is a valid method name of the `Series` class. The method must reduce a `Series` object into a scalar value like `mean`,`sum` and `max`. To calculate mean for each window, you can do `df.rolling(window).apply('mean')`. `win_type` is not currently supported.
+Provide rolling window calculations. The parameters work exactly the same as in [pandas.DataFrame.rolling](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rolling.html). The `Rolling` object only implements the `sum` method for now. But you can do other rolling calculations by calling the `apply` method. The `fn` argument of the `apply` method can be a string that is a valid method name of the `Series` class. The method must reduce a `Series` object into a scalar value like `mean`,`sum` and `max`. As an example, to calculate mean for each window, you can do `df.rolling(window).apply('mean')`. `win_type` is not currently supported. If `keepNaN` is `true`, the input to the `fn` function will include `NaN` values, which might be useful for weighted rolling calculations. If `fn` is a string, `keepNaN` will always be `false`.
 
 
 
@@ -568,7 +568,7 @@ interface RollingOptions{
 
 class SeriesRolling{
     ...
-    apply(fn:((vals:number[])=>number)|string): Series<number>
+    apply(fn:((vals:number[])=>number)|string, keepNaN=false): Series<number>
 }
 
 rolling(this:Series<number>,window:number,
@@ -576,7 +576,7 @@ rolling(this:Series<number>,window:number,
         closed='right',step=1}:RollingOptions
         ={}):SeriesRolling
 ```
-Provide rolling window calculations. The parameters work exactly the same as in [pandas.Series.rolling](https://pandas.pydata.org/docs/reference/api/pandas.Series.rolling.html). The `SeriesRolling` object only implements the `sum` method for now. But you can do other rolling calculations by calling the `apply` method. The `fn` argument of the `apply` method can be a string that is a valid method name of the `Series` class. The method must reduce a `Series` object into a scalar value like `mean`,`sum` and `max`. To calculate mean for each window, you can do `ss.rolling(window).apply('mean')`. `win_type` is not currently supported.
+Provide rolling window calculations. The parameters work exactly the same as in [pandas.Series.rolling](https://pandas.pydata.org/docs/reference/api/pandas.Series.rolling.html). The `SeriesRolling` object only implements the `sum` method for now. But you can do other rolling calculations by calling the `apply` method. The `fn` argument of the `apply` method can be a string that is a valid method name of the `Series` class. This method must reduce a `Series` object into a scalar value like `mean`,`sum` and `max`. As an example,to calculate mean for each window, you can do `ss.rolling(window).apply('mean')`. `win_type` is not currently supported. If `keepNaN` is `true`, the input to the `fn` function will include `NaN` values, which might be useful for weighted rolling calculations. If `fn` is a string, `keepNaN` will always be `false`.
 
 
 \

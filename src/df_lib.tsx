@@ -251,19 +251,22 @@ class Rolling {
 
     }
 
-    apply(fn2:((vals:number[])=>number)|string){
+    apply(fn2:((vals:number[])=>number)|string,keepNaN:boolean=false){
         //fn: (win: DataFrame<number>|typeof NaN) => number[]
         const fn = (win: DataFrame<number>|typeof NaN) => {
             if(_.isNumber(win))
                 return full(this.df.shape[1],NaN)
             else
                 return range(this.df.shape[1]).map(i=>{
-                    const ss = win.iloc(null,i).query('!_.isNaN(x)')
+                    const s0 = win.iloc(null,i)
+                    const ss = s0.query('!_.isNaN(x)')
                     if(ss.shape < this.min_periods)
                         return NaN
                     else
-                        return _.isString(fn2) ? (ss[fn2 as keyof Series<number>] as any)() as number : fn2(ss.values)
-    
+                        if(_.isString(fn2))
+                            return (ss[fn2 as keyof Series<number>] as any)() as number
+                        else
+                            return keepNaN ? fn2(s0.values) : fn2(ss.values)
                 })
         }
 
@@ -290,8 +293,8 @@ class SeriesRolling{
     this.roll = new Rolling(df,window,min_periods,center,closed,step)
   }
 
-  apply(fn2:((vals:number[])=>number)|string){
-    return this.roll.apply(fn2).iloc(null,0)
+  apply(fn2:((vals:number[])=>number)|string,keepNaN:boolean=false){
+    return this.roll.apply(fn2,keepNaN).iloc(null,0)
   }
 
   sum(){
