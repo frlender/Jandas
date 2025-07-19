@@ -74,4 +74,17 @@ interface QueryOptions {
     axis?: 0 | 1;
     ctx?: any;
 }
-export { ns, ns_arr, numx, nsx, locParamArr, locParam, Obj, GP, SeriesInitOptions, DataFrameInitOptions, DataFrameArrInitOptions, SortOptions, PushOptions, MergeOptions, SeriesRankOptions, DataFrameRankOptions, IndexRaw, SeriesRaw, DataFrameRaw, DropDuplicatesOptions, IndexType, QueryOptions };
+interface DiffOptions {
+    periods?: number;
+    axis?: 0 | 1;
+}
+interface RollingOptions {
+    min_periods?: number;
+    center?: boolean;
+    closed?: 'left' | 'right' | 'both' | 'neither';
+    step?: number;
+}
+interface DataFrameRollingOptions extends RollingOptions {
+    axis?: 0 | 1;
+}
+export { ns, ns_arr, numx, nsx, locParamArr, locParam, Obj, GP, SeriesInitOptions, DataFrameInitOptions, DataFrameArrInitOptions, SortOptions, PushOptions, MergeOptions, SeriesRankOptions, DataFrameRankOptions, IndexRaw, SeriesRaw, DataFrameRaw, DropDuplicatesOptions, IndexType, QueryOptions, DiffOptions, RollingOptions, DataFrameRollingOptions };

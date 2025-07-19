@@ -27,4 +27,30 @@ declare class GroupByThen<T> implements Iterable<[DataFrame<T>, T | T[], number]
 }
 declare function _sortIndices<S>(arr: S[] | S[][], multiple: boolean, ascending: boolean | boolean[]): number[];
 declare function findUnquotedAt(str: string): number[];
-export { Obj, GP, GroupByThen, _sortIndices, findUnquotedAt };
+declare class Rolling {
+    private df;
+    private window;
+    private min_periods;
+    private center;
+    private closed;
+    private step;
+    private axis;
+    wins: (DataFrame<number> | typeof NaN)[];
+    labels: (string | number)[];
+    constructor(df: DataFrame<number>, window: number, min_periods?: number, center?: boolean, closed?: 'left' | 'right' | 'both' | 'neither', step?: number, axis?: 0 | 1);
+    apply(fn2: ((vals: number[]) => number) | string, keepNaN?: boolean): DataFrame<number>;
+    sum(): DataFrame<number>;
+}
+declare class SeriesRolling {
+    private df;
+    private window;
+    private min_periods;
+    private center;
+    private closed;
+    private step;
+    roll: Rolling;
+    constructor(df: DataFrame<number>, window: number, min_periods?: number, center?: boolean, closed?: 'left' | 'right' | 'both' | 'neither', step?: number);
+    apply(fn2: ((vals: number[]) => number) | string, keepNaN?: boolean): Series<number>;
+    sum(): Series<number>;
+}
+export { Obj, GP, GroupByThen, _sortIndices, findUnquotedAt, Rolling, SeriesRolling };

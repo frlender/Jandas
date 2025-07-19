@@ -1,5 +1,6 @@
-import { ns, ns_arr, numx, nsx, locParamArr, SeriesInitOptions, SeriesRankOptions } from './interfaces';
+import { ns, ns_arr, numx, nsx, locParamArr, SeriesInitOptions, SeriesRankOptions, RollingOptions } from './interfaces';
 import Index from './Index';
+import { SeriesRolling } from './df_lib';
 declare class Series<T> {
     values: T[];
     private _index;
@@ -53,17 +54,22 @@ declare class Series<T> {
     op<K>(opStr: string | ((x: T) => K)): Series<K>;
     op<K, Z>(opStr: string | ((x: T, y: Z) => K), ss: Series<Z> | Z[]): Series<K>;
     unique(): T[];
-    rank(options?: SeriesRankOptions): Series<number>;
+    rank(this: Series<number>, options?: SeriesRankOptions): Series<number>;
+    change(this: Series<number>, op_str: string, periods?: number): Series<number>;
+    diff(this: Series<number>, periods?: number): Series<number>;
+    pct_change(this: Series<number>, periods?: number): Series<number>;
+    rolling(this: Series<number>, window: number, { min_periods, center, closed, step }?: RollingOptions): SeriesRolling;
+    isna(): Series<boolean>;
     reduce<K>(func: (a: T[]) => K): K;
-    min(): number;
-    max(): number;
-    sum(): number;
-    mean(): number;
-    mode(): number;
-    median(): number;
-    std(): number;
-    var(): number;
-    prod(): number;
+    min(this: Series<number>): number;
+    max(this: Series<number>): number;
+    sum(this: Series<number>): number;
+    mean(this: Series<number>): number;
+    mode(this: Series<number>): number;
+    median(this: Series<number>): number;
+    std(this: Series<number>): number;
+    var(this: Series<number>): number;
+    prod(this: Series<number>): number;
     to_raw(copy?: boolean): {
         values: T[];
         name: string | number;

@@ -11,4 +11,6 @@ declare function concat<T>(dfArr: DataFrame<T>[], axis: 0 | 1): DataFrame<T>;
 declare function from_raw<T>(data: IndexRaw): Index;
 declare function from_raw<T>(data: SeriesRaw<T>): Series<T>;
 declare function from_raw<T>(data: DataFrameRaw<T>): DataFrame<T>;
-export { concat, from_raw };
+declare function full<T>(shape: number, fill_value: T): T[];
+declare function full<T>(shape: number[], fill_value: T): T[][];
+export { concat, from_raw, full };
