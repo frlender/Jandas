@@ -9,7 +9,8 @@ Jandas is designed to have very similar indexing experience as  Pandas. It imple
 -   Negative number and range indexing.
 -   Query functions with a better syntax than Pandas.
 -   Avoid using objects as arguments when possible.
--   Comprehensive overloads on indexing ensuring proper return types in TypeScript.
+-   Comprehensive overloads on indexing ensure proper return types in TypeScript.
+-   Row and column indexes can be changed by direct assignment.
  
 
 
@@ -20,7 +21,7 @@ npm install jandas
 ```
 Then import Jandas classes and functions in TypeScript:
 ```TypeScript
-import {Series, DataFrame, Index, range, concat, from_raw} from 'jandas'
+import {Series, DataFrame, Index, range, concat, from_raw, full} from 'jandas'
 ```
 
 \
@@ -74,7 +75,7 @@ const df = new DataFrame([[1,2],
 let df2 = df.loc() // create a copy of df
 df2.iset(0,[3,3]) // df2.values equals to: [[3,3],[3,4],[5,6]]
 
-df2 = df.loc()
+df2 = df.loc() // create a copy of df
 df2.iset([true,false,false],[[3,3]]) //df2.values: [[3,3],[3,4],[5,6]]
 
 df2 = df.loc()
@@ -92,6 +93,20 @@ df2 = df.loc()
 df2.set(null,'e',[1,2,3]) // new DataFrame([[1,2,1],[3,4,2],[5,6,3]],
                           // {index:['a','b','b'],columns:['d',5,'e']})
 ```
+
+Row and column indexes can be changed by direct assignment.The assigned value can be either an array or an index object.
+
+```TypeScript
+const df = new DataFrame([[1,2],[3,4],[5,6]],
+    {index:['a','b','b'],columns:['d',5]})
+df.index = ['c','d','e']
+df.loc('e').values // [5,6]
+df.columns = new Index(['f',6],'colIndex')
+df.loc(null,'f').values // [1,3,5]
+df.columns.name // 'colIndex'
+```
+
+### Query
 Jandas implements two query functions `.b()` and `.q()` for Series and DataFrame. `.b()` returns a boolean index and `.q()` returns a DataFrame matching the query string. The query syntaxes are slightly different bewtween Series and DataFrame. `.bool()` and `.query()` are implemented as alias for `.b()` and `.q()`
 
 ```TypeScript

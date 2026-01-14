@@ -338,7 +338,7 @@ interface DiffOptions{
 }
 change(this:DataFrame<number>,op:string,{periods=1,axis=0}:DiffOptions={}):DataFrame<T>
 ```
-Calculates a user-defined change of a DataFrame element compared with another element in the DataFrame. The `op` argument is an operation string that is the same format as required by the `DataFrame.op method`. The `diff` and `pct_change` methods are implemented by this method with `op` being `'x-y'` and `'(x-y)/y'`, respectively. Computes the user-defined change from the immediately previous row by default (`periods=1` and `axis=0`). The method only works for dataframes with numeric values.
+Calculates a user-defined change of a DataFrame element compared with another element in the DataFrame. The `op` argument is an operation string that is the same format as required by the `DataFrame.op` method. The `diff` and `pct_change` methods are implemented by this method with `op` being `'x-y'` and `'(x-y)/y'`, respectively. Computes the user-defined change from the immediately previous row by default (`periods=1` and `axis=0`). The method only works for dataframes with numeric values.
 
 \
 **DataFrame.rolling**
@@ -353,7 +353,7 @@ interface DataFrameRollingOptions{
 
 class Rolling{
     ...
-    apply(fn:((vals:number[])=>number)|string,keepNaN=false): DataFrame<number>
+    apply(fn:((vals:number[])=>number)|string, keepNaN=false): DataFrame<number>
 }
 
 rolling(this:DataFrame<number>,window:number,
@@ -567,7 +567,7 @@ Fractional change between the current and a prior element. Computes the fraction
 ```TypeScript
 change(this:Series<number>,op:string,periods:number=1):Series<T>
 ```
-Calculates a user-defined change of a Series element compared with another element in the Series. The `op` argument is an operation string that is the same format as required by the `Series.op method`. The `diff` and `pct_change` methods are implemented by this method with `op` being `'x-y'` and `'(x-y)/y'`, respectively. Computes the user-defined change from the immediately previous element by default (`periods=1`). The method only works for Series with numeric values.
+Calculates a user-defined change of a Series element compared with another element in the Series. The `op` argument is an operation string that is the same format as required by the `Series.op` method. The `diff` and `pct_change` methods are implemented by this method with `op` being `'x-y'` and `'(x-y)/y'`, respectively. Computes the user-defined change from the immediately previous element by default (`periods=1`). The method only works for Series with numeric values.
 
 \
 **Series.rolling**

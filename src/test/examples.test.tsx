@@ -1,5 +1,5 @@
 import { expect, test, describe} from '@jest/globals';
-import {DataFrame,Series} from '../J'
+import {DataFrame, Series, Index} from '../J'
 // import {range} from './util'
 
 test('.iloc, .loc',()=>{
@@ -79,6 +79,17 @@ df2.set(null,'e',[1,2,3]) // new DataFrame([[1,2,1],[3,4,2],[5,6,3]],
 expect(df2.loc()).toEqual(new DataFrame([[1,2,1],[3,4,2],[5,6,3]],
     {index:['a','b','b'],columns:['d',5,'e']}))
 })
+
+test('change indexes',()=>{
+    const df = new DataFrame([[1,2],[3,4],[5,6]],
+        {index:['a','b','b'],columns:['d',5]})
+    df.index = ['c','d','e']
+    expect(df.loc('e').values).toEqual([5,6])
+    df.columns = new Index(['f',6],'colIndex')
+    expect(df.loc(null,'f').values).toEqual([1,3,5])
+    expect(df.columns.name).toEqual('colIndex')
+})
+
 
 test('q b',()=>{
 const ss = new Series([1,2,3],{index:['a','b','b'],name:'kk'})

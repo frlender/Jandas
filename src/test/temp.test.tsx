@@ -7,6 +7,16 @@ import {sum} from 'simple-statistics'
 
 test('a',()=>{})
 
+test('change indexes',()=>{
+    const df = new DataFrame([[1,2],[3,4],[5,6]],
+        {index:['a','b','b'],columns:['d',5]})
+    df.index = ['c','d','e']
+    expect(df.loc('e').values).toEqual([5,6])
+    df.columns = new Index(['f',6],'colIndex')
+    expect(df.loc(null,'f').values).toEqual([1,3,5])
+    expect(df.columns.name).toEqual('colIndex')
+})
+
 test('b',()=>{
     let ss = new Series([1,2,3],{index:['a','b','b']})
     expect(ss.b('x>1')).toEqual([false,true,true])
