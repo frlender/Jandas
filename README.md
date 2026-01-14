@@ -106,6 +106,9 @@ df.loc(null,'f').values // [1,3,5]
 df.columns.name // 'colIndex'
 ```
 
+It also implements `.reset_index()` and `.reset_columns()` to reset index along the row and column axes, and `.set_index()` and `.set_columns()`
+to set index and columns using a column or a row.
+
 ### Query
 Jandas implements two query functions `.b()` and `.q()` for Series and DataFrame. `.b()` returns a boolean index and `.q()` returns a DataFrame matching the query string. The query syntaxes are slightly different bewtween Series and DataFrame. `.bool()` and `.query()` are implemented as alias for `.b()` and `.q()`
 
@@ -154,10 +157,7 @@ dx.q('["c",].includes([5])')
 // or use the context value (recommended):
 dx.q('@.includes([5])',['c']) // the same output
 ```
-
-Jandas implements `.to_dict()` to convert a dataframe into an array of objects. It is similar to `.to_dict('records')` in Pandas. It also implements `.reset_index()` and `.reset_columns()` to reset index along the row and column axes.
-
-
+Jandas implements `.to_dict()` to convert a dataframe into an array of objects. It is similar to `.to_dict('records')` in Pandas. 
 ### Iteration
 Jandas implements `.iterrows()` and `.itercols()` to iter over the rows and columns of a DataFrame. They can be iterated in two ways using either the `for...of` expression or a function. The `for...of` expression enables the use of the `break` keyword.
 ```TypeScript
