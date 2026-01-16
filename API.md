@@ -563,7 +563,7 @@ Fractional change between the current and a prior element. Computes the fraction
 
 
 \
-**DataFrame.change**
+**Series.change**
 ```TypeScript
 change(this:Series<number>,op:string,periods:number=1):Series<T>
 ```
