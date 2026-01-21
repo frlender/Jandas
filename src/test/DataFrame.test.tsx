@@ -183,6 +183,9 @@ describe('iloc',()=>{
         expect(df.iloc(':2',[false,true])).toEqual(
             new DataFrame([[2],[4]],{columns:[1]})
         )
+
+        const df2 = new DataFrame([[1,2],[3,null]])
+        expect(df2.iloc(1,1)).toEqual(null)
     })
 })
 
@@ -324,6 +327,12 @@ describe('iset',()=>{
         )
         expect(()=>df.iset(null,[0,1],[[5,5,5],[6,6,6]]))
             .toThrow('length')
+    })
+
+    test('null',()=>{
+        let df = new DataFrame<number|null>([[1,2],[3,5]])
+        df.iset(0,[3,null])
+        expect(df.iloc(0).values).toEqual([3,null])
     })
 })
 

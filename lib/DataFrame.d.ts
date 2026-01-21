@@ -2,6 +2,7 @@ import { ns, ns_arr, numx, nsx, locParamArr, Obj, DataFrameArrInitOptions, DataF
 import { GroupByThen, Rolling } from './df_lib';
 import Index from './Index';
 import Series from './Series';
+declare const UNMET: unique symbol;
 declare class DataFrame<T> {
     values: T[][];
     shape: [number, number];
@@ -40,8 +41,8 @@ declare class DataFrame<T> {
     _p(): void;
     p(): void;
     transpose(inplace?: boolean): DataFrame<T>;
-    _iloc_asymmetric(v1: T[][], l1: Index, l2: Index, transpose: boolean, i1: numx | boolean[], i2?: numx | boolean[]): DataFrame<T> | Series<T> | null;
-    _iloc_symmetric(ir?: numx | boolean[], ic?: numx | boolean[]): DataFrame<T> | T | null;
+    _iloc_asymmetric(v1: T[][], l1: Index, l2: Index, transpose: boolean, i1: numx | boolean[], i2?: numx | boolean[]): DataFrame<T> | Series<T> | typeof UNMET;
+    _iloc_symmetric(ir?: numx | boolean[], ic?: numx | boolean[]): DataFrame<T> | T | typeof UNMET;
     iloc(row: number, col: number): T;
     iloc(row: number, col?: null | string | number[] | boolean[]): Series<T>;
     iloc(row: null | string | number[] | boolean[], col: number): Series<T>;
@@ -52,8 +53,8 @@ declare class DataFrame<T> {
     loc(row: null | locParamArr, col: number | string): Series<T> | DataFrame<T>;
     loc(row?: null | locParamArr, col?: null | locParamArr): DataFrame<T>;
     loc(row?: null | number | string | locParamArr, col?: null | number | string | locParamArr): T | Series<T> | DataFrame<T>;
-    _iset_asymmetric(v1: T[][], l1: Index, l2: Index, i1: numx | boolean[], rpl: T[] | T[][], i2?: numx | boolean[]): null | undefined;
-    _iset_symmetric(ir: undefined | numx | boolean[], ic: undefined | numx | boolean[], rpl: T | T[] | T[][]): null | undefined;
+    _iset_asymmetric(v1: T[][], l1: Index, l2: Index, i1: numx | boolean[], rpl: T[] | T[][], i2?: numx | boolean[]): typeof UNMET | undefined;
+    _iset_symmetric(ir: undefined | numx | boolean[], ic: undefined | numx | boolean[], rpl: T | T[] | T[][]): typeof UNMET | undefined;
     _iset(row: undefined | numx | boolean[], col: undefined | numx | boolean[], rpl: T | T[] | T[][]): void;
     iset(row: number, col: number, rpl: T): void;
     iset(row: number, rpl: T[]): void;

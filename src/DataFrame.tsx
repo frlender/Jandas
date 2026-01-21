@@ -23,7 +23,7 @@ import * as stat from 'simple-statistics'
 import * as _ from 'lodash'
 import ranks = require('@stdlib/stats-ranks')
 
-
+const UNMET: unique symbol = Symbol()
 
 class DataFrame<T>{
     values: T[][]
@@ -205,7 +205,7 @@ class DataFrame<T>{
                     {index:final_l1,columns:final_l2})
                 return transpose ? df.transpose(true) : df }
             default:
-                return null
+                return UNMET
         }
     }
     // _iloc_symmetric(ir:number,ic:number):T
@@ -236,7 +236,7 @@ class DataFrame<T>{
                     this.columns.name)
                 return new DataFrame(final_vals,{index:final_index,  columns:final_columns})
             default:
-                return null
+                return UNMET
         }
     }
 
@@ -254,20 +254,21 @@ class DataFrame<T>{
         if(col === null) col = undefined
         row = _trans_iloc(row,this.shape[0])
         col = _trans_iloc(col,this.shape[1])
-
-        let res: null | Series<T> | DataFrame<T> | T;
+        
+    
+        let res: typeof UNMET | Series<T> | DataFrame<T> | T;
         res = this._iloc_symmetric(row,col)
         // console.log('sym res',res)
-        if(res !== null) return res
+        if(res !== UNMET) return res
 
         if(col === undefined || isVal(row)){
             res = this._iloc_asymmetric(this.values,this.index,this.columns,false,row!,col)
             // console.log('asym row res',res)
-            if(res !== null) return res
+            if(res !== UNMET) return res
         }else{
             res = this._iloc_asymmetric(this.tr,this.columns,this.index,true,col!,row,)
             // console.log('asym col res',res)
-            if(res !== null) return res
+            if(res !== UNMET) return res
         }
         throw(`input parameters for iloc might be wrong`)
     }
@@ -310,7 +311,7 @@ class DataFrame<T>{
                 vec_set(v1,rpl as T[][],i1 as number[] | boolean[])
                 break
             default:
-                return null
+                return UNMET
         }
     }
 
@@ -338,15 +339,15 @@ class DataFrame<T>{
                 this._tr = undefined
                 break
             default:
-                return null
+                return UNMET
         }
     }
     
     _iset(row:undefined | numx | boolean[],col:undefined | numx | boolean[],rpl:T| T[] | T[][]){
-        let res: undefined | null;
+        let res: undefined | typeof UNMET;
         res = this._iset_symmetric(row,col,rpl)
         // console.log('_iset_symmetric',res,row,col,rpl)
-        if(res === null){
+        if(res === UNMET){
             rpl = rpl as T[] | T[][]
             if(col === undefined || isVal(row)){
                 res = this._iset_asymmetric(this.values,this.index,this.columns,row!,rpl,col)
@@ -358,7 +359,7 @@ class DataFrame<T>{
                 if(res===undefined) this.values = this._transpose(this.tr)
             }
         }
-        if(res===null) throw('function failed. Please check the input for _iset')
+        if(res===UNMET) throw('function failed. Please check the input for _iset')
     }
 
     // iset(rpl: T[][]):void
