@@ -70,6 +70,9 @@ declare class Series<T> {
     std(this: Series<number>): number;
     var(this: Series<number>): number;
     prod(this: Series<number>): number;
+    accumulate(this: Series<number>, func: (x: number, y: number) => number): Series<number>;
+    cumsum(this: Series<number>): Series<number>;
+    cumprod(this: Series<number>): Series<number>;
     to_raw(copy?: boolean): {
         values: T[];
         name: string | number;

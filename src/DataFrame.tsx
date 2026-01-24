@@ -285,9 +285,9 @@ class DataFrame<T>{
         row = row as undefined | locParam
         col = col as undefined | locParam
         
-        const num_row = _trans(this.index, row as any)
-        const num_col = _trans(this.columns, col as any)
-        return this.iloc(num_row as any, num_col as any) as T|Series<T>|DataFrame<T>
+        const num_row = _trans(this.index, row)
+        const num_col = _trans(this.columns, col)
+        return this.iloc(num_row, num_col) as T|Series<T>|DataFrame<T>
     }
 
 
@@ -1123,6 +1123,38 @@ class DataFrame<T>{
     }
     prod(this:DataFrame<number>,axis:0|1=0){
         return this._reduce_num(stat.product,axis)
+    }
+
+    accumulate(this:DataFrame<number>, 
+        func: string | ((x:number,y:number)=>number), 
+        axis=0):DataFrame<number>{
+        if(axis===0){
+            let curr:number[]
+            const values:number[][] = []
+            for(const [row,key,i] of this.iterrows()){
+                if(i===0)
+                    curr = row.values
+                else
+                    curr = row.op(func,curr!).values
+                values.push(curr)
+            }
+            return new DataFrame(values,{index:this.index.cp(),
+                columns:this.columns.cp()})
+        }else{
+            this.transpose(true)
+            const df = this.accumulate(func,0)
+            this.transpose(true)
+            df.transpose(true)
+            return df
+        }
+    }
+
+    cumsum(this:DataFrame<number>,axis:0|1=0):DataFrame<number>{
+        return this.accumulate('x+y',axis)
+    }
+
+    cumprod(this:DataFrame<number>,axis:0|1=0):DataFrame<number>{
+        return this.accumulate('x*y',axis)
     }
 }
 

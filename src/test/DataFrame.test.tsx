@@ -1264,3 +1264,28 @@ test('isna',()=>{
     const ss = new DataFrame([[1,2,null,3,NaN,undefined,'',Infinity]])
     expect(ss.isna().values).toEqual([[false,false,true,false,true,true,false,false]])
 })
+
+test('accumulate',()=>{
+    const df = new DataFrame([[1,2],[5,6],[7,9]],
+        {index:['a','b','b'], columns:['c','e']})
+    const ds = df.cumsum()
+    expect(ds.values).toEqual([[1,2],[6,8],[13,17]])
+    expect(ds.index.values).toEqual(['a','b','b'])
+    expect(ds.columns.values).toEqual(['c','e'])
+
+    const ds2 = df.cumsum(1)
+    expect(ds2.values).toEqual([[1,3],[5,11],[7,16]])
+    expect(ds2.index.values).toEqual(['a','b','b'])
+    expect(ds2.columns.values).toEqual(['c','e'])
+
+    const dp = df.cumprod()
+    expect(dp.values).toEqual([[1,2],[5,12],[35,108]])
+    expect(dp.index.values).toEqual(['a','b','b'])
+    expect(ds.columns.values).toEqual(['c','e'])
+
+    const dp2 = df.cumprod(1)
+    expect(dp2.values).toEqual([[1,2],[5,30],[7,63]])
+    expect(dp.index.values).toEqual(['a','b','b'])
+    expect(ds.columns.values).toEqual(['c','e'])
+    
+})

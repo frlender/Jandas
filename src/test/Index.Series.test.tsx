@@ -598,3 +598,13 @@ test('isna',()=>{
     const ss = new Series([1,2,null,3,NaN,undefined,'',Infinity])
     expect(ss.isna().values).toEqual([false,false,true,false,true,true,false,false])
 })
+
+
+test('cumsum',()=>{
+    const ss = new Series([1,2,3,4,5,6],{index:['a','b','c','d','e','f'],name:'s'})
+    expect(ss.cumsum().values).toEqual([1,3,6,10,15,21])
+    expect(ss.cumsum().index.values).toEqual(ss.index.values)
+
+    expect(ss.cumprod().values).toEqual([1,2,6,24,120,720])
+    expect(ss.cumprod().index.values).toEqual(ss.index.values)
+})

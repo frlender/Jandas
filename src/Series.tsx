@@ -368,6 +368,28 @@ class Series<T>{
         return stat.product(this.values)
     }
 
+    accumulate(this:Series<number>, func:(x:number,y:number)=>number){
+        let curr: number
+        const values = this.values.map((x,i)=>{
+            if(i === 0)
+                curr = x
+            else
+                curr = func(curr,x)
+            return curr
+        })
+        return new Series(values, {name:this.name, index:this.index.cp()})
+    }
+
+    cumsum(this:Series<number>){
+        return this.accumulate((x,y)=>x+y)
+    }
+
+    cumprod(this:Series<number>){
+        return this.accumulate((x,y)=>x*y)
+    }
+
+
+
     to_raw(copy:boolean=true){
         if(copy)
             return {values:cp(this.values),

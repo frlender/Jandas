@@ -254,6 +254,31 @@ A collection of functions to compute statistics on the `axis` dimension. The def
 These methods only work for dataframes with numeric values.
 
 \
+**DataFrame.accumulate**
+```TypeScript
+accumulate(this:DataFrame<number>, 
+        func: string | ((x:number,y:number)=>number), 
+        axis=0):DataFrame<number>
+```
+Calculate cumulative statistics of the values along `axis` in the DataFrame as specified by `func`. Allowed `func` strings are the same as in `Series.op`. The method only works for DataFrame with numeric values.
+
+
+\
+**DataFrame.cumsum**
+```TypeScript
+cumsum(this:DataFrame<number>,axis:0|1=0):DataFrame<number>
+```
+Calculate cumulative sums of the values along `axis` in the DataFrame. It only works for DataFrame with numeric values.
+
+
+\
+**DataFrame.cumprod**
+```TypeScript
+cumprod(this:DataFrame<number>,axis:0|1=0):DataFrame<number>
+```
+Calculate cumulative products of the values along `axis` in the DataFrame. It only works for DataFrame with numeric values.
+
+\
 **DataFrame.sort_values**
 ```TypeScript
 interface SortOptions{
@@ -499,6 +524,30 @@ min(this:Series<number>): number|undefined
 // other functions are similarly defined
 ```
 A collection of functions to compute statistics on the Series. They are implemented as wrappers around the corresponding functions in the [simple-statistics](https://github.com/simple-statistics/simple-statistics) package. The `std` and `var` functions are implemented using the `sampleStandardDeviation` and `sampleVariance` functions in the package. These functions are intended to use for Series with numeric values only. These methods only work for Series with numeric values.
+
+\
+**Series.accumulate**
+```TypeScript
+accumulate(this:Series<number>, func:(x:number,y:number)=>number): Series<number>
+```
+Calculate cumulative statistics of the values in the Series as specified by `func`. The method only works for Series with numeric values.
+
+\
+**Series.cumsum**
+```TypeScript
+cumsum(this:Series<number>): Series<number>
+```
+Calculate cumulative sum of the values in the Series. It only works for Series with numeric values.
+
+
+\
+**Series.cumprod**
+```TypeScript
+cumprod(this:Series<number>): Series<number>
+```
+Calculate cumulative product of the values in the Series. It only works for Series with numeric values.
+
+
 
 \
 **Series.sort_values**

@@ -132,5 +132,8 @@ declare class DataFrame<T> {
     var(this: DataFrame<number>, axis?: 0 | 1): Series<number>;
     mode(this: DataFrame<number>, axis?: 0 | 1): Series<number>;
     prod(this: DataFrame<number>, axis?: 0 | 1): Series<number>;
+    accumulate(this: DataFrame<number>, func: string | ((x: number, y: number) => number), axis?: number): DataFrame<number>;
+    cumsum(this: DataFrame<number>, axis?: 0 | 1): DataFrame<number>;
+    cumprod(this: DataFrame<number>, axis?: 0 | 1): DataFrame<number>;
 }
 export default DataFrame;
