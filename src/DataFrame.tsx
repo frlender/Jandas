@@ -78,6 +78,7 @@ class DataFrame<T>{
     }
 
     get tr():T[][]{
+        // console.log('tr',this._tr)
         if(_.isUndefined(this._tr)){
             if(this.values.length > 0)
                 this._tr = this._transpose(this.values);
@@ -1076,12 +1077,12 @@ class DataFrame<T>{
         if(copy)
             return {values:cp(this.values),
                 index:this.index.to_raw(),
-                columns:this.index.to_raw()
+                columns:this.columns.to_raw()
             }
         else
             return {values:this.values,
                 index:this.index.to_raw(copy),
-                columns:this.index.to_raw(copy)
+                columns:this.columns.to_raw(copy)
             }
     }
 

@@ -4,6 +4,7 @@ import Index from './Index'
 import { ns_arr, IndexRaw, SeriesRaw, DataFrameRaw } from './interfaces'
 import {check,range} from './util'
 import * as _ from 'lodash'
+import { index } from 'd3-array'
 // import {cp} from './cmm'
 
 // function cp2<S>(arr:S[][]){
@@ -22,17 +23,23 @@ function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
         const ssArr = sdArr as Series<T>[]
         if(axis===0){
             let vals:T[] = []
+            let indexName = ssArr[0].index.name
+            let name = ssArr[0].name
             ssArr.forEach(ss=>{
                 idx = idx.concat(ss.index.values)
                 vals = vals.concat(ss.values)
+                indexName = indexName === ss.index.name ? indexName : ''
+                name = name === ss.name ? name : ''
             })
-            return new Series<T>(vals,{index:idx})
+            return new Series<T>(vals,{index: new Index(idx,indexName),
+                name:name})
         }else{
             let vals: T[][] = []
             let cols: ns_arr = []
-            let emptyFlag = false
-            ssArr.every((ss,i)=>{
+            let indexName = ssArr[0].index.name
+            ssArr.forEach((ss,i)=>{
                 check.concat.index.uniq(ss.index)
+                indexName = indexName === ss.index.name ? indexName : ''
                 if(i===0){
                     idx = ss.index.values
                     vals = ss.values.map(x=>[x])
@@ -40,11 +47,9 @@ function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
                     const _idx = idx
                     const _vals = vals
                     vals = []
-                    idx = _.intersection(idx,ss.index.values)
-                    if(idx.length === 0){
-                        emptyFlag = true
-                        return false
-                    }else{
+                    idx = idx.length > 0 ?
+                        _.intersection(idx,ss.index.values) : []
+                    if(idx.length > 0){
                         // const sx = ss.loc(idx)
                         idx.forEach(label=>{
                            const i =  _idx.findIndex(x=>x===label)
@@ -54,12 +59,11 @@ function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
                     }
                 }
                 cols.push(ss.name)
-                return true 
             })
-            if(emptyFlag) return new DataFrame([],{columns:ssArr.map(x=>x.name)})
-            return new DataFrame(vals,{index:idx,columns:cols})
+            return new DataFrame(vals,{index:new Index(idx,indexName),
+                columns:cols})
         }
-    }else{
+    }else if(sdArr[0] instanceof DataFrame){
         const dfArr = sdArr as DataFrame<T>[]
         const getIndex = axis === 0 ? 
             (x:DataFrame<T>)=>x.index :
@@ -73,12 +77,15 @@ function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
         let idx:ns_arr = []
         let cols:ns_arr = []
         let vals:T[][] = [] 
-        let emptyFlag = false
-        dfArr.every((df,i)=>{
+        let indexName: string|number;
+        let columnsName: string|number;
+        dfArr.forEach((df,i)=>{
             const columns = getColumns(df)
             check.concat.index.uniq(columns)
             const index = getIndex(df)
             const values = getVals(df)
+            indexName = i === 0 || indexName === index.name ? index.name : ''
+            columnsName = i=== 0 || columnsName === columns.name ? columns.name : ''
             if(i===0){
                 idx = index.values
                 cols = columns.values
@@ -86,32 +93,21 @@ function concat<T>(sdArr:Series<T>[]|DataFrame<T>[],axis:0|1=0){
             }else{
                 const _cols = cols
                 cols = _.intersection(cols,columns.values)
-                if(cols.length === 0){
-                    emptyFlag = true
-                    return false
-                }else{
-                    vals = new DataFrame(vals,{columns:_cols})
-                        .loc(null,cols).values
-                    vals = axis === 0 ? 
-                        vals.concat(df.loc(null,cols).values) :
-                        vals.concat(df.loc(cols).tr)
-                    idx = idx.concat(getIndex(df).values)
-                }
-            }
-            return true 
-        })
-        if(emptyFlag){
-            idx = []
-            dfArr.forEach(df=>{
+            
+                vals = new DataFrame(vals,{columns:_cols})
+                    .loc(null,cols).values
+                vals = axis === 0 ? 
+                    vals.concat(df.loc(null,cols).values) :
+                    vals.concat(df.loc(cols).tr)
                 idx = idx.concat(getIndex(df).values)
-            })
-            // console.log('aaaa',idx)
-            const new_df = new DataFrame(idx.map(x=>[]),{index:idx})
-            return axis === 0 ?  new_df : new_df.transpose(true)
-        }
-        const new_df = new DataFrame(vals,{index:idx,columns:cols})
+            
+            }
+        })
+        const new_df = new DataFrame(vals,{index:
+            new Index(idx,indexName!),columns:new Index(cols,columnsName!)})
         return axis === 0 ? new_df : new_df.transpose(true)
-    }
+    }else
+        throw Error('unsupported input type.')
 }
 
 function from_raw<T>(data:IndexRaw):Index

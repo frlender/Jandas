@@ -1,11 +1,44 @@
 import { expect, test, describe} from '@jest/globals';
 import {DataFrame,Index,Series} from '../J'
-import { from_raw, full } from '../util2';
+import { from_raw, full, concat} from '../util2';
 import {range} from '../util'
 import * as _ from 'lodash'
 import {sum} from 'simple-statistics'
 
-test('a',()=>{})
+
+
+test('a',()=>{
+
+    let d1 = new DataFrame([[1],[3]],{
+            index:['a','b'], columns:['c']
+        })
+        let d2 = new DataFrame([[2],[6]],{
+            index:['a','b'], columns:['c']
+        })
+        let d3 = concat([d1,d2])
+        expect(d3).toEqual(
+            new DataFrame([[1],[3],[2],[6]],{
+                index:['a','b','a','b'],columns:['c']
+            })
+        )
+        d3 = concat([d1,d2],1)
+        let df = new DataFrame([[1,2],[3,6]],{
+            index:['a','b'],columns:['c','c']
+        })
+        let tr = df.tr // execute lazy evaluation
+        expect(d3).toEqual(df)
+
+        d2 = new DataFrame([[2],[6]],{
+            index:['a','b'], columns:['e']
+        })
+        d3 = concat([d1,d2])
+        // expect(d3).toEqual(
+        //     new DataFrame([[],[],[],[]],
+        //         {index:['a','b','a','b']})
+        // )
+        // expect(d3.shape).toEqual([4,0])
+
+})
 
 test('change indexes',()=>{
     const df = new DataFrame([[1,2],[3,4],[5,6]],

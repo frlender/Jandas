@@ -3,7 +3,7 @@ import {range,_trans_rg} from '../util'
 import {concat,full} from '../util2'
 import Series from '../Series'
 import DataFrame from '../DataFrame';
-
+import Index from '../Index';
 
 const trans = _trans_rg
 test('_trans_rg',()=>{
@@ -46,6 +46,29 @@ describe('concat',()=>{
         expect(s12).toEqual(
             new Series([1,2,3,4],{index:['a','b','a','b']})
         )
+
+        let s2x = new Series([3,4],{index:new Index(['a','b']),name:'dd'})
+        s12 = concat([s1,s2x])
+        expect(s12).toEqual(
+            new Series([1,2,3,4],{index:['a','b','a','b'], name:'dd'})
+        )
+
+        let s1x = new Series([1,2],{index:new Index(['a','b'],'dd')})
+        s2x = new Series([3,5],{index:new Index(['a','b'],'dd')})
+        s12 = concat([s1x,s2x])
+        expect(s12).toEqual(
+            new Series([1,2,3,5],{index: new Index(['a','b','a','b'],'dd')})
+        )
+
+        s2x.index.name = 'ee'
+        s1x.name = 'kk'
+        s12 = concat([s1x,s2x],1)
+        expect(s12).toEqual(
+            new DataFrame([[1,3,],[2,5]],{index: new Index(['a','b'],''),
+                columns:['kk','']
+            })
+        )
+        
         s12 = concat([s1,s2],1)
         expect(s12).toEqual(
             new DataFrame([[1,3],[2,4]],{index:['a','b'],
@@ -105,6 +128,60 @@ describe('concat',()=>{
         })
         let tr = df.tr // execute lazy evaluation
         expect(d3).toEqual(df)
+
+        let d1x = d1.loc()
+        let d2x = d2.loc()
+        d1x.index.name = 'dd'
+        d2x.index.name = 'dd'
+        d1x.columns.name = 'ff'
+        d2x.columns.name = 'ff'
+        d3 = concat([d1x,d2x])
+        expect(d3).toEqual(
+            new DataFrame([[1],[3],[2],[6]],{
+                index: new Index(['a','b','a','b'],'dd'),
+                columns: new Index(['c'],'ff')
+            })
+        )
+
+        d3 = concat([d1x,d2x],1)
+        // console.log('aab')
+        // let res = d3.tr
+        // console.log('ttt')
+        // expect(d3).toEqual([])
+        let target = new DataFrame([[1,2],[3,6]],
+                {index: new Index(['a','b'],'dd'),
+                columns: new Index(['c','c'],'ff')}
+            )
+        let res = target.tr
+        expect(d3).toEqual(target)
+
+        d2x.index.name = 'ee'
+        d2x.columns.name = 'ee'
+        d3 = concat([d1x,d2x])
+        expect(d3).toEqual(
+            new DataFrame([[1],[3],[2],[6]],{
+                index:new Index(['a','b','a','b']),columns:['c']
+            })
+        )
+        
+        d3 = concat([d1x,d2x],1)
+        target = new DataFrame([[1,2],[3,6]],
+                {index: new Index(['a','b'],''),
+                columns: new Index(['c','c'],'')}
+            )
+        res = target.tr
+        expect(d3).toEqual(target)
+
+        d2x.index.name = 'dd'
+        d3 = concat([d1x,d2x],1)
+        target = new DataFrame([[1,2],[3,6]],
+                {index: new Index(['a','b'],'dd'),
+                columns: new Index(['c','c'],'')}
+            )
+        res = target.tr
+        expect(d3).toEqual(target)
+
+
 
         d2 = new DataFrame([[2],[6]],{
             index:['a','b'], columns:['e']

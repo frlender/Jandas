@@ -975,12 +975,12 @@ test('rank',()=>{
 })
 
 test('to_raw, from_raw',()=>{
-    let df = new DataFrame([[1,2],[3,4]])
+    let df = new DataFrame([[1,2],[3,4]],{index:['a',5],columns:['b','c']})
     let df_raw = df.to_raw()
     expect(from_raw(df_raw)).toEqual(df)
 
     df_raw = df.to_raw(false)
-    df.set(0,1,10)
+    df.iset(0,1,10)
     expect(from_raw(df_raw).iloc(0,1)).toEqual(10)
 })
 
