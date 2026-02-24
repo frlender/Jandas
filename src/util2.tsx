@@ -4,7 +4,6 @@ import Index from './Index'
 import { ns_arr, IndexRaw, SeriesRaw, DataFrameRaw } from './interfaces'
 import {check,range} from './util'
 import * as _ from 'lodash'
-import { index } from 'd3-array'
 // import {cp} from './cmm'
 
 // function cp2<S>(arr:S[][]){
